@@ -1,10 +1,10 @@
+import { InvitationStatus, TripMemberRole } from "@luis-travel/types"
 import { addDays } from "date-fns"
 import { nanoid } from "nanoid"
-import { InvitationStatus, TripMemberRole } from "@luis-travel/types"
-import type { Invitation } from "../schema"
 import { createRequestLogger } from "../lib/logger"
 import { invitationRepository } from "../repositories/invitation.repository"
 import { tripRepository } from "../repositories/trip.repository"
+import type { Invitation } from "../schema"
 
 interface InviteMemberParams {
   tripId: string

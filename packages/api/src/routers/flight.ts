@@ -1,6 +1,6 @@
+import { flightService } from "@luis-travel/db/services"
 import { TRPCError } from "@trpc/server"
 import { z } from "zod"
-import { flightService } from "@luis-travel/db/services"
 import { protectedProcedure, router } from "../init"
 
 export const flightRouter = router({

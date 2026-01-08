@@ -1,6 +1,6 @@
 import { type Trip, TripMemberRole, type TripWithMembers } from "@luis-travel/types"
-import type { NewTrip } from "../schema"
 import { tripRepository } from "../repositories/trip.repository"
+import type { NewTrip } from "../schema"
 
 export class TripService {
   async getUserTrips(userId: string): Promise<Trip[]> {

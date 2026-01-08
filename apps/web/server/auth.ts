@@ -1,7 +1,7 @@
-import { betterAuth } from "better-auth"
-import { drizzleAdapter } from "better-auth/adapters/drizzle"
 import { db } from "@luis-travel/db"
 import * as schema from "@luis-travel/db/schema"
+import { betterAuth } from "better-auth"
+import { drizzleAdapter } from "better-auth/adapters/drizzle"
 
 // Build social providers config only if credentials are set
 const socialProviders: Record<string, { clientId: string; clientSecret: string }> = {}
@@ -41,6 +41,11 @@ export const auth = betterAuth({
     cookieCache: {
       enabled: true,
       maxAge: 60 * 5, // 5 minutes
+    },
+  },
+  advanced: {
+    database: {
+      generateId: "uuid",
     },
   },
 })

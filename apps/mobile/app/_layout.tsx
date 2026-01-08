@@ -1,8 +1,8 @@
-import { Stack } from "expo-router"
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
-import { useState } from "react"
 import { GluestackUIProvider } from "@gluestack-ui/themed"
-import { trpc, getTRPCClient } from "../src/lib/trpc"
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
+import { Stack } from "expo-router"
+import { useState } from "react"
+import { getTRPCClient, trpc } from "../src/lib/trpc"
 import "../src/styles/global.css"
 
 export default function RootLayout() {

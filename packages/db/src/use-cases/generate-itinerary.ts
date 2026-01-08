@@ -6,9 +6,9 @@ import {
   DEFAULT_ACTIVITY_COLOR,
   TripMemberRole,
 } from "@luis-travel/types"
-import type { Activity } from "../schema"
 import { createRequestLogger } from "../lib/logger"
 import { tripRepository } from "../repositories/trip.repository"
+import type { Activity } from "../schema"
 import { activityService } from "../services/activity.service"
 import { aiService } from "../services/ai.service"
 
@@ -19,7 +19,7 @@ interface GenerateItineraryParams {
   autoAdd?: boolean
 }
 
-interface AISuggestion {
+export interface AISuggestion {
   title: string
   description: string
   suggestedStartTime: string
@@ -31,7 +31,7 @@ interface AISuggestion {
   day: number
 }
 
-interface GenerateItineraryResult {
+export interface GenerateItineraryResult {
   suggestions: AISuggestion[]
   addedActivities?: Activity[]
 }

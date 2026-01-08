@@ -1,23 +1,17 @@
-import { View, Text, ScrollView, Pressable, ActivityIndicator } from "react-native"
-import { useLocalSearchParams, Link, router } from "expo-router"
 import { format } from "date-fns"
 import { ptBR } from "date-fns/locale"
+import { Link, router, useLocalSearchParams } from "expo-router"
+import { Calendar, ChevronLeft, MapPin, Plane, Users } from "lucide-react-native"
+import { ActivityIndicator, Pressable, ScrollView, Text, View } from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context"
-import { ChevronLeft, Calendar, MapPin, Users, Plane } from "lucide-react-native"
 import { trpc } from "../../../../src/lib/trpc"
 
 export default function TripDetailScreen() {
   const { tripId } = useLocalSearchParams<{ tripId: string }>()
 
   const { data: trip, isLoading } = trpc.trip.byId.useQuery({ id: tripId })
-  const { data: activities } = trpc.activity.listByTrip.useQuery(
-    { tripId },
-    { enabled: !!trip }
-  )
-  const { data: flights } = trpc.flight.listByTrip.useQuery(
-    { tripId },
-    { enabled: !!trip }
-  )
+  const { data: activities } = trpc.activity.listByTrip.useQuery({ tripId }, { enabled: !!trip })
+  const { data: flights } = trpc.flight.listByTrip.useQuery({ tripId }, { enabled: !!trip })
 
   if (isLoading || !trip) {
     return (
@@ -55,18 +49,14 @@ export default function TripDetailScreen() {
           <View className="flex-1 bg-secondary p-4 rounded-xl flex-row items-center">
             <MapPin size={20} color="#3b82f6" />
             <View className="ml-3">
-              <Text className="text-2xl font-bold text-foreground">
-                {activities?.length || 0}
-              </Text>
+              <Text className="text-2xl font-bold text-foreground">{activities?.length || 0}</Text>
               <Text className="text-sm text-muted-foreground">Atividades</Text>
             </View>
           </View>
           <View className="flex-1 bg-secondary p-4 rounded-xl flex-row items-center">
             <Plane size={20} color="#3b82f6" />
             <View className="ml-3">
-              <Text className="text-2xl font-bold text-foreground">
-                {flights?.length || 0}
-              </Text>
+              <Text className="text-2xl font-bold text-foreground">{flights?.length || 0}</Text>
               <Text className="text-sm text-muted-foreground">Voos</Text>
             </View>
           </View>
@@ -95,10 +85,7 @@ export default function TripDetailScreen() {
             <Text className="text-muted-foreground">Nenhuma atividade planejada</Text>
           )}
           {activities?.slice(0, 5).map((activity) => (
-            <View
-              key={activity.id}
-              className="bg-white border border-border p-3 rounded-xl mb-2"
-            >
+            <View key={activity.id} className="bg-white border border-border p-3 rounded-xl mb-2">
               <Text className="font-medium text-foreground">{activity.title}</Text>
               <Text className="text-sm text-muted-foreground">
                 {format(new Date(activity.startTime), "d MMM, HH:mm", { locale: ptBR })}
@@ -106,9 +93,7 @@ export default function TripDetailScreen() {
               {activity.location && (
                 <View className="flex-row items-center mt-1">
                   <MapPin size={14} color="#64748b" />
-                  <Text className="text-sm text-muted-foreground ml-1">
-                    {activity.location}
-                  </Text>
+                  <Text className="text-sm text-muted-foreground ml-1">{activity.location}</Text>
                 </View>
               )}
             </View>
@@ -120,13 +105,8 @@ export default function TripDetailScreen() {
           <View className="mb-6">
             <Text className="text-lg font-semibold text-foreground mb-3">Voos</Text>
             {flights.map((flight) => (
-              <View
-                key={flight.id}
-                className="bg-white border border-border p-3 rounded-xl mb-2"
-              >
-                <Text className="font-medium text-foreground">
-                  {flight.flightNumber}
-                </Text>
+              <View key={flight.id} className="bg-white border border-border p-3 rounded-xl mb-2">
+                <Text className="font-medium text-foreground">{flight.flightNumber}</Text>
                 <Text className="text-sm text-muted-foreground">
                   {flight.departureAirport} → {flight.arrivalAirport}
                 </Text>
@@ -143,9 +123,7 @@ export default function TripDetailScreen() {
         {/* Action Button */}
         <Link href={`/trips/${tripId}/calendar`} asChild>
           <Pressable className="bg-primary p-4 rounded-xl mb-8">
-            <Text className="text-white text-center font-semibold">
-              Abrir Calendário
-            </Text>
+            <Text className="text-white text-center font-semibold">Abrir Calendário</Text>
           </Pressable>
         </Link>
       </ScrollView>

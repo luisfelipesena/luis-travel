@@ -1,3 +1,4 @@
+import { formatDestinations } from "@luis-travel/types"
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router"
 import { format } from "date-fns"
 import { ptBR } from "date-fns/locale"
@@ -14,7 +15,6 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Textarea } from "@/components/ui/textarea"
 import { trpc } from "@/lib/trpc"
 import { cn } from "@/lib/utils"
-import { formatDestinations } from "@luis-travel/types"
 
 export const Route = createFileRoute("/_authenticated/dashboard/trips/new")({
   component: NewTripPage,

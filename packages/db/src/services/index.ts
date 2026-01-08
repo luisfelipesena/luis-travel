@@ -1,5 +1,5 @@
-export * from "./trip.service"
 export * from "./activity.service"
-export * from "./flight.service"
 export * from "./ai.service"
+export * from "./flight.service"
 export * from "./geo.service"
+export * from "./trip.service"

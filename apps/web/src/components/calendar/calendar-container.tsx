@@ -1,6 +1,6 @@
+import type { Activity } from "@luis-travel/db/schema"
 import { addDays, format, startOfWeek } from "date-fns"
 import { useState } from "react"
-import type { Activity } from "@luis-travel/db/schema"
 import { ActivityFormDialog } from "./activity-form-dialog"
 import { CalendarToolbar } from "./calendar-toolbar"
 import { DayView } from "./views/day-view"

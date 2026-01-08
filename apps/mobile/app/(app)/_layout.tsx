@@ -1,5 +1,5 @@
 import { Tabs } from "expo-router"
-import { Home, Map, Plane, Users, User } from "lucide-react-native"
+import { Home, Map as MapIcon, Plane, User, Users } from "lucide-react-native"
 
 export default function AppLayout() {
   return (
@@ -26,7 +26,7 @@ export default function AppLayout() {
         name="trips"
         options={{
           title: "Viagens",
-          tabBarIcon: ({ color, size }) => <Map size={size} color={color} />,
+          tabBarIcon: ({ color, size }) => <MapIcon size={size} color={color} />,
         }}
       />
       <Tabs.Screen

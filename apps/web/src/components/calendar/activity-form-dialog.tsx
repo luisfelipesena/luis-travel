@@ -1,3 +1,4 @@
+import { ActivityType } from "@luis-travel/types"
 import { format, setHours, setMinutes } from "date-fns"
 import { ptBR } from "date-fns/locale"
 import { CalendarIcon, Clock, Loader2 } from "lucide-react"
@@ -25,7 +26,6 @@ import {
 } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
 import { cn } from "@/lib/utils"
-import { ActivityType } from "@luis-travel/types"
 import { LocationMapPicker } from "./location-map-picker"
 
 const ACTIVITY_TYPES = [

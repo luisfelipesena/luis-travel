@@ -1,3 +1,12 @@
+import {
+  type ActivityMetadata,
+  ActivityTypeValues,
+  type FlightExternalData,
+  InvitationStatusValues,
+  ParticipantStatusValues,
+  type TripDestinationsArray,
+  TripMemberRoleValues,
+} from "@luis-travel/types"
 import { relations } from "drizzle-orm"
 import {
   boolean,
@@ -9,15 +18,6 @@ import {
   uuid,
   varchar,
 } from "drizzle-orm/pg-core"
-import {
-  type ActivityMetadata,
-  ActivityTypeValues,
-  type FlightExternalData,
-  InvitationStatusValues,
-  ParticipantStatusValues,
-  type TripDestinationsArray,
-  TripMemberRoleValues,
-} from "@luis-travel/types"
 
 // ============================================================================
 // Better Auth Tables

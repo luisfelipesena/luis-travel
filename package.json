@@ -2,7 +2,14 @@
   "name": "luis-travel-monorepo",
   "private": true,
   "type": "module",
-  "workspaces": ["apps/*", "packages/*"],
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "resolutions": {
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0"
+  },
   "scripts": {
     "dev": "bun run --filter @luis-travel/web dev",
     "dev:web": "bun run --filter @luis-travel/web dev",

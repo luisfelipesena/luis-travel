@@ -1,8 +1,8 @@
+import type { Activity } from "@luis-travel/db/schema"
 import { addMinutes, format, isSameDay, setHours, setMinutes } from "date-fns"
 import { useMemo } from "react"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Skeleton } from "@/components/ui/skeleton"
-import type { Activity } from "@luis-travel/db/schema"
 import { CalendarEvent } from "../calendar-event"
 
 const HOURS = Array.from({ length: 24 }, (_, i) => i)

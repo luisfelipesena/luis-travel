@@ -1,3 +1,4 @@
+import type { Activity } from "@luis-travel/db/schema"
 import {
   addDays,
   endOfMonth,
@@ -11,7 +12,6 @@ import {
 import { useMemo } from "react"
 import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
-import type { Activity } from "@luis-travel/db/schema"
 
 const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
 

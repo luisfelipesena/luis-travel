@@ -1,8 +1,8 @@
 import type { LatLngBoundsExpression, LatLngExpression } from "leaflet"
 import "leaflet/dist/leaflet.css"
+import { ActivityType } from "@luis-travel/types"
 import { useMemo } from "react"
 import { MapContainer, Marker, Polyline, Popup, TileLayer, useMap } from "react-leaflet"
-import { ActivityType } from "@luis-travel/types"
 
 // Activity type to color mapping
 const ACTIVITY_TYPE_COLORS: Record<string, string> = {

@@ -1,6 +1,6 @@
+import { generateItineraryUseCase } from "@luis-travel/db/use-cases"
 import { TRPCError } from "@trpc/server"
 import { z } from "zod"
-import { generateItineraryUseCase } from "@luis-travel/db/use-cases"
 import { protectedProcedure, router } from "../init"
 
 export const aiRouter = router({

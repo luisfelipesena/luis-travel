@@ -1,5 +1,10 @@
+import {
+  type Trip,
+  TripMemberRole,
+  type TripMemberWithUser,
+  type TripWithMembers,
+} from "@luis-travel/types"
 import { and, eq } from "drizzle-orm"
-import { type Trip, TripMemberRole, type TripMemberWithUser, type TripWithMembers } from "@luis-travel/types"
 import { db } from ".."
 import { type NewTrip, trip, tripMember } from "../schema"
 

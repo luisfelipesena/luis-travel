@@ -1,10 +1,10 @@
-import { View, Text, ScrollView, Pressable, ActivityIndicator, TextInput } from "react-native"
-import { Link } from "expo-router"
 import { format } from "date-fns"
 import { ptBR } from "date-fns/locale"
-import { useState, useMemo } from "react"
+import { Link } from "expo-router"
+import { Plus, Search } from "lucide-react-native"
+import { useMemo, useState } from "react"
+import { ActivityIndicator, Pressable, ScrollView, Text, TextInput, View } from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context"
-import { Search, Plus } from "lucide-react-native"
 import { trpc } from "../../../src/lib/trpc"
 
 export default function TripsScreen() {

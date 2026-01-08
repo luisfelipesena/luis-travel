@@ -1,5 +1,4 @@
-import { TRPCError } from "@trpc/server"
-import { z } from "zod"
+import { tripService } from "@luis-travel/db/services"
 import {
   createTripInputSchema,
   deleteTripInputSchema,
@@ -8,7 +7,8 @@ import {
   tripWithMembersSchema,
   updateTripInputSchema,
 } from "@luis-travel/types"
-import { tripService } from "@luis-travel/db/services"
+import { TRPCError } from "@trpc/server"
+import { z } from "zod"
 import { protectedProcedure, router } from "../init"
 
 export const tripRouter = router({

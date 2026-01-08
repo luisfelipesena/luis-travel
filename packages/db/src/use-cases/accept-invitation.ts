@@ -1,8 +1,8 @@
-import type { Invitation, TripMember } from "../schema"
 import { invitationRepository } from "../repositories/invitation.repository"
 import { tripRepository } from "../repositories/trip.repository"
+import type { Invitation, TripMember } from "../schema"
 
-interface AcceptInvitationResult {
+export interface AcceptInvitationResult {
   invitation: Invitation
   membership: TripMember
 }

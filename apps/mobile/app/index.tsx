@@ -1,6 +1,6 @@
 import { Redirect } from "expo-router"
 import { useEffect, useState } from "react"
-import { View, ActivityIndicator } from "react-native"
+import { ActivityIndicator, View } from "react-native"
 import { isAuthenticated } from "../src/lib/auth"
 
 export default function Index() {

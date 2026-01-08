@@ -1,5 +1,5 @@
-import { asc, eq } from "drizzle-orm"
 import type { Flight, FlightExternalData } from "@luis-travel/types"
+import { asc, eq } from "drizzle-orm"
 import { db } from ".."
 import { flight, type NewFlight } from "../schema"
 

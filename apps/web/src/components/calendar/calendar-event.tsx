@@ -1,7 +1,7 @@
+import type { Activity } from "@luis-travel/db/schema"
 import { format } from "date-fns"
 import { useCallback, useEffect, useRef, useState } from "react"
 import { cn } from "@/lib/utils"
-import type { Activity } from "@luis-travel/db/schema"
 
 const SLOT_HEIGHT = 48
 const MINUTES_PER_SLOT = 60

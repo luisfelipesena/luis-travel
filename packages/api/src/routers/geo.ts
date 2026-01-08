@@ -1,5 +1,5 @@
-import { z } from "zod"
 import { geoService } from "@luis-travel/db/services"
+import { z } from "zod"
 import { publicProcedure, router } from "../init"
 
 // ============================================================================

@@ -1,10 +1,10 @@
-import { View, Text, ScrollView, Pressable, ActivityIndicator } from "react-native"
-import { useLocalSearchParams, router } from "expo-router"
-import { format, addDays, isSameDay, startOfDay } from "date-fns"
+import { addDays, format, isSameDay, startOfDay } from "date-fns"
 import { ptBR } from "date-fns/locale"
-import { useState, useMemo } from "react"
-import { SafeAreaView } from "react-native-safe-area-context"
+import { router, useLocalSearchParams } from "expo-router"
 import { ChevronLeft, ChevronRight, MapPin } from "lucide-react-native"
+import { useMemo, useState } from "react"
+import { ActivityIndicator, Pressable, ScrollView, Text, View } from "react-native"
+import { SafeAreaView } from "react-native-safe-area-context"
 import { trpc } from "../../../../src/lib/trpc"
 
 export default function TripCalendarScreen() {
@@ -31,9 +31,9 @@ export default function TripCalendarScreen() {
 
   const dayActivities = useMemo(() => {
     if (!activities) return []
-    return activities.filter((a) =>
-      isSameDay(new Date(a.startTime), selectedDate)
-    ).sort((a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime())
+    return activities
+      .filter((a) => isSameDay(new Date(a.startTime), selectedDate))
+      .sort((a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime())
   }, [activities, selectedDate])
 
   if (tripLoading || !trip) {
@@ -58,11 +58,7 @@ export default function TripCalendarScreen() {
 
       {/* Days Scroll */}
       <View className="border-b border-border">
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          className="px-2 py-3"
-        >
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} className="px-2 py-3">
           {tripDays.map((day) => {
             const isSelected = isSameDay(day, selectedDate)
             const isToday = isSameDay(day, new Date())
@@ -74,17 +70,11 @@ export default function TripCalendarScreen() {
                   isSelected ? "bg-primary" : isToday ? "bg-primary/10" : "bg-secondary"
                 }`}
               >
-                <Text
-                  className={`text-xs ${
-                    isSelected ? "text-white" : "text-muted-foreground"
-                  }`}
-                >
+                <Text className={`text-xs ${isSelected ? "text-white" : "text-muted-foreground"}`}>
                   {format(day, "EEE", { locale: ptBR })}
                 </Text>
                 <Text
-                  className={`text-lg font-bold ${
-                    isSelected ? "text-white" : "text-foreground"
-                  }`}
+                  className={`text-lg font-bold ${isSelected ? "text-white" : "text-foreground"}`}
                 >
                   {format(day, "d")}
                 </Text>
@@ -115,23 +105,16 @@ export default function TripCalendarScreen() {
 
       {/* Activities List */}
       <ScrollView className="flex-1 px-4">
-        {activitiesLoading && (
-          <ActivityIndicator size="small" color="#3b82f6" className="my-4" />
-        )}
+        {activitiesLoading && <ActivityIndicator size="small" color="#3b82f6" className="my-4" />}
 
         {dayActivities.length === 0 && !activitiesLoading && (
           <View className="items-center py-8">
-            <Text className="text-muted-foreground text-center">
-              Nenhuma atividade neste dia
-            </Text>
+            <Text className="text-muted-foreground text-center">Nenhuma atividade neste dia</Text>
           </View>
         )}
 
         {dayActivities.map((activity) => (
-          <View
-            key={activity.id}
-            className="bg-white border border-border p-4 rounded-xl mb-3"
-          >
+          <View key={activity.id} className="bg-white border border-border p-4 rounded-xl mb-3">
             <View className="flex-row items-start">
               <View className="bg-primary/10 px-2 py-1 rounded mr-3">
                 <Text className="text-primary text-sm font-medium">
@@ -141,16 +124,12 @@ export default function TripCalendarScreen() {
               <View className="flex-1">
                 <Text className="font-semibold text-foreground">{activity.title}</Text>
                 {activity.description && (
-                  <Text className="text-sm text-muted-foreground mt-1">
-                    {activity.description}
-                  </Text>
+                  <Text className="text-sm text-muted-foreground mt-1">{activity.description}</Text>
                 )}
                 {activity.location && (
                   <View className="flex-row items-center mt-2">
                     <MapPin size={14} color="#64748b" />
-                    <Text className="text-sm text-muted-foreground ml-1">
-                      {activity.location}
-                    </Text>
+                    <Text className="text-sm text-muted-foreground ml-1">{activity.location}</Text>
                   </View>
                 )}
                 <Text className="text-xs text-muted-foreground mt-2">

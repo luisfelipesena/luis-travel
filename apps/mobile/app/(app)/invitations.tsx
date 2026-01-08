@@ -1,8 +1,8 @@
-import { View, Text, ScrollView, Pressable, ActivityIndicator, Alert } from "react-native"
 import { format } from "date-fns"
 import { ptBR } from "date-fns/locale"
+import { Calendar, Check, MapPin, Users, X } from "lucide-react-native"
+import { ActivityIndicator, Alert, Pressable, ScrollView, Text, View } from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context"
-import { Users, Check, X, MapPin, Calendar } from "lucide-react-native"
 import { trpc } from "../../src/lib/trpc"
 
 export default function InvitationsScreen() {
@@ -29,32 +29,24 @@ export default function InvitationsScreen() {
   })
 
   const handleAccept = (token: string) => {
-    Alert.alert(
-      "Aceitar Convite",
-      "Deseja aceitar este convite?",
-      [
-        { text: "Cancelar", style: "cancel" },
-        {
-          text: "Aceitar",
-          onPress: () => acceptMutation.mutate({ token }),
-        },
-      ]
-    )
+    Alert.alert("Aceitar Convite", "Deseja aceitar este convite?", [
+      { text: "Cancelar", style: "cancel" },
+      {
+        text: "Aceitar",
+        onPress: () => acceptMutation.mutate({ token }),
+      },
+    ])
   }
 
   const handleDecline = (id: string) => {
-    Alert.alert(
-      "Recusar Convite",
-      "Deseja recusar este convite?",
-      [
-        { text: "Cancelar", style: "cancel" },
-        {
-          text: "Recusar",
-          style: "destructive",
-          onPress: () => declineMutation.mutate({ id }),
-        },
-      ]
-    )
+    Alert.alert("Recusar Convite", "Deseja recusar este convite?", [
+      { text: "Cancelar", style: "cancel" },
+      {
+        text: "Recusar",
+        style: "destructive",
+        onPress: () => declineMutation.mutate({ id }),
+      },
+    ])
   }
 
   if (isLoading) {
@@ -75,16 +67,11 @@ export default function InvitationsScreen() {
         {!invitations || invitations.length === 0 ? (
           <View className="items-center py-8">
             <Users size={48} color="#94a3b8" />
-            <Text className="text-muted-foreground text-center mt-4">
-              Nenhum convite pendente
-            </Text>
+            <Text className="text-muted-foreground text-center mt-4">Nenhum convite pendente</Text>
           </View>
         ) : (
           invitations.map((invitation) => (
-            <View
-              key={invitation.id}
-              className="bg-white border border-border p-4 rounded-xl mb-3"
-            >
+            <View key={invitation.id} className="bg-white border border-border p-4 rounded-xl mb-3">
               <View className="flex-row items-start justify-between mb-3">
                 <View className="flex-1">
                   <Text className="font-semibold text-foreground text-lg">
@@ -126,9 +113,7 @@ export default function InvitationsScreen() {
                   className="flex-1 flex-row items-center justify-center bg-secondary py-3 rounded-xl"
                 >
                   <X size={18} color="#64748b" />
-                  <Text className="text-muted-foreground font-medium ml-2">
-                    Recusar
-                  </Text>
+                  <Text className="text-muted-foreground font-medium ml-2">Recusar</Text>
                 </Pressable>
                 <Pressable
                   onPress={() => handleAccept(invitation.token)}
@@ -136,9 +121,7 @@ export default function InvitationsScreen() {
                   className="flex-1 flex-row items-center justify-center bg-primary py-3 rounded-xl"
                 >
                   <Check size={18} color="white" />
-                  <Text className="text-white font-medium ml-2">
-                    Aceitar
-                  </Text>
+                  <Text className="text-white font-medium ml-2">Aceitar</Text>
                 </Pressable>
               </View>
             </View>
@@ -151,8 +134,11 @@ export default function InvitationsScreen() {
 
 function getRoleLabel(role: string) {
   switch (role) {
-    case "editor": return "Editor"
-    case "viewer": return "Visualizador"
-    default: return role
+    case "editor":
+      return "Editor"
+    case "viewer":
+      return "Visualizador"
+    default:
+      return role
   }
 }

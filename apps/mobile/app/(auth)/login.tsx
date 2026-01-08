@@ -1,7 +1,7 @@
-import { View, Text, Pressable, Image } from "react-native"
 import { router } from "expo-router"
 import { useState } from "react"
-import { signInWithGoogle, signInWithGitHub } from "../../src/lib/auth"
+import { Pressable, Text, View } from "react-native"
+import { signInWithGitHub, signInWithGoogle } from "../../src/lib/auth"
 
 export default function LoginScreen() {
   const [loading, setLoading] = useState(false)
@@ -39,9 +39,7 @@ export default function LoginScreen() {
           disabled={loading}
           className="bg-white border border-border rounded-xl p-4 flex-row items-center justify-center gap-3"
         >
-          <Text className="text-base font-medium text-foreground">
-            Continuar com Google
-          </Text>
+          <Text className="text-base font-medium text-foreground">Continuar com Google</Text>
         </Pressable>
 
         <Pressable
@@ -49,9 +47,7 @@ export default function LoginScreen() {
           disabled={loading}
           className="bg-foreground rounded-xl p-4 flex-row items-center justify-center gap-3"
         >
-          <Text className="text-base font-medium text-white">
-            Continuar com GitHub
-          </Text>
+          <Text className="text-base font-medium text-white">Continuar com GitHub</Text>
         </Pressable>
       </View>
 

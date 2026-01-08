@@ -1,4 +1,3 @@
-import { and, asc, eq, gte, lte } from "drizzle-orm"
 import {
   type Activity,
   type ActivityParticipant,
@@ -7,6 +6,7 @@ import {
   type ActivityWithParticipants,
   ParticipantStatus,
 } from "@luis-travel/types"
+import { and, asc, eq, gte, lte } from "drizzle-orm"
 import { db } from ".."
 import {
   activity,

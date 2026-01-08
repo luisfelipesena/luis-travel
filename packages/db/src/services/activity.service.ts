@@ -1,7 +1,7 @@
 import { type ParticipantStatus, TripMemberRole } from "@luis-travel/types"
-import type { Activity, NewActivity } from "../schema"
 import { activityRepository } from "../repositories/activity.repository"
 import { tripRepository } from "../repositories/trip.repository"
+import type { Activity, NewActivity } from "../schema"
 
 export class ActivityService {
   async getActivitiesByTripId(tripId: string, userId: string): Promise<Activity[]> {

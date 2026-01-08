@@ -1,29 +1,25 @@
-import { View, Text, ScrollView, Pressable, ActivityIndicator, Alert } from "react-native"
-import { SafeAreaView } from "react-native-safe-area-context"
-import { User, LogOut, Settings, Bell, HelpCircle, ChevronRight } from "lucide-react-native"
 import { router } from "expo-router"
-import { trpc } from "../../src/lib/trpc"
+import { Bell, ChevronRight, HelpCircle, LogOut, Settings, User } from "lucide-react-native"
+import { Alert, Pressable, ScrollView, Text, View } from "react-native"
+import { SafeAreaView } from "react-native-safe-area-context"
 import { logout } from "../../src/lib/auth"
+import { trpc } from "../../src/lib/trpc"
 
 export default function ProfileScreen() {
   const { data: trips } = trpc.trip.list.useQuery()
 
   const handleLogout = () => {
-    Alert.alert(
-      "Sair",
-      "Deseja realmente sair da sua conta?",
-      [
-        { text: "Cancelar", style: "cancel" },
-        {
-          text: "Sair",
-          style: "destructive",
-          onPress: async () => {
-            await logout()
-            router.replace("/(auth)/login")
-          },
+    Alert.alert("Sair", "Deseja realmente sair da sua conta?", [
+      { text: "Cancelar", style: "cancel" },
+      {
+        text: "Sair",
+        style: "destructive",
+        onPress: async () => {
+          await logout()
+          router.replace("/(auth)/login")
         },
-      ]
-    )
+      },
+    ])
   }
 
   const stats = {
@@ -40,9 +36,7 @@ export default function ProfileScreen() {
           <View className="w-24 h-24 bg-primary/10 rounded-full items-center justify-center mb-4">
             <User size={48} color="#3b82f6" />
           </View>
-          <Text className="text-xl font-semibold text-foreground">
-            Minha Conta
-          </Text>
+          <Text className="text-xl font-semibold text-foreground">Minha Conta</Text>
         </View>
 
         {/* Stats */}
@@ -110,10 +104,7 @@ function MenuItem({
   onPress: () => void
 }) {
   return (
-    <Pressable
-      onPress={onPress}
-      className="flex-row items-center py-4 border-b border-border"
-    >
+    <Pressable onPress={onPress} className="flex-row items-center py-4 border-b border-border">
       {icon}
       <Text className="flex-1 ml-3 text-foreground">{label}</Text>
       <ChevronRight size={20} color="#94a3b8" />

@@ -1,8 +1,8 @@
 import { createFlightExternalData, TripMemberRole } from "@luis-travel/types"
-import type { Flight, NewFlight } from "../schema"
 import { type AviationstackFlight, aviationstackClient } from "../external/aviationstack"
 import { flightRepository } from "../repositories/flight.repository"
 import { tripRepository } from "../repositories/trip.repository"
+import type { Flight, NewFlight } from "../schema"
 
 export class FlightService {
   async getFlightsByTripId(tripId: string, userId: string): Promise<Flight[]> {

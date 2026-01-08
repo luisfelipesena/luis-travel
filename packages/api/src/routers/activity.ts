@@ -1,4 +1,4 @@
-import { TRPCError } from "@trpc/server"
+import { activityService } from "@luis-travel/db/services"
 import {
   activitiesByDateRangeInputSchema,
   createActivityInputSchema,
@@ -11,7 +11,7 @@ import {
   updateActivityTimesInputSchema,
   updateParticipantStatusInputSchema,
 } from "@luis-travel/types"
-import { activityService } from "@luis-travel/db/services"
+import { TRPCError } from "@trpc/server"
 import { protectedProcedure, router } from "../init"
 
 export const activityRouter = router({

@@ -98,8 +98,8 @@ export function HeroTripForm({ isAuthenticated }: HeroTripFormProps) {
               },
             ]
           : undefined,
-        startDate: pending.dateRange.from,
-        endDate: pending.dateRange.to,
+        startDate: new Date(pending.dateRange.from),
+        endDate: new Date(pending.dateRange.to),
       })
     }
   }, [isAuthenticated, createTripMutation])
@@ -138,8 +138,8 @@ export function HeroTripForm({ isAuthenticated }: HeroTripFormProps) {
             countryCode: selectedCity.countryCode,
           },
         ],
-        startDate: tripData.dateRange.from,
-        endDate: tripData.dateRange.to,
+        startDate: new Date(tripData.dateRange.from),
+        endDate: new Date(tripData.dateRange.to),
       })
     } else {
       savePendingTrip(tripData)

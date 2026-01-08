@@ -59,6 +59,7 @@ export const authLocalizationPtBR = {
   FORGOT_PASSWORD_DESCRIPTION: "Digite seu email para redefinir sua senha",
   FORGOT_PASSWORD_EMAIL: "Verifique seu email para o link de redefinição.",
   FORGOT_PASSWORD_LINK: "Esqueceu sua senha?",
+  GO_BACK: "Voltar",
   MAGIC_LINK: "Link Mágico",
   MAGIC_LINK_ACTION: "Enviar link mágico",
   MAGIC_LINK_DESCRIPTION: "Digite seu email para receber um link mágico",

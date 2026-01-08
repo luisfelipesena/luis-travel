@@ -1,3 +1,5 @@
+import type { Activity } from "@luis-travel/db/schema"
+import { ActivityType } from "@luis-travel/types"
 import { format, isSameDay } from "date-fns"
 import { ptBR } from "date-fns/locale"
 import { ChevronLeft, ChevronRight, Clock, MapPin, Navigation } from "lucide-react"
@@ -5,8 +7,6 @@ import { useMemo, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import type { Activity } from "@luis-travel/db/schema"
-import { ActivityType } from "@luis-travel/types"
 import {
   calculateDistance,
   calculateTotalRouteDistance,

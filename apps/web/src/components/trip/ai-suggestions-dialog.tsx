@@ -1,3 +1,4 @@
+import { ACTIVITY_COLORS, type AIActivityCategory } from "@luis-travel/types"
 import { format } from "date-fns"
 import { ptBR } from "date-fns/locale"
 import { Check, Clock, Loader2, MapPin, Sparkles } from "lucide-react"
@@ -17,7 +18,6 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { cn } from "@/lib/utils"
-import { ACTIVITY_COLORS, type AIActivityCategory } from "@luis-travel/types"
 
 export interface AISuggestion {
   title: string

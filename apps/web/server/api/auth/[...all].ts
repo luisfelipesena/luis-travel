@@ -1,6 +1,4 @@
-import { defineEventHandler, toRequest } from "h3"
+import { fromWebHandler } from "h3"
 import { auth } from "../../auth"
 
-export default defineEventHandler(async (event) => {
-  return auth.handler(toRequest(event))
-})
+export default fromWebHandler(auth.handler)
