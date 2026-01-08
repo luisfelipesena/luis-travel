@@ -2,8 +2,8 @@ import type {
   Activity as ActivityBase,
   ActivityParticipant as ActivityParticipantBase,
   User,
-} from "@/server/db/schema"
-import type { ActivityType, ParticipantStatus } from "@/types/enums"
+} from "@luis-travel/db/schema"
+import type { ActivityType, ParticipantStatus } from "../enums"
 import type { RefineEnums, WithRelations } from "./helpers"
 
 // Refined Activity with proper type enum

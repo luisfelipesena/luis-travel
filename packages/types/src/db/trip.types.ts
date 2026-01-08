@@ -1,5 +1,5 @@
-import type { Trip as TripBase, TripMember as TripMemberBase, User } from "@/server/db/schema"
-import type { TripMemberRole } from "@/types/enums"
+import type { Trip as TripBase, TripMember as TripMemberBase, User } from "@luis-travel/db/schema"
+import type { TripMemberRole } from "../enums"
 import type { RefineEnums, WithRelations } from "./helpers"
 
 // Base Trip type (no enums to refine currently)

@@ -1,4 +1,4 @@
-import type { Flight as FlightBase, User } from "@/server/db/schema"
+import type { Flight as FlightBase, User } from "@luis-travel/db/schema"
 import type { WithRelations } from "./helpers"
 
 // Flight has no enums to refine

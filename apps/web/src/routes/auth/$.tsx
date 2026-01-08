@@ -23,15 +23,8 @@ function AuthPage() {
           <p className="text-sm text-muted-foreground">Planeje sua viagem em segundos</p>
         </div>
 
-        {/* Auth Form - using classNames to customize styling */}
-        <AuthView
-          pathname={pathname || "sign-in"}
-          classNames={{
-            card: {
-              base: "border-0 shadow-lg rounded-xl bg-card",
-            },
-          }}
-        />
+        {/* Auth Form */}
+        <AuthView pathname={pathname || "sign-in"} />
 
         {/* Back to home link */}
         <div className="text-center">

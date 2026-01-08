@@ -1,5 +1,5 @@
-import type { Invitation as InvitationBase, Trip, User } from "@/server/db/schema"
-import type { InvitationStatus, TripMemberRole } from "@/types/enums"
+import type { Invitation as InvitationBase, Trip, User } from "@luis-travel/db/schema"
+import type { InvitationStatus, TripMemberRole } from "../enums"
 import type { RefineEnums, WithRelations } from "./helpers"
 
 // Refined Invitation with proper enum types
