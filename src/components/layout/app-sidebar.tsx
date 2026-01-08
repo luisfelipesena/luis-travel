@@ -37,11 +37,9 @@ export function AppSidebar({ user, ...props }: AppSidebarProps) {
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
               <Link to="/dashboard">
-                <div className="bg-primary text-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
-                  <Plane className="size-4" />
-                </div>
+                <img src="/luis-travel-icon.svg" alt="Luis Travel" className="size-8" />
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-semibold">Luis Travel</span>
+                  <span className="truncate font-semibold text-[#2D8B6F]">Luis Travel</span>
                   <span className="truncate text-xs text-muted-foreground">Planeje sua viagem</span>
                 </div>
               </Link>

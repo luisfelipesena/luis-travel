@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 120">
+  <!-- Icon group scaled down -->
+  <g transform="translate(10, 10) scale(0.5)">
+    <!-- Swirl/orbit path -->
+    <path d="M100 180c-44.2 0-80-35.8-80-80s35.8-80 80-80"
+          fill="none"
+          stroke="#8CD4B8"
+          stroke-width="8"
+          stroke-linecap="round"
+          opacity="0.7"/>
+    <path d="M40 100c0-33.1 26.9-60 60-60"
+          fill="none"
+          stroke="#8CD4B8"
+          stroke-width="6"
+          stroke-linecap="round"
+          opacity="0.5"/>
+    <path d="M60 100c0-22.1 17.9-40 40-40"
+          fill="none"
+          stroke="#8CD4B8"
+          stroke-width="4"
+          stroke-linecap="round"
+          opacity="0.4"/>
+
+    <!-- Location pin -->
+    <path d="M100 85c-16.5 0-30 13.5-30 30 0 25 30 50 30 50s30-25 30-50c0-16.5-13.5-30-30-30z"
+          fill="#8CD4B8"/>
+    <circle cx="100" cy="115" r="12" fill="white"/>
+
+    <!-- Airplane -->
+    <g transform="translate(115, 45) rotate(45)">
+      <path d="M0 25 L-8 35 L-8 28 L-25 35 L-25 25 L-8 20 L-8 10 L0 0 L8 10 L8 20 L25 25 L25 35 L8 28 L8 35 Z"
+            fill="#5DB894"/>
+    </g>
+  </g>
+
+  <!-- Text "Luis Travel" -->
+  <text x="130" y="72"
+        font-family="Arial, Helvetica, sans-serif"
+        font-size="36"
+        font-weight="600"
+        fill="#2D8B6F">Luis Travel</text>
+</svg>

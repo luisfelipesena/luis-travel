@@ -177,8 +177,8 @@ function LandingPage() {
             <div className="absolute -inset-4 rounded-3xl bg-gradient-to-br from-primary/20 via-primary/5 to-transparent blur-2xl" />
             <div className="relative rounded-2xl border bg-gradient-to-br from-background to-muted/50 p-8 lg:p-12 shadow-xl">
               <div className="space-y-6 text-center">
-                <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-2xl bg-primary shadow-lg shadow-primary/25">
-                  <Plane className="h-10 w-10 text-primary-foreground" />
+                <div className="mx-auto flex h-20 w-20 items-center justify-center">
+                  <img src="/luis-travel-icon.svg" alt="Luis Travel" className="h-20 w-20" />
                 </div>
                 <div className="space-y-2">
                   <h3 className="text-2xl font-bold">Comece grátis</h3>

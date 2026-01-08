@@ -108,10 +108,7 @@ export function CitySearchCombobox({
           onChange={handleInputChange}
           onFocus={handleFocus}
           disabled={disabled}
-          className={cn(
-            "pl-9 pr-8",
-            value && "text-foreground"
-          )}
+          className={cn("pl-9 pr-8", value && "text-foreground")}
           readOnly={!!value}
           onClick={() => !value && setOpen(true)}
         />
@@ -136,9 +133,7 @@ export function CitySearchCombobox({
           )}
 
           {!isLoading && !hasResults && debouncedQuery.length >= 2 && (
-            <div className="px-3 py-3 text-sm text-muted-foreground">
-              Nenhuma cidade encontrada
-            </div>
+            <div className="px-3 py-3 text-sm text-muted-foreground">Nenhuma cidade encontrada</div>
           )}
 
           {hasResults && (
@@ -165,9 +160,7 @@ export function CitySearchCombobox({
                             </span>
                           )}
                         </div>
-                        <p className="truncate text-xs text-muted-foreground">
-                          {city.displayName}
-                        </p>
+                        <p className="truncate text-xs text-muted-foreground">{city.displayName}</p>
                       </div>
                       {isSelected && <Check className="h-4 w-4 shrink-0 text-primary" />}
                     </button>

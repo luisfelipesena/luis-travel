@@ -1,5 +1,4 @@
 import { createFileRoute, Link, Outlet } from "@tanstack/react-router"
-import { Plane } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
 export const Route = createFileRoute("/_public")({
@@ -18,10 +17,8 @@ function PublicLayout() {
       <header className="sticky top-0 z-50 border-b bg-background/80 backdrop-blur-lg supports-[backdrop-filter]:bg-background/60">
         <div className="container flex h-16 items-center justify-between">
           <Link to="/" className="flex items-center gap-2 transition-opacity hover:opacity-80">
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary">
-              <Plane className="h-5 w-5 text-primary-foreground" />
-            </div>
-            <span className="text-xl font-bold tracking-tight">Luis Travel</span>
+            <img src="/luis-travel-icon.svg" alt="Luis Travel" className="h-9 w-9" />
+            <span className="text-xl font-bold tracking-tight text-[#2D8B6F]">Luis Travel</span>
           </Link>
           <nav className="flex items-center gap-3">
             {isAuthenticated ? (
@@ -50,8 +47,8 @@ function PublicLayout() {
         <div className="container py-8">
           <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
             <div className="flex items-center gap-2">
-              <Plane className="h-5 w-5 text-primary" />
-              <span className="font-semibold">Luis Travel</span>
+              <img src="/luis-travel-icon.svg" alt="Luis Travel" className="h-5 w-5" />
+              <span className="font-semibold text-[#2D8B6F]">Luis Travel</span>
             </div>
             <p className="text-sm text-muted-foreground">
               &copy; {new Date().getFullYear()} Luis Travel. Todos os direitos reservados.
