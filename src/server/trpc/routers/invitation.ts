@@ -1,10 +1,13 @@
 import { TRPCError } from "@trpc/server"
+import { z } from "zod"
 import {
   acceptInvitationInputSchema,
   cancelInvitationInputSchema,
   declineInvitationInputSchema,
   InvitationStatus,
   invitationsByTripInputSchema,
+  invitationWithInviterSchema,
+  invitationWithRelationsSchema,
   sendInvitationInputSchema,
 } from "@/types"
 import { invitationRepository } from "../../repositories/invitation.repository"
@@ -13,13 +16,18 @@ import { inviteMemberUseCase } from "../../use-cases/invite-member"
 import { protectedProcedure, router } from "../init"
 
 export const invitationRouter = router({
-  listByTrip: protectedProcedure.input(invitationsByTripInputSchema).query(async ({ input }) => {
-    return invitationRepository.findByTripId(input.tripId)
-  }),
+  listByTrip: protectedProcedure
+    .input(invitationsByTripInputSchema)
+    .output(z.array(invitationWithInviterSchema))
+    .query(async ({ input }) => {
+      return invitationRepository.findByTripId(input.tripId)
+    }),
 
-  myPendingInvitations: protectedProcedure.query(async ({ ctx }) => {
-    return invitationRepository.findPendingByEmail(ctx.user.email)
-  }),
+  myPendingInvitations: protectedProcedure
+    .output(z.array(invitationWithRelationsSchema))
+    .query(async ({ ctx }) => {
+      return invitationRepository.findPendingByEmail(ctx.user.email)
+    }),
 
   send: protectedProcedure.input(sendInvitationInputSchema).mutation(async ({ ctx, input }) => {
     try {

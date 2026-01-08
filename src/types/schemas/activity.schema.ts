@@ -1,5 +1,5 @@
 import { z } from "zod"
-import { activityTypeSchema } from "../enums"
+import { activityTypeSchema, participantStatusSchema } from "../enums"
 import {
   dateTimeSchema,
   descriptionSchema,
@@ -36,9 +36,12 @@ export const createActivityInputSchema = z.object({
   startTime: dateTimeSchema,
   endTime: dateTimeSchema,
   location: locationSchema.optional(),
+  locationLat: z.string().optional(),
+  locationLng: z.string().optional(),
   imageUrl: urlSchema.optional(),
   color: hexColorSchema.optional(),
   type: activityTypeSchema.optional(),
+  participantIds: z.array(idSchema).optional(),
 })
 
 export type CreateActivityInput = z.infer<typeof createActivityInputSchema>
@@ -50,8 +53,12 @@ export const updateActivityInputSchema = z.object({
   startTime: dateTimeSchema.optional(),
   endTime: dateTimeSchema.optional(),
   location: locationSchema.optional().nullable(),
+  locationLat: z.string().optional().nullable(),
+  locationLng: z.string().optional().nullable(),
   imageUrl: urlSchema.optional().nullable(),
   color: hexColorSchema.optional(),
+  type: activityTypeSchema.optional(),
+  participantIds: z.array(idSchema).optional(),
 })
 
 export type UpdateActivityInput = z.infer<typeof updateActivityInputSchema>
@@ -67,3 +74,35 @@ export type UpdateActivityTimesInput = z.infer<typeof updateActivityTimesInputSc
 export const deleteActivityInputSchema = z.object({ id: idSchema })
 
 export type DeleteActivityInput = z.infer<typeof deleteActivityInputSchema>
+
+// ============================================================================
+// Participant Inputs
+// ============================================================================
+
+export const setActivityParticipantsInputSchema = z.object({
+  activityId: idSchema,
+  participantIds: z.array(idSchema),
+})
+
+export type SetActivityParticipantsInput = z.infer<typeof setActivityParticipantsInputSchema>
+
+export const updateParticipantStatusInputSchema = z.object({
+  activityId: idSchema,
+  status: participantStatusSchema,
+})
+
+export type UpdateParticipantStatusInput = z.infer<typeof updateParticipantStatusInputSchema>
+
+export const getActivityWithParticipantsInputSchema = z.object({
+  activityId: idSchema,
+})
+
+export type GetActivityWithParticipantsInput = z.infer<
+  typeof getActivityWithParticipantsInputSchema
+>
+
+export const listActivitiesWithParticipantsInputSchema = tripIdSchema
+
+export type ListActivitiesWithParticipantsInput = z.infer<
+  typeof listActivitiesWithParticipantsInputSchema
+>

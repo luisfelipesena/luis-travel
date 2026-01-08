@@ -9,12 +9,39 @@ import { WeekView } from "./views/week-view"
 
 export type CalendarView = "day" | "week" | "month"
 
+interface TripMember {
+  id: string
+  userId: string
+  user: {
+    id: string
+    name: string
+    email: string
+    image?: string | null
+  }
+}
+
+interface ActivityFormData {
+  title: string
+  description?: string | null
+  type: string
+  startTime: Date
+  endTime: Date
+  location?: string | null
+  locationLat?: string | null
+  locationLng?: string | null
+  color?: string | null
+  participantIds?: string[]
+}
+
 interface CalendarContainerProps {
   activities: Activity[]
   tripStartDate: Date
   tripEndDate: Date
   onActivityUpdate: (activityId: string, startTime: Date, endTime: Date) => void
-  onActivityCreate: (data: { title: string; startTime: Date; endTime: Date }) => void
+  onActivityCreate: (data: ActivityFormData) => void
+  onActivityEdit?: (activityId: string, data: ActivityFormData) => void
+  members?: TripMember[]
+  ownerId?: string
   isLoading?: boolean
 }
 
@@ -24,6 +51,9 @@ export function CalendarContainer({
   tripEndDate,
   onActivityUpdate,
   onActivityCreate,
+  onActivityEdit,
+  members = [],
+  ownerId,
   isLoading,
 }: CalendarContainerProps) {
   const [view, setView] = useState<CalendarView>("week")
@@ -32,6 +62,7 @@ export function CalendarContainer({
     startTime: Date
     endTime: Date
   } | null>(null)
+  const [selectedActivity, setSelectedActivity] = useState<Activity | null>(null)
 
   const handleNavigate = (direction: "prev" | "next" | "today") => {
     if (direction === "today") {
@@ -61,21 +92,28 @@ export function CalendarContainer({
 
   const handleSlotSelect = (startTime: Date, endTime: Date) => {
     setSelectedSlot({ startTime, endTime })
+    setSelectedActivity(null)
+  }
+
+  const handleActivityClick = (activity: Activity) => {
+    setSelectedActivity(activity)
+    setSelectedSlot(null)
   }
 
   const handleCloseDialog = () => {
     setSelectedSlot(null)
+    setSelectedActivity(null)
   }
 
-  const handleCreateActivity = (title: string) => {
-    if (selectedSlot) {
-      onActivityCreate({
-        title,
-        startTime: selectedSlot.startTime,
-        endTime: selectedSlot.endTime,
-      })
-      setSelectedSlot(null)
+  const handleFormSubmit = (data: Omit<ActivityFormData, "id">) => {
+    if (selectedActivity) {
+      // Edit mode
+      onActivityEdit?.(selectedActivity.id, data)
+    } else if (selectedSlot) {
+      // Create mode
+      onActivityCreate(data)
     }
+    handleCloseDialog()
   }
 
   const getDateRangeLabel = () => {
@@ -92,8 +130,25 @@ export function CalendarContainer({
     }
   }
 
+  // Convert selected activity to form data format
+  const activityFormData = selectedActivity
+    ? {
+        id: selectedActivity.id,
+        title: selectedActivity.title,
+        description: selectedActivity.description,
+        type: selectedActivity.type,
+        startTime: new Date(selectedActivity.startTime),
+        endTime: new Date(selectedActivity.endTime),
+        location: selectedActivity.location,
+        locationLat: selectedActivity.locationLat,
+        locationLng: selectedActivity.locationLng,
+        color: selectedActivity.color,
+        participantIds: [], // Would need to be passed from parent if needed
+      }
+    : undefined
+
   return (
-    <div className="flex flex-col h-[calc(100vh-200px)] min-h-[600px] border rounded-lg bg-background">
+    <div className="flex h-[calc(100vh-200px)] min-h-[600px] flex-col rounded-lg border bg-background">
       <CalendarToolbar
         view={view}
         onViewChange={setView}
@@ -107,6 +162,7 @@ export function CalendarContainer({
             date={currentDate}
             activities={activities}
             onActivityUpdate={onActivityUpdate}
+            onActivityClick={handleActivityClick}
             onSlotSelect={handleSlotSelect}
             isLoading={isLoading}
           />
@@ -116,6 +172,7 @@ export function CalendarContainer({
             currentDate={currentDate}
             activities={activities}
             onActivityUpdate={onActivityUpdate}
+            onActivityClick={handleActivityClick}
             onSlotSelect={handleSlotSelect}
             isLoading={isLoading}
           />
@@ -134,11 +191,15 @@ export function CalendarContainer({
       </div>
 
       <ActivityFormDialog
-        open={!!selectedSlot}
+        open={!!selectedSlot || !!selectedActivity}
         onClose={handleCloseDialog}
-        onSubmit={handleCreateActivity}
-        startTime={selectedSlot?.startTime}
-        endTime={selectedSlot?.endTime}
+        onSubmit={handleFormSubmit}
+        startTime={selectedSlot?.startTime || selectedActivity?.startTime}
+        endTime={selectedSlot?.endTime || selectedActivity?.endTime}
+        activity={activityFormData}
+        members={members}
+        ownerId={ownerId}
+        isLoading={isLoading}
       />
     </div>
   )

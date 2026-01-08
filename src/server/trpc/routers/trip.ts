@@ -1,33 +1,39 @@
 import { TRPCError } from "@trpc/server"
+import { z } from "zod"
 import {
   createTripInputSchema,
   deleteTripInputSchema,
   tripByIdInputSchema,
+  tripSchema,
+  tripWithMembersSchema,
   updateTripInputSchema,
 } from "@/types"
 import { tripService } from "../../services/trip.service"
 import { protectedProcedure, router } from "../init"
 
 export const tripRouter = router({
-  list: protectedProcedure.query(async ({ ctx }) => {
+  list: protectedProcedure.output(z.array(tripSchema)).query(async ({ ctx }) => {
     return tripService.getUserTrips(ctx.user.id)
   }),
 
-  byId: protectedProcedure.input(tripByIdInputSchema).query(async ({ ctx, input }) => {
-    try {
-      return await tripService.getTripById(input.id, ctx.user.id)
-    } catch (error) {
-      if (error instanceof Error) {
-        if (error.message === "Trip not found") {
-          throw new TRPCError({ code: "NOT_FOUND", message: error.message })
+  byId: protectedProcedure
+    .input(tripByIdInputSchema)
+    .output(tripWithMembersSchema)
+    .query(async ({ ctx, input }) => {
+      try {
+        return await tripService.getTripById(input.id, ctx.user.id)
+      } catch (error) {
+        if (error instanceof Error) {
+          if (error.message === "Trip not found") {
+            throw new TRPCError({ code: "NOT_FOUND", message: error.message })
+          }
+          if (error.message === "Access denied") {
+            throw new TRPCError({ code: "FORBIDDEN", message: error.message })
+          }
         }
-        if (error.message === "Access denied") {
-          throw new TRPCError({ code: "FORBIDDEN", message: error.message })
-        }
+        throw error
       }
-      throw error
-    }
-  }),
+    }),
 
   create: protectedProcedure.input(createTripInputSchema).mutation(async ({ ctx, input }) => {
     return tripService.createTrip(ctx.user.id, input)

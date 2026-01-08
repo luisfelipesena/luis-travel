@@ -1,6 +1,54 @@
 import { z } from "zod"
-import { assignableRoleSchema } from "../enums"
-import { emailSchema, idSchema } from "./base.schema"
+import { assignableRoleSchema, invitationStatusSchema, tripMemberRoleSchema } from "../enums"
+import { dateTimeSchema, emailSchema, idSchema, titleSchema } from "./base.schema"
+
+// ============================================================================
+// Invitation Output Schemas (for tRPC .output())
+// ============================================================================
+
+/** User reference in relations */
+const userRefSchema = z.object({
+  id: idSchema,
+  name: z.string(),
+  email: emailSchema,
+})
+
+/** Trip reference in relations */
+const tripRefSchema = z.object({
+  id: idSchema,
+  name: titleSchema,
+  destination: titleSchema,
+  startDate: dateTimeSchema,
+  endDate: dateTimeSchema,
+})
+
+/** Base invitation fields - uses tripMemberRoleSchema because DB stores TripMemberRole */
+const invitationBaseSchema = z.object({
+  id: idSchema,
+  tripId: idSchema,
+  invitedEmail: emailSchema,
+  role: tripMemberRoleSchema, // DB stores TripMemberRole, not AssignableRole
+  status: invitationStatusSchema,
+  token: z.string(),
+  invitedBy: idSchema,
+  expiresAt: dateTimeSchema,
+  createdAt: dateTimeSchema,
+})
+
+/** Invitation with inviter relation (for listByTrip) */
+export const invitationWithInviterSchema = invitationBaseSchema.extend({
+  inviter: userRefSchema,
+})
+
+export type InvitationWithInviterOutput = z.infer<typeof invitationWithInviterSchema>
+
+/** Invitation with all relations (for myPendingInvitations, findById, findByToken) */
+export const invitationWithRelationsSchema = invitationBaseSchema.extend({
+  trip: tripRefSchema,
+  inviter: userRefSchema,
+})
+
+export type InvitationWithRelationsOutput = z.infer<typeof invitationWithRelationsSchema>
 
 // ============================================================================
 // Invitation Query Inputs

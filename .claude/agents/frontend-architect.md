@@ -211,6 +211,18 @@ const tripId = useMemo(() => trip.id, [trip]) // trivial, don't memo
 4. **No any types** - Always explicit interfaces
 5. **No hardcoded strings** - Use constants from `@/types`
 6. **No missing loading/error states** - Always handle both
+7. **No manual type assertions for tRPC data** - Types should flow automatically
+
+```typescript
+// ❌ WRONG - Manual type assertion for API data
+const invitationWithRelations = invitation as typeof invitation & {
+  trip?: { name: string }
+}
+
+// ✅ CORRECT - tRPC output schemas provide full types automatically
+const { data } = trpc.invitation.myPendingInvitations.useQuery()
+// data is already typed as InvitationWithRelations[]
+```
 
 ## TypeScript Typing Guidelines
 

@@ -1,6 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router"
 import { Calendar, Check, Plane, Sparkles, Users } from "lucide-react"
-import { authClient } from "@/auth"
 import { HeroTripForm } from "@/components/landing"
 import { FeatureCard } from "@/components/molecules"
 import { LandingLayout } from "@/components/templates"
@@ -17,8 +16,7 @@ const steps = [
 ]
 
 function LandingPage() {
-  const { data: session } = authClient.useSession()
-  const isAuthenticated = !!session?.user
+  const { isAuthenticated } = Route.useRouteContext()
 
   return (
     <LandingLayout isAuthenticated={isAuthenticated}>

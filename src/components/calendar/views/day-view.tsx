@@ -13,6 +13,7 @@ interface DayViewProps {
   date: Date
   activities: Activity[]
   onActivityUpdate: (activityId: string, startTime: Date, endTime: Date) => void
+  onActivityClick?: (activity: Activity) => void
   onSlotSelect: (startTime: Date, endTime: Date) => void
   isLoading?: boolean
 }
@@ -21,6 +22,7 @@ export function DayView({
   date,
   activities,
   onActivityUpdate,
+  onActivityClick,
   onSlotSelect,
   isLoading,
 }: DayViewProps) {
@@ -98,6 +100,7 @@ export function DayView({
                   height: Math.max(height, 24),
                 }}
                 onUpdate={onActivityUpdate}
+                onClick={onActivityClick}
               />
             )
           })}

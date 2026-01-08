@@ -4,6 +4,7 @@ import { ptBR } from "date-fns/locale"
 import { ArrowLeft, CalendarIcon } from "lucide-react"
 import { useState } from "react"
 import { toast } from "sonner"
+import { type Destination, DestinationList } from "@/components/trip/destination-list"
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -13,6 +14,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Textarea } from "@/components/ui/textarea"
 import { trpc } from "@/lib/trpc"
 import { cn } from "@/lib/utils"
+import { formatDestinations } from "@/types"
 
 export const Route = createFileRoute("/_authenticated/dashboard/trips/new")({
   component: NewTripPage,
@@ -21,7 +23,9 @@ export const Route = createFileRoute("/_authenticated/dashboard/trips/new")({
 function NewTripPage() {
   const navigate = useNavigate()
   const [name, setName] = useState("")
-  const [destination, setDestination] = useState("")
+  const [destinations, setDestinations] = useState<Destination[]>([
+    { name: "", displayName: "", lat: 0, lng: 0, order: 0 },
+  ])
   const [description, setDescription] = useState("")
   const [startDate, setStartDate] = useState<Date>()
   const [endDate, setEndDate] = useState<Date>()
@@ -36,10 +40,17 @@ function NewTripPage() {
     },
   })
 
+  // Get valid destinations for submission
+  const validDestinations = destinations.filter((d) => d.name && d.lat !== 0 && d.lng !== 0)
+
+  // Get primary destination name for backward compatibility
+  const primaryDestination =
+    validDestinations.length > 0 ? formatDestinations(validDestinations, "comma") : ""
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
 
-    if (!name || !destination || !startDate || !endDate) {
+    if (!name || validDestinations.length === 0 || !startDate || !endDate) {
       toast.error("Por favor, preencha todos os campos obrigatórios")
       return
     }
@@ -51,7 +62,15 @@ function NewTripPage() {
 
     createTrip.mutate({
       name,
-      destination,
+      destination: primaryDestination,
+      destinations: validDestinations.map((d, index) => ({
+        name: d.name,
+        lat: d.lat,
+        lng: d.lng,
+        order: index,
+        country: d.country,
+        countryCode: d.countryCode,
+      })),
       description: description || undefined,
       startDate,
       endDate,
@@ -59,7 +78,7 @@ function NewTripPage() {
   }
 
   return (
-    <div className="max-w-2xl mx-auto space-y-6">
+    <div className="mx-auto max-w-2xl space-y-6">
       <div className="flex items-center gap-4">
         <Button variant="ghost" size="icon" asChild>
           <Link to="/dashboard/trips">
@@ -91,13 +110,15 @@ function NewTripPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="destination">Destino *</Label>
-              <Input
-                id="destination"
-                placeholder="Rio de Janeiro, Brasil"
-                value={destination}
-                onChange={(e) => setDestination(e.target.value)}
-                required
+              <Label>Destinos *</Label>
+              <p className="text-sm text-muted-foreground">
+                Adicione uma ou mais cidades para sua viagem. Arraste para reordenar.
+              </p>
+              <DestinationList
+                destinations={destinations}
+                onChange={setDestinations}
+                maxDestinations={10}
+                showMap={true}
               />
             </div>
 

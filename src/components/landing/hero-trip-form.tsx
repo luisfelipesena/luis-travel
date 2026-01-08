@@ -1,9 +1,10 @@
 import { useNavigate } from "@tanstack/react-router"
 import { format } from "date-fns"
 import { ptBR } from "date-fns/locale"
-import { ArrowRight, CalendarIcon, Loader2, MapPin, Plane } from "lucide-react"
+import { ArrowRight, CalendarIcon, Loader2, Plane } from "lucide-react"
 import { useEffect, useRef, useState } from "react"
 import type { DateRange } from "react-day-picker"
+import { CitySearchCombobox, type CitySelection } from "@/components/molecules/city-search-combobox"
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
 import { Input } from "@/components/ui/input"
@@ -16,6 +17,7 @@ const STORAGE_KEY = "luis_travel_pending_trip"
 
 interface PendingTrip {
   destination: string
+  destinationData?: CitySelection
   dateRange: { from: string; to: string }
   flightNumber?: string
 }
@@ -44,7 +46,7 @@ interface HeroTripFormProps {
 
 export function HeroTripForm({ isAuthenticated }: HeroTripFormProps) {
   const navigate = useNavigate()
-  const [destination, setDestination] = useState("")
+  const [selectedCity, setSelectedCity] = useState<CitySelection | null>(null)
   const [dateRange, setDateRange] = useState<DateRange | undefined>()
   const [flightNumber, setFlightNumber] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -61,7 +63,9 @@ export function HeroTripForm({ isAuthenticated }: HeroTripFormProps) {
   useEffect(() => {
     const pending = getPendingTrip()
     if (pending) {
-      setDestination(pending.destination)
+      if (pending.destinationData) {
+        setSelectedCity(pending.destinationData)
+      }
       setDateRange({
         from: new Date(pending.dateRange.from),
         to: new Date(pending.dateRange.to),
@@ -77,23 +81,42 @@ export function HeroTripForm({ isAuthenticated }: HeroTripFormProps) {
     const pending = getPendingTrip()
     if (isAuthenticated && pending) {
       hasTriggeredAutoCreate.current = true
+
+      const destinationData = pending.destinationData
       createTripMutation.mutate({
         name: `Viagem para ${pending.destination}`,
         destination: pending.destination,
+        destinations: destinationData
+          ? [
+              {
+                name: destinationData.name,
+                lat: destinationData.lat,
+                lng: destinationData.lng,
+                order: 0,
+                country: destinationData.country,
+                countryCode: destinationData.countryCode,
+              },
+            ]
+          : undefined,
         startDate: pending.dateRange.from,
         endDate: pending.dateRange.to,
       })
     }
   }, [isAuthenticated, createTripMutation])
 
+  const destination = selectedCity
+    ? `${selectedCity.name}${selectedCity.country ? `, ${selectedCity.country}` : ""}`
+    : ""
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    if (!destination || !dateRange?.from || !dateRange?.to) return
+    if (!selectedCity || !dateRange?.from || !dateRange?.to) return
 
     setIsSubmitting(true)
 
     const tripData: PendingTrip = {
       destination,
+      destinationData: selectedCity,
       dateRange: {
         from: dateRange.from.toISOString(),
         to: dateRange.to.toISOString(),
@@ -105,6 +128,16 @@ export function HeroTripForm({ isAuthenticated }: HeroTripFormProps) {
       createTripMutation.mutate({
         name: `Viagem para ${destination}`,
         destination,
+        destinations: [
+          {
+            name: selectedCity.name,
+            lat: selectedCity.lat,
+            lng: selectedCity.lng,
+            order: 0,
+            country: selectedCity.country,
+            countryCode: selectedCity.countryCode,
+          },
+        ],
         startDate: tripData.dateRange.from,
         endDate: tripData.dateRange.to,
       })
@@ -117,11 +150,11 @@ export function HeroTripForm({ isAuthenticated }: HeroTripFormProps) {
   const isLoading = isSubmitting || createTripMutation.isPending
 
   return (
-    <form onSubmit={handleSubmit} className="w-full max-w-2xl mx-auto">
-      <div className="bg-card rounded-2xl shadow-xl border p-6 md:p-8 space-y-6">
-        <div className="text-center space-y-2">
+    <form onSubmit={handleSubmit} className="mx-auto w-full max-w-2xl">
+      <div className="space-y-6 rounded-2xl border bg-card p-6 shadow-xl md:p-8">
+        <div className="space-y-2 text-center">
           <h2 className="text-2xl font-bold">Comece sua viagem agora</h2>
-          <p className="text-muted-foreground text-sm">
+          <p className="text-sm text-muted-foreground">
             Preencha o destino e as datas para criar seu roteiro
           </p>
         </div>
@@ -129,18 +162,12 @@ export function HeroTripForm({ isAuthenticated }: HeroTripFormProps) {
         <div className="space-y-4">
           {/* Destination */}
           <div className="space-y-2">
-            <Label htmlFor="destination">Para onde você vai?</Label>
-            <div className="relative">
-              <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                id="destination"
-                placeholder="Ex: Paris, Tokyo, New York..."
-                value={destination}
-                onChange={(e) => setDestination(e.target.value)}
-                className="pl-10"
-                required
-              />
-            </div>
+            <Label>Para onde você vai?</Label>
+            <CitySearchCombobox
+              value={selectedCity}
+              onChange={setSelectedCity}
+              placeholder="Buscar cidade..."
+            />
           </div>
 
           {/* Date Range */}
@@ -188,10 +215,10 @@ export function HeroTripForm({ isAuthenticated }: HeroTripFormProps) {
           {/* Flight Number (Optional) */}
           <div className="space-y-2">
             <Label htmlFor="flight" className="flex items-center gap-2">
-              Número do voo <span className="text-muted-foreground text-xs">(opcional)</span>
+              Número do voo <span className="text-xs text-muted-foreground">(opcional)</span>
             </Label>
             <div className="relative">
-              <Plane className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Plane className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <Input
                 id="flight"
                 placeholder="Ex: LA8084, AA1234..."
@@ -212,7 +239,7 @@ export function HeroTripForm({ isAuthenticated }: HeroTripFormProps) {
           type="submit"
           size="lg"
           className="w-full"
-          disabled={!destination || !dateRange?.from || !dateRange?.to || isLoading}
+          disabled={!selectedCity || !dateRange?.from || !dateRange?.to || isLoading}
         >
           {isLoading ? (
             <>

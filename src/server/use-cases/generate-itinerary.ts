@@ -25,7 +25,10 @@ interface AISuggestion {
   suggestedStartTime: string
   durationMinutes: number
   location: string
+  locationLat: number
+  locationLng: number
   category: AIActivityCategory
+  day: number
 }
 
 interface GenerateItineraryResult {
@@ -63,6 +66,8 @@ export class GenerateItineraryUseCase {
       startTime: new Date(s.suggestedStartTime),
       endTime: new Date(new Date(s.suggestedStartTime).getTime() + s.durationMinutes * 60000),
       location: s.location,
+      locationLat: s.locationLat ? String(s.locationLat) : undefined,
+      locationLng: s.locationLng ? String(s.locationLng) : undefined,
       type: ActivityType.AI_GENERATED,
       color: this.getColorByCategory(s.category),
       metadata: createAIMetadata(s.category),

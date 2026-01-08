@@ -1,10 +1,10 @@
 import { and, eq } from "drizzle-orm"
-import { TripMemberRole } from "@/types"
+import { type Trip, TripMemberRole, type TripMemberWithUser, type TripWithMembers } from "@/types"
 import { db } from "../db"
-import { type NewTrip, type Trip, trip, tripMember } from "../db/schema"
+import { type NewTrip, trip, tripMember } from "../db/schema"
 
 export class TripRepository {
-  async findById(id: string): Promise<Trip | undefined> {
+  async findById(id: string): Promise<TripWithMembers | undefined> {
     const result = await db.query.trip.findFirst({
       where: eq(trip.id, id),
       with: {
@@ -16,10 +16,10 @@ export class TripRepository {
         },
       },
     })
-    return result
+    return result as TripWithMembers | undefined
   }
 
-  async findByUserId(userId: string) {
+  async findByUserId(userId: string): Promise<Trip[]> {
     const owned = await db.query.trip.findMany({
       where: eq(trip.ownerId, userId),
       orderBy: (trip, { desc }) => [desc(trip.startDate)],
@@ -34,7 +34,7 @@ export class TripRepository {
 
     const memberTrips = memberOf.map((m) => m.trip).filter((t): t is Trip => t !== null)
 
-    const allTrips = [...owned, ...memberTrips]
+    const allTrips = [...owned, ...memberTrips] as Trip[]
 
     const uniqueTrips = allTrips.filter(
       (t, index, self) => index === self.findIndex((s) => s.id === t.id)
@@ -47,7 +47,7 @@ export class TripRepository {
 
   async create(data: NewTrip): Promise<Trip> {
     const [created] = await db.insert(trip).values(data).returning()
-    return created
+    return created as Trip
   }
 
   async update(
@@ -59,7 +59,7 @@ export class TripRepository {
       .set({ ...data, updatedAt: new Date() })
       .where(eq(trip.id, id))
       .returning()
-    return updated
+    return updated as Trip
   }
 
   async delete(id: string): Promise<void> {
@@ -93,7 +93,18 @@ export class TripRepository {
       where: and(eq(tripMember.tripId, tripId), eq(tripMember.userId, userId)),
     })
 
-    return (membership?.role as TripMemberRole) || null
+    if (!membership) return null
+    return membership.role as TripMemberRole
+  }
+
+  async getMembers(tripId: string): Promise<TripMemberWithUser[]> {
+    const results = await db.query.tripMember.findMany({
+      where: eq(tripMember.tripId, tripId),
+      with: {
+        user: true,
+      },
+    })
+    return results as TripMemberWithUser[]
   }
 }
 

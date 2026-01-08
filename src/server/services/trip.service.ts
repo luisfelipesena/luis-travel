@@ -1,5 +1,5 @@
-import { TripMemberRole } from "@/types"
-import type { NewTrip, Trip } from "../db/schema"
+import { type Trip, TripMemberRole, type TripWithMembers } from "@/types"
+import type { NewTrip } from "../db/schema"
 import { tripRepository } from "../repositories/trip.repository"
 
 export class TripService {
@@ -7,7 +7,7 @@ export class TripService {
     return tripRepository.findByUserId(userId)
   }
 
-  async getTripById(tripId: string, userId: string): Promise<Trip> {
+  async getTripById(tripId: string, userId: string): Promise<TripWithMembers> {
     const trip = await tripRepository.findById(tripId)
 
     if (!trip) {
@@ -48,13 +48,13 @@ export class TripService {
   }
 
   async deleteTrip(tripId: string, userId: string): Promise<void> {
-    const trip = await tripRepository.findById(tripId)
+    const tripWithMembers = await tripRepository.findById(tripId)
 
-    if (!trip) {
+    if (!tripWithMembers) {
       throw new Error("Trip not found")
     }
 
-    if (trip.ownerId !== userId) {
+    if (tripWithMembers.ownerId !== userId) {
       throw new Error("Only trip owner can delete")
     }
 

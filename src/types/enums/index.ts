@@ -8,6 +8,9 @@ export {
   activityTypeSchema,
   aiActivityCategorySchema,
   DEFAULT_ACTIVITY_COLOR,
+  ParticipantStatus,
+  ParticipantStatusValues,
+  participantStatusSchema,
 } from "./activity.enum"
 // Calendar enums
 export { CalendarView, CalendarViewValues, calendarViewSchema } from "./calendar.enum"

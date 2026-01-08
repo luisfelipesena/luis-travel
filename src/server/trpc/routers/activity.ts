@@ -3,9 +3,13 @@ import {
   activitiesByDateRangeInputSchema,
   createActivityInputSchema,
   deleteActivityInputSchema,
+  getActivityWithParticipantsInputSchema,
   listActivitiesByTripInputSchema,
+  listActivitiesWithParticipantsInputSchema,
+  setActivityParticipantsInputSchema,
   updateActivityInputSchema,
   updateActivityTimesInputSchema,
+  updateParticipantStatusInputSchema,
 } from "@/types"
 import { activityService } from "../../services/activity.service"
 import { protectedProcedure, router } from "../init"
@@ -120,4 +124,81 @@ export const activityRouter = router({
       throw error
     }
   }),
+
+  // Participant endpoints
+  getWithParticipants: protectedProcedure
+    .input(getActivityWithParticipantsInputSchema)
+    .query(async ({ ctx, input }) => {
+      try {
+        return await activityService.getActivityWithParticipants(input.activityId, ctx.user.id)
+      } catch (error) {
+        if (error instanceof Error) {
+          if (error.message === "Activity not found") {
+            throw new TRPCError({ code: "NOT_FOUND", message: error.message })
+          }
+          if (error.message === "Access denied") {
+            throw new TRPCError({ code: "FORBIDDEN", message: error.message })
+          }
+        }
+        throw error
+      }
+    }),
+
+  listWithParticipants: protectedProcedure
+    .input(listActivitiesWithParticipantsInputSchema)
+    .query(async ({ ctx, input }) => {
+      try {
+        return await activityService.getActivitiesWithParticipants(input.tripId, ctx.user.id)
+      } catch (error) {
+        if (error instanceof Error && error.message === "Access denied") {
+          throw new TRPCError({ code: "FORBIDDEN", message: error.message })
+        }
+        throw error
+      }
+    }),
+
+  setParticipants: protectedProcedure
+    .input(setActivityParticipantsInputSchema)
+    .mutation(async ({ ctx, input }) => {
+      try {
+        await activityService.setActivityParticipants(
+          input.activityId,
+          ctx.user.id,
+          input.participantIds
+        )
+        return { success: true }
+      } catch (error) {
+        if (error instanceof Error) {
+          if (error.message === "Activity not found") {
+            throw new TRPCError({ code: "NOT_FOUND", message: error.message })
+          }
+          if (error.message === "Access denied") {
+            throw new TRPCError({ code: "FORBIDDEN", message: error.message })
+          }
+          if (error.message === "Invalid participant - not a trip member") {
+            throw new TRPCError({ code: "BAD_REQUEST", message: error.message })
+          }
+        }
+        throw error
+      }
+    }),
+
+  updateMyParticipantStatus: protectedProcedure
+    .input(updateParticipantStatusInputSchema)
+    .mutation(async ({ ctx, input }) => {
+      try {
+        await activityService.updateParticipantStatus(input.activityId, ctx.user.id, input.status)
+        return { success: true }
+      } catch (error) {
+        if (error instanceof Error) {
+          if (error.message === "Activity not found") {
+            throw new TRPCError({ code: "NOT_FOUND", message: error.message })
+          }
+          if (error.message === "Access denied") {
+            throw new TRPCError({ code: "FORBIDDEN", message: error.message })
+          }
+        }
+        throw error
+      }
+    }),
 })

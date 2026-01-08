@@ -8,6 +8,34 @@
       "when": 1767837304755,
       "tag": "0000_damp_ironclad",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1767840256170,
+      "tag": "0001_red_spencer_smythe",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1767840642112,
+      "tag": "0002_orange_peter_quill",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1767840715177,
+      "tag": "0003_lying_echo",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1767842862291,
+      "tag": "0004_white_jamie_braddock",
+      "breakpoints": true
     }
   ]
 }

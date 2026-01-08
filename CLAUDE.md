@@ -17,8 +17,9 @@ src/
 ├── auth.ts           # Neon Auth client
 ├── types/            # Type system (see TypeScript section)
 │   ├── enums/        # Const-as-const enums + Zod schemas
-│   ├── schemas/      # Shared Zod validation schemas
+│   ├── schemas/      # Shared Zod validation schemas (input + output)
 │   ├── metadata/     # Discriminated unions for JSONB
+│   ├── db/           # Domain types (RefineEnums + WithRelations)
 │   └── utils.ts      # Type utilities (enumToZod, helpers)
 ├── server/
 │   ├── db/           # Schema + migrations + db client
@@ -190,6 +191,59 @@ switch (status) {
   case TripStatus.ACTIVE: return "active"
   default: assertNever(status)  // Compile error if missing case
 }
+```
+
+### Domain Types (src/types/db/)
+Drizzle's `$inferSelect` degrades pgEnum to `string`. Domain types fix this:
+
+```typescript
+// src/types/db/helpers.ts
+export type RefineEnums<T, Refinements> = Omit<T, keyof Refinements> & Refinements
+export type WithRelations<TModel, TRelations> = TModel & TRelations
+
+// src/types/db/invitation.types.ts
+export type Invitation = RefineEnums<InvitationBase, {
+  status: InvitationStatus  // Not string!
+  role: TripMemberRole
+}>
+
+export type InvitationWithRelations = WithRelations<Invitation, {
+  trip: Pick<Trip, "id" | "name" | "destination">
+  inviter: Pick<User, "id" | "name" | "email">
+}>
+```
+
+**Repository usage:**
+```typescript
+// Return type uses domain type, not Drizzle inferred
+async findPendingByEmail(email: string): Promise<InvitationWithRelations[]> {
+  const results = await db.query.invitation.findMany({
+    where: ...,
+    with: { trip: true, inviter: true }
+  })
+  return results as InvitationWithRelations[]
+}
+```
+
+### tRPC Output Schemas
+Always add `.output()` for typed API contracts:
+
+```typescript
+// src/types/schemas/invitation.schema.ts
+export const invitationWithRelationsSchema = z.object({
+  id: z.string().uuid(),
+  status: invitationStatusSchema,  // Uses enum schema
+  role: assignableRoleSchema,
+  trip: z.object({ id: z.string(), name: z.string(), ... }),
+  inviter: z.object({ id: z.string(), name: z.string(), ... }),
+})
+
+// Router with output validation
+myPendingInvitations: protectedProcedure
+  .output(z.array(invitationWithRelationsSchema))
+  .query(async ({ ctx }) => {
+    return invitationRepository.findPendingByEmail(ctx.user.email)
+  })
 ```
 
 ## Linting (Biome)

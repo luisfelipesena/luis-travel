@@ -192,3 +192,37 @@ export const tripRoleEnum = pgEnum("trip_role", TripMemberRoleValues)
 // ❌ WRONG - Duplicates enum values
 pgEnum("trip_role", ["owner", "editor", "viewer"])
 ```
+
+### Domain Types (src/types/db/)
+Drizzle's `$inferSelect` degrades pgEnum to `string`. Use domain types:
+
+```typescript
+// ✅ CORRECT - Import domain types with proper enums
+import { InvitationWithRelations, TripWithMembers } from "@/types"
+
+async findById(id: string): Promise<InvitationWithRelations | undefined> {
+  const result = await db.query.invitation.findFirst({
+    where: eq(invitation.id, id),
+    with: { trip: true, inviter: true }
+  })
+  return result as InvitationWithRelations | undefined
+}
+
+// ❌ WRONG - Using Drizzle inferred type (enums are strings)
+async findById(id: string): Promise<Invitation | undefined>
+```
+
+### tRPC Output Schemas
+Always add `.output()` for typed API contracts:
+
+```typescript
+// ✅ CORRECT - Explicit output schema
+import { invitationWithRelationsSchema } from "@/types"
+
+myPendingInvitations: protectedProcedure
+  .output(z.array(invitationWithRelationsSchema))
+  .query(async ({ ctx }) => ...)
+
+// ❌ WRONG - No output schema, frontend gets incomplete types
+myPendingInvitations: protectedProcedure.query(...)
+```

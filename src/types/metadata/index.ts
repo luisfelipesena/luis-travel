@@ -21,3 +21,16 @@ export {
   isFlightExternalData,
   parseFlightExternalData,
 } from "./flight-data"
+
+// Trip destination metadata
+export {
+  createTripDestination,
+  formatDestinations,
+  getPrimaryDestinationName,
+  isTripDestination,
+  isTripDestinationsArray,
+  type TripDestination,
+  type TripDestinationsArray,
+  tripDestinationSchema,
+  tripDestinationsArraySchema,
+} from "./trip-destination"

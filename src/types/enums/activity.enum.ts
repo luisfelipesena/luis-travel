@@ -6,9 +6,13 @@ import { enumValues } from "../utils"
 // ============================================================================
 
 export const ActivityType = {
-  DEFAULT: "default",
-  AI_GENERATED: "ai_generated",
+  FLIGHT: "flight",
+  ACCOMMODATION: "accommodation",
+  TRANSPORT: "transport",
+  MEAL: "meal",
+  ACTIVITY: "activity",
   CUSTOM: "custom",
+  AI_GENERATED: "ai_generated",
 } as const
 
 export type ActivityType = (typeof ActivityType)[keyof typeof ActivityType]
@@ -46,3 +50,19 @@ export const ACTIVITY_COLORS: Record<AIActivityCategory, string> = {
 } as const
 
 export const DEFAULT_ACTIVITY_COLOR = "#6b7280"
+
+// ============================================================================
+// Participant Status
+// ============================================================================
+
+export const ParticipantStatus = {
+  PENDING: "pending",
+  CONFIRMED: "confirmed",
+  DECLINED: "declined",
+} as const
+
+export type ParticipantStatus = (typeof ParticipantStatus)[keyof typeof ParticipantStatus]
+
+export const ParticipantStatusValues = enumValues(ParticipantStatus)
+
+export const participantStatusSchema = z.enum(ParticipantStatusValues)

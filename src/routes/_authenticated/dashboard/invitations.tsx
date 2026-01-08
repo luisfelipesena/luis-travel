@@ -34,45 +34,35 @@ function InvitationsPage() {
         </div>
       ) : (
         <div className="space-y-4">
-          {invitations?.map((invitation) => {
-            const invitationWithRelations = invitation as typeof invitation & {
-              trip?: { name: string }
-              inviter?: { name: string }
-            }
-
-            return (
-              <Card key={invitation.id}>
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-lg">
-                    {invitationWithRelations.trip?.name || "Viagem"}
-                  </CardTitle>
-                  <CardDescription>
-                    Você foi convidado como{" "}
-                    {invitation.role === "editor" ? "Editor" : "Visualizador"}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="flex gap-2">
-                  <Button
-                    size="sm"
-                    onClick={() => acceptMutation.mutate({ token: invitation.token })}
-                    disabled={acceptMutation.isPending}
-                  >
-                    <Check className="mr-1 h-4 w-4" />
-                    Aceitar
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => declineMutation.mutate({ id: invitation.id })}
-                    disabled={declineMutation.isPending}
-                  >
-                    <X className="mr-1 h-4 w-4" />
-                    Recusar
-                  </Button>
-                </CardContent>
-              </Card>
-            )
-          })}
+          {invitations?.map((invitation) => (
+            <Card key={invitation.id}>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-lg">{invitation.trip.name}</CardTitle>
+                <CardDescription>
+                  Você foi convidado como {invitation.role === "editor" ? "Editor" : "Visualizador"}
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="flex gap-2">
+                <Button
+                  size="sm"
+                  onClick={() => acceptMutation.mutate({ token: invitation.token })}
+                  disabled={acceptMutation.isPending}
+                >
+                  <Check className="mr-1 h-4 w-4" />
+                  Aceitar
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => declineMutation.mutate({ id: invitation.id })}
+                  disabled={declineMutation.isPending}
+                >
+                  <X className="mr-1 h-4 w-4" />
+                  Recusar
+                </Button>
+              </CardContent>
+            </Card>
+          ))}
         </div>
       )}
     </div>

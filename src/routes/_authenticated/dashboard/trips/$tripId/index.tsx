@@ -1,7 +1,20 @@
 import { createFileRoute, Link } from "@tanstack/react-router"
 import { format } from "date-fns"
 import { ptBR } from "date-fns/locale"
-import { ArrowLeft, Calendar, MapPin, Plane, Settings, Sparkles, Users } from "lucide-react"
+import {
+  ArrowLeft,
+  Calendar,
+  MapPin,
+  Navigation,
+  Plane,
+  Settings,
+  Sparkles,
+  Users,
+} from "lucide-react"
+import { useState } from "react"
+import { toast } from "sonner"
+import { type AISuggestion, AISuggestionsDialog } from "@/components/trip/ai-suggestions-dialog"
+import { DailyItinerary } from "@/components/trip/daily-itinerary"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -15,9 +28,40 @@ export const Route = createFileRoute("/_authenticated/dashboard/trips/$tripId/")
 
 function TripDetailPage() {
   const { tripId } = Route.useParams()
+  const [aiDialogOpen, setAiDialogOpen] = useState(false)
+
+  const utils = trpc.useUtils()
   const { data: trip, isLoading, error } = trpc.trip.byId.useQuery({ id: tripId })
   const { data: activities } = trpc.activity.listByTrip.useQuery({ tripId }, { enabled: !!trip })
   const { data: flights } = trpc.flight.listByTrip.useQuery({ tripId }, { enabled: !!trip })
+
+  const generateMutation = trpc.ai.generateActivities.useMutation()
+  const addMutation = trpc.ai.generateActivities.useMutation({
+    onSuccess: () => {
+      utils.activity.listByTrip.invalidate({ tripId })
+      toast.success("Atividades adicionadas com sucesso!")
+    },
+    onError: (err) => {
+      toast.error(err.message || "Erro ao adicionar atividades")
+    },
+  })
+
+  const handleGenerateSuggestions = async (preferences?: string): Promise<AISuggestion[]> => {
+    const result = await generateMutation.mutateAsync({
+      tripId,
+      preferences,
+      autoAdd: false,
+    })
+    return result.suggestions as AISuggestion[]
+  }
+
+  const handleAddSuggestions = async (_suggestions: AISuggestion[]) => {
+    // Use autoAdd=true to actually add the suggestions
+    await addMutation.mutateAsync({
+      tripId,
+      autoAdd: true,
+    })
+  }
 
   if (isLoading) {
     return (
@@ -32,8 +76,8 @@ function TripDetailPage() {
     return (
       <Card>
         <CardContent className="flex flex-col items-center justify-center py-16">
-          <h3 className="text-xl font-medium mb-2">Viagem não encontrada</h3>
-          <p className="text-muted-foreground mb-4">
+          <h3 className="mb-2 text-xl font-medium">Viagem não encontrada</h3>
+          <p className="mb-4 text-muted-foreground">
             A viagem que você procura não existe ou você não tem acesso.
           </p>
           <Button asChild>
@@ -63,7 +107,7 @@ function TripDetailPage() {
               {isOngoing && <Badge className="bg-green-500">Em andamento</Badge>}
               {isUpcoming && <Badge>Próxima</Badge>}
             </div>
-            <div className="flex items-center gap-4 mt-1 text-muted-foreground">
+            <div className="mt-1 flex items-center gap-4 text-muted-foreground">
               <span className="flex items-center gap-1">
                 <MapPin className="h-4 w-4" />
                 {trip.destination}
@@ -78,7 +122,7 @@ function TripDetailPage() {
         </div>
         <Button variant="outline" asChild>
           <Link to="/dashboard/trips/$tripId" params={{ tripId }}>
-            <Settings className="h-4 w-4 mr-2" />
+            <Settings className="mr-2 h-4 w-4" />
             Configurações
           </Link>
         </Button>
@@ -88,7 +132,7 @@ function TripDetailPage() {
       <div className="grid gap-4 md:grid-cols-3">
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium flex items-center gap-2">
+            <CardTitle className="flex items-center gap-2 text-sm font-medium">
               <Calendar className="h-4 w-4" />
               Atividades
             </CardTitle>
@@ -99,7 +143,7 @@ function TripDetailPage() {
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium flex items-center gap-2">
+            <CardTitle className="flex items-center gap-2 text-sm font-medium">
               <Plane className="h-4 w-4" />
               Voos
             </CardTitle>
@@ -110,7 +154,7 @@ function TripDetailPage() {
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium flex items-center gap-2">
+            <CardTitle className="flex items-center gap-2 text-sm font-medium">
               <Users className="h-4 w-4" />
               Membros
             </CardTitle>
@@ -125,6 +169,10 @@ function TripDetailPage() {
       <Tabs defaultValue="overview" className="space-y-4">
         <TabsList>
           <TabsTrigger value="overview">Visão Geral</TabsTrigger>
+          <TabsTrigger value="routes">
+            <Navigation className="mr-1 h-3 w-3" />
+            Rotas
+          </TabsTrigger>
           <TabsTrigger value="calendar">Calendário</TabsTrigger>
           <TabsTrigger value="flights">Voos</TabsTrigger>
           <TabsTrigger value="members">Membros</TabsTrigger>
@@ -150,16 +198,16 @@ function TripDetailPage() {
             <CardContent className="flex flex-wrap gap-2">
               <Button asChild>
                 <Link to="/dashboard/trips/$tripId/calendar" params={{ tripId }}>
-                  <Calendar className="h-4 w-4 mr-2" />
+                  <Calendar className="mr-2 h-4 w-4" />
                   Abrir Calendário
                 </Link>
               </Button>
               <Button variant="outline">
-                <Plane className="h-4 w-4 mr-2" />
+                <Plane className="mr-2 h-4 w-4" />
                 Adicionar Voo
               </Button>
-              <Button variant="outline">
-                <Sparkles className="h-4 w-4 mr-2" />
+              <Button variant="outline" onClick={() => setAiDialogOpen(true)}>
+                <Sparkles className="mr-2 h-4 w-4" />
                 Sugestões IA
               </Button>
             </CardContent>
@@ -172,8 +220,8 @@ function TripDetailPage() {
             </CardHeader>
             <CardContent>
               {activities?.length === 0 ? (
-                <div className="text-center py-8 text-muted-foreground">
-                  <Calendar className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                <div className="py-8 text-center text-muted-foreground">
+                  <Calendar className="mx-auto mb-2 h-8 w-8 opacity-50" />
                   <p>Nenhuma atividade ainda</p>
                   <Button variant="link" asChild className="mt-2">
                     <Link to="/dashboard/trips/$tripId/calendar" params={{ tripId }}>
@@ -186,7 +234,7 @@ function TripDetailPage() {
                   {activities?.slice(0, 5).map((activity) => (
                     <div
                       key={activity.id}
-                      className="flex items-center justify-between p-3 rounded-lg border"
+                      className="flex items-center justify-between rounded-lg border p-3"
                     >
                       <div>
                         <p className="font-medium">{activity.title}</p>
@@ -197,7 +245,7 @@ function TripDetailPage() {
                         </p>
                       </div>
                       {activity.location && (
-                        <span className="text-sm text-muted-foreground flex items-center gap-1">
+                        <span className="flex items-center gap-1 text-sm text-muted-foreground">
                           <MapPin className="h-3 w-3" />
                           {activity.location}
                         </span>
@@ -210,12 +258,45 @@ function TripDetailPage() {
           </Card>
         </TabsContent>
 
+        <TabsContent value="routes" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Navigation className="h-5 w-5" />
+                Itinerário Diário
+              </CardTitle>
+              <CardDescription>Visualize o percurso das suas atividades dia a dia</CardDescription>
+            </CardHeader>
+            <CardContent>
+              {activities && activities.length > 0 ? (
+                <DailyItinerary
+                  activities={activities}
+                  tripStartDate={new Date(trip.startDate)}
+                  tripEndDate={new Date(trip.endDate)}
+                  showNavigation={true}
+                />
+              ) : (
+                <div className="py-8 text-center text-muted-foreground">
+                  <Navigation className="mx-auto mb-2 h-8 w-8 opacity-50" />
+                  <p>Nenhuma atividade para exibir no mapa</p>
+                  <p className="text-sm">Adicione atividades com localização para ver o roteiro</p>
+                  <Button variant="link" asChild className="mt-2">
+                    <Link to="/dashboard/trips/$tripId/calendar" params={{ tripId }}>
+                      Adicionar atividades
+                    </Link>
+                  </Button>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
         <TabsContent value="calendar">
           <Card>
             <CardContent className="flex flex-col items-center justify-center py-16">
-              <Calendar className="h-16 w-16 text-muted-foreground mb-4" />
-              <h3 className="text-xl font-medium mb-2">Visualização do Calendário</h3>
-              <p className="text-muted-foreground mb-4">
+              <Calendar className="mb-4 h-16 w-16 text-muted-foreground" />
+              <h3 className="mb-2 text-xl font-medium">Visualização do Calendário</h3>
+              <p className="mb-4 text-muted-foreground">
                 Visualize e gerencie suas atividades em um layout de calendário
               </p>
               <Button asChild>
@@ -235,8 +316,8 @@ function TripDetailPage() {
             </CardHeader>
             <CardContent>
               {flights?.length === 0 ? (
-                <div className="text-center py-8 text-muted-foreground">
-                  <Plane className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                <div className="py-8 text-center text-muted-foreground">
+                  <Plane className="mx-auto mb-2 h-8 w-8 opacity-50" />
                   <p>Nenhum voo adicionado ainda</p>
                   <Button variant="link" className="mt-2">
                     Adicione seu primeiro voo
@@ -247,7 +328,7 @@ function TripDetailPage() {
                   {flights?.map((flight) => (
                     <div
                       key={flight.id}
-                      className="flex items-center justify-between p-4 rounded-lg border"
+                      className="flex items-center justify-between rounded-lg border p-4"
                     >
                       <div className="flex items-center gap-4">
                         <Plane className="h-5 w-5 text-primary" />
@@ -283,9 +364,9 @@ function TripDetailPage() {
             </CardHeader>
             <CardContent>
               <div className="space-y-2">
-                <div className="flex items-center justify-between p-3 rounded-lg border">
+                <div className="flex items-center justify-between rounded-lg border p-3">
                   <div className="flex items-center gap-3">
-                    <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10">
                       <Users className="h-4 w-4 text-primary" />
                     </div>
                     <div>
@@ -296,14 +377,24 @@ function TripDetailPage() {
                   <Badge>Proprietário</Badge>
                 </div>
               </div>
-              <Button variant="outline" className="w-full mt-4">
-                <Users className="h-4 w-4 mr-2" />
+              <Button variant="outline" className="mt-4 w-full">
+                <Users className="mr-2 h-4 w-4" />
                 Convidar Membros
               </Button>
             </CardContent>
           </Card>
         </TabsContent>
       </Tabs>
+
+      {/* AI Suggestions Dialog */}
+      <AISuggestionsDialog
+        open={aiDialogOpen}
+        onClose={() => setAiDialogOpen(false)}
+        onGenerate={handleGenerateSuggestions}
+        onAddSuggestions={handleAddSuggestions}
+        isGenerating={generateMutation.isPending}
+        isAdding={addMutation.isPending}
+      />
     </div>
   )
 }

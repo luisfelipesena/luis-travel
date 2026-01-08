@@ -1,7 +1,7 @@
 import { asc, eq } from "drizzle-orm"
-import type { FlightExternalData } from "@/types"
+import type { Flight, FlightExternalData } from "@/types"
 import { db } from "../db"
-import { type Flight, flight, type NewFlight } from "../db/schema"
+import { flight, type NewFlight } from "../db/schema"
 
 export class FlightRepository {
   async findById(id: string): Promise<Flight | undefined> {

@@ -14,6 +14,8 @@ import {
   ActivityTypeValues,
   type FlightExternalData,
   InvitationStatusValues,
+  ParticipantStatusValues,
+  type TripDestinationsArray,
   TripMemberRoleValues,
 } from "@/types"
 
@@ -82,6 +84,7 @@ export const trip = pgTable("trip", {
   name: varchar("name", { length: 255 }).notNull(),
   description: text("description"),
   destination: varchar("destination", { length: 255 }).notNull(),
+  destinations: jsonb("destinations").$type<TripDestinationsArray>(),
   startDate: timestamp("start_date").notNull(),
   endDate: timestamp("end_date").notNull(),
   coverImage: text("cover_image"),
@@ -143,6 +146,8 @@ export const activity = pgTable("activity", {
   startTime: timestamp("start_time").notNull(),
   endTime: timestamp("end_time").notNull(),
   location: varchar("location", { length: 255 }),
+  locationLat: text("location_lat"),
+  locationLng: text("location_lng"),
   imageUrl: text("image_url"),
   color: varchar("color", { length: 7 }).default("#3b82f6"),
   metadata: jsonb("metadata").$type<ActivityMetadata>(),
@@ -151,6 +156,21 @@ export const activity = pgTable("activity", {
     .references(() => user.id),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
+})
+
+// Activity Participants
+export const participantStatusEnum = pgEnum("participant_status", ParticipantStatusValues)
+
+export const activityParticipant = pgTable("activity_participant", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  activityId: uuid("activity_id")
+    .notNull()
+    .references(() => activity.id, { onDelete: "cascade" }),
+  userId: uuid("user_id")
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
+  status: participantStatusEnum("status").notNull().default("pending"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
 })
 
 // ============================================================================
@@ -189,6 +209,7 @@ export const userRelations = relations(user, ({ many }) => ({
   activities: many(activity),
   flights: many(flight),
   sentInvitations: many(invitation),
+  activityParticipations: many(activityParticipant),
 }))
 
 export const sessionRelations = relations(session, ({ one }) => ({
@@ -217,9 +238,15 @@ export const invitationRelations = relations(invitation, ({ one }) => ({
   inviter: one(user, { fields: [invitation.invitedBy], references: [user.id] }),
 }))
 
-export const activityRelations = relations(activity, ({ one }) => ({
+export const activityRelations = relations(activity, ({ one, many }) => ({
   trip: one(trip, { fields: [activity.tripId], references: [trip.id] }),
   creator: one(user, { fields: [activity.createdBy], references: [user.id] }),
+  participants: many(activityParticipant),
+}))
+
+export const activityParticipantRelations = relations(activityParticipant, ({ one }) => ({
+  activity: one(activity, { fields: [activityParticipant.activityId], references: [activity.id] }),
+  user: one(user, { fields: [activityParticipant.userId], references: [user.id] }),
 }))
 
 export const flightRelations = relations(flight, ({ one }) => ({
@@ -248,3 +275,6 @@ export type NewActivity = typeof activity.$inferInsert
 
 export type Flight = typeof flight.$inferSelect
 export type NewFlight = typeof flight.$inferInsert
+
+export type ActivityParticipant = typeof activityParticipant.$inferSelect
+export type NewActivityParticipant = typeof activityParticipant.$inferInsert
