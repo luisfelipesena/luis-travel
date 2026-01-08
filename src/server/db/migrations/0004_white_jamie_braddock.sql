@@ -1,1 +1,0 @@
-ALTER TABLE "trip" ADD COLUMN "destinations" jsonb;

@@ -1,1 +1,0 @@
-ALTER TYPE "public"."activity_type" ADD VALUE 'ai_generated';
