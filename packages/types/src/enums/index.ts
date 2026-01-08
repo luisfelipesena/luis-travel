@@ -31,3 +31,10 @@ export {
   tripMemberRoleSchema,
   tripStatusSchema,
 } from "./trip.enum"
+// Routing enums
+export {
+  TransportMode,
+  TransportModeValues,
+  RouteStatus,
+  RouteStatusValues,
+} from "./routing.enum"

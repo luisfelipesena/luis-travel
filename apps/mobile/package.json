@@ -12,11 +12,12 @@
     "build:production": "eas build --profile production"
   },
   "dependencies": {
+    "@expo/vector-icons": "^14.0.4",
+    "@gluestack-style/react": "^1.0.57",
+    "@gluestack-ui/themed": "^1.1.68",
     "@luis-travel/api": "workspace:*",
     "@luis-travel/types": "workspace:*",
-    "@expo/vector-icons": "^14.0.4",
-    "@gluestack-ui/themed": "^1.1.68",
-    "@gluestack-style/react": "^1.0.57",
+    "@react-native-community/datetimepicker": "^8.6.0",
     "@tanstack/react-query": "^5.90.16",
     "@trpc/client": "^11.0.0",
     "@trpc/react-query": "^11.0.0",

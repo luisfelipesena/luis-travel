@@ -1,7 +1,6 @@
-import { addDays, format } from "date-fns"
-import { ptBR } from "date-fns/locale"
+import { addDays } from "date-fns"
 import { router } from "expo-router"
-import { Calendar, ChevronLeft, MapPin } from "lucide-react-native"
+import { ChevronLeft } from "lucide-react-native"
 import { useState } from "react"
 import {
   ActivityIndicator,
@@ -13,13 +12,15 @@ import {
   View,
 } from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context"
+import { CitySearch, type CitySelection } from "../../../src/components/city-search"
+import { DateRangePicker } from "../../../src/components/date-picker"
 import { trpc } from "../../../src/lib/trpc"
 
 export default function NewTripScreen() {
   const utils = trpc.useUtils()
   const [name, setName] = useState("")
-  const [destination, setDestination] = useState("")
-  const [startDate, _setStartDate] = useState(new Date())
+  const [destination, setDestination] = useState<CitySelection | null>(null)
+  const [startDate, setStartDate] = useState(new Date())
   const [endDate, setEndDate] = useState(addDays(new Date(), 7))
 
   const createMutation = trpc.trip.create.useMutation({
@@ -37,8 +38,8 @@ export default function NewTripScreen() {
       Alert.alert("Erro", "Digite o nome da viagem")
       return
     }
-    if (!destination.trim()) {
-      Alert.alert("Erro", "Digite o destino")
+    if (!destination) {
+      Alert.alert("Erro", "Selecione o destino")
       return
     }
     if (startDate >= endDate) {
@@ -48,9 +49,20 @@ export default function NewTripScreen() {
 
     createMutation.mutate({
       name: name.trim(),
-      destination: destination.trim(),
+      destination: destination.name,
       startDate,
       endDate,
+      // Include coordinates in destinations array
+      destinations: [
+        {
+          name: destination.displayName,
+          lat: destination.lat,
+          lng: destination.lng,
+          order: 0,
+          country: destination.country,
+          countryCode: destination.countryCode,
+        },
+      ],
     })
   }
 
@@ -77,47 +89,25 @@ export default function NewTripScreen() {
           />
         </View>
 
-        {/* Destination */}
+        {/* Destination with City Search */}
         <View className="mb-4">
           <Text className="text-sm font-medium text-foreground mb-2">Destino</Text>
-          <View className="flex-row items-center bg-secondary rounded-xl px-4 py-3">
-            <MapPin size={20} color="#64748b" />
-            <TextInput
-              value={destination}
-              onChangeText={setDestination}
-              placeholder="Ex: Paris, França"
-              placeholderTextColor="#94a3b8"
-              className="flex-1 ml-2 text-foreground"
-            />
-          </View>
+          <CitySearch
+            value={destination}
+            onChange={setDestination}
+            placeholder="Buscar cidade de destino..."
+          />
         </View>
 
-        {/* Dates */}
+        {/* Dates with Date Picker */}
         <View className="mb-6">
           <Text className="text-sm font-medium text-foreground mb-2">Período</Text>
-          <View className="flex-row gap-3">
-            <View className="flex-1 bg-secondary rounded-xl px-4 py-3">
-              <View className="flex-row items-center">
-                <Calendar size={18} color="#64748b" />
-                <Text className="ml-2 text-xs text-muted-foreground">Início</Text>
-              </View>
-              <Text className="text-foreground font-medium mt-1">
-                {format(startDate, "d MMM, yyyy", { locale: ptBR })}
-              </Text>
-            </View>
-            <View className="flex-1 bg-secondary rounded-xl px-4 py-3">
-              <View className="flex-row items-center">
-                <Calendar size={18} color="#64748b" />
-                <Text className="ml-2 text-xs text-muted-foreground">Fim</Text>
-              </View>
-              <Text className="text-foreground font-medium mt-1">
-                {format(endDate, "d MMM, yyyy", { locale: ptBR })}
-              </Text>
-            </View>
-          </View>
-          <Text className="text-xs text-muted-foreground mt-2">
-            * Date picker será implementado com @react-native-community/datetimepicker
-          </Text>
+          <DateRangePicker
+            startDate={startDate}
+            endDate={endDate}
+            onStartDateChange={setStartDate}
+            onEndDateChange={setEndDate}
+          />
         </View>
 
         {/* Quick Date Options */}
