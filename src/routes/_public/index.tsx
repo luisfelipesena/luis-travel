@@ -187,11 +187,15 @@ function LandingPage() {
                     necessário.
                   </p>
                 </div>
-                <Button size="lg" className="w-full sm:w-auto px-8 shadow-lg" asChild>
-                  <Link to={isAuthenticated ? "/dashboard" : "/register"}>
-                    {isAuthenticated ? "Ir para o Painel" : "Criar Conta Grátis"}
-                  </Link>
-                </Button>
+                {isAuthenticated ? (
+                  <Button size="lg" className="w-full sm:w-auto px-8 shadow-lg" asChild>
+                    <Link to="/dashboard">Ir para o Painel</Link>
+                  </Button>
+                ) : (
+                  <Button size="lg" className="w-full sm:w-auto px-8 shadow-lg" asChild>
+                    <a href="/auth/sign-up">Criar Conta Grátis</a>
+                  </Button>
+                )}
               </div>
             </div>
           </div>

@@ -5,6 +5,7 @@ import { createRootRouteWithContext, Outlet } from "@tanstack/react-router"
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools"
 import { NuqsAdapter } from "nuqs/adapters/tanstack-router"
 import { useState } from "react"
+import { toast } from "sonner"
 import { authClient } from "@/auth"
 import { Toaster } from "@/components/ui/sonner"
 import type { RouterContext } from "@/lib/router-context"
@@ -43,7 +44,14 @@ function RootComponent() {
   const [trpcClient] = useState(() => getTRPCClient())
 
   return (
-    <NeonAuthUIProvider authClient={authClient}>
+    <NeonAuthUIProvider
+      authClient={authClient}
+      toast={({ variant = "default", message }) => {
+        if (variant === "error") toast.error(message)
+        else if (variant === "success") toast.success(message)
+        else toast(message)
+      }}
+    >
       <trpc.Provider client={trpcClient} queryClient={queryClient}>
         <QueryClientProvider client={queryClient}>
           <NuqsAdapter>

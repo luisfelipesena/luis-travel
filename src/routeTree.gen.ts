@@ -13,8 +13,6 @@ import { Route as PublicRouteImport } from './routes/_public'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as PublicIndexRouteImport } from './routes/_public/index'
 import { Route as AuthSplatRouteImport } from './routes/auth/$'
-import { Route as PublicRegisterRouteImport } from './routes/_public/register'
-import { Route as PublicLoginRouteImport } from './routes/_public/login'
 import { Route as AuthenticatedDashboardIndexRouteImport } from './routes/_authenticated/dashboard/index'
 import { Route as AuthenticatedDashboardInvitationsRouteImport } from './routes/_authenticated/dashboard/invitations'
 import { Route as AuthenticatedDashboardFlightsRouteImport } from './routes/_authenticated/dashboard/flights'
@@ -41,16 +39,6 @@ const AuthSplatRoute = AuthSplatRouteImport.update({
   id: '/auth/$',
   path: '/auth/$',
   getParentRoute: () => rootRouteImport,
-} as any)
-const PublicRegisterRoute = PublicRegisterRouteImport.update({
-  id: '/register',
-  path: '/register',
-  getParentRoute: () => PublicRoute,
-} as any)
-const PublicLoginRoute = PublicLoginRouteImport.update({
-  id: '/login',
-  path: '/login',
-  getParentRoute: () => PublicRoute,
 } as any)
 const AuthenticatedDashboardIndexRoute =
   AuthenticatedDashboardIndexRouteImport.update({
@@ -102,8 +90,6 @@ const AuthenticatedDashboardTripsTripIdCalendarRoute =
   } as any)
 
 export interface FileRoutesByFullPath {
-  '/login': typeof PublicLoginRoute
-  '/register': typeof PublicRegisterRoute
   '/auth/$': typeof AuthSplatRoute
   '/': typeof PublicIndexRoute
   '/dashboard/calendar': typeof AuthenticatedDashboardCalendarRoute
@@ -116,8 +102,6 @@ export interface FileRoutesByFullPath {
   '/dashboard/trips/$tripId': typeof AuthenticatedDashboardTripsTripIdIndexRoute
 }
 export interface FileRoutesByTo {
-  '/login': typeof PublicLoginRoute
-  '/register': typeof PublicRegisterRoute
   '/auth/$': typeof AuthSplatRoute
   '/': typeof PublicIndexRoute
   '/dashboard/calendar': typeof AuthenticatedDashboardCalendarRoute
@@ -133,8 +117,6 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/_public': typeof PublicRouteWithChildren
-  '/_public/login': typeof PublicLoginRoute
-  '/_public/register': typeof PublicRegisterRoute
   '/auth/$': typeof AuthSplatRoute
   '/_public/': typeof PublicIndexRoute
   '/_authenticated/dashboard/calendar': typeof AuthenticatedDashboardCalendarRoute
@@ -149,8 +131,6 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    | '/login'
-    | '/register'
     | '/auth/$'
     | '/'
     | '/dashboard/calendar'
@@ -163,8 +143,6 @@ export interface FileRouteTypes {
     | '/dashboard/trips/$tripId'
   fileRoutesByTo: FileRoutesByTo
   to:
-    | '/login'
-    | '/register'
     | '/auth/$'
     | '/'
     | '/dashboard/calendar'
@@ -179,8 +157,6 @@ export interface FileRouteTypes {
     | '__root__'
     | '/_authenticated'
     | '/_public'
-    | '/_public/login'
-    | '/_public/register'
     | '/auth/$'
     | '/_public/'
     | '/_authenticated/dashboard/calendar'
@@ -228,20 +204,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/auth/$'
       preLoaderRoute: typeof AuthSplatRouteImport
       parentRoute: typeof rootRouteImport
-    }
-    '/_public/register': {
-      id: '/_public/register'
-      path: '/register'
-      fullPath: '/register'
-      preLoaderRoute: typeof PublicRegisterRouteImport
-      parentRoute: typeof PublicRoute
-    }
-    '/_public/login': {
-      id: '/_public/login'
-      path: '/login'
-      fullPath: '/login'
-      preLoaderRoute: typeof PublicLoginRouteImport
-      parentRoute: typeof PublicRoute
     }
     '/_authenticated/dashboard/': {
       id: '/_authenticated/dashboard/'
@@ -332,14 +294,10 @@ const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
 )
 
 interface PublicRouteChildren {
-  PublicLoginRoute: typeof PublicLoginRoute
-  PublicRegisterRoute: typeof PublicRegisterRoute
   PublicIndexRoute: typeof PublicIndexRoute
 }
 
 const PublicRouteChildren: PublicRouteChildren = {
-  PublicLoginRoute: PublicLoginRoute,
-  PublicRegisterRoute: PublicRegisterRoute,
   PublicIndexRoute: PublicIndexRoute,
 }
 

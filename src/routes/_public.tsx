@@ -28,10 +28,10 @@ function PublicLayout() {
             ) : (
               <>
                 <Button variant="ghost" asChild>
-                  <Link to="/login">Entrar</Link>
+                  <a href="/auth/sign-in">Entrar</a>
                 </Button>
                 <Button asChild>
-                  <Link to="/register">Começar</Link>
+                  <a href="/auth/sign-up">Começar</a>
                 </Button>
               </>
             )}

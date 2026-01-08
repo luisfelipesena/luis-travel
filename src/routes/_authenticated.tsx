@@ -6,7 +6,8 @@ import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/s
 export const Route = createFileRoute("/_authenticated")({
   beforeLoad: ({ context }) => {
     if (!context.isAuthenticated) {
-      throw redirect({ to: "/login" })
+      // @ts-expect-error - catch-all route /auth/$ handles /auth/sign-in
+      throw redirect({ to: "/auth/sign-in" })
     }
   },
   component: AuthenticatedLayout,

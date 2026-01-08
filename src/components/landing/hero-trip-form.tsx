@@ -143,7 +143,7 @@ export function HeroTripForm({ isAuthenticated }: HeroTripFormProps) {
       })
     } else {
       savePendingTrip(tripData)
-      navigate({ to: "/login" })
+      window.location.href = "/auth/sign-in"
     }
   }
 
