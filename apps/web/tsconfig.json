@@ -1,0 +1,18 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "types": ["vite/client"],
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"],
+      "@luis-travel/api": ["../../packages/api/src"],
+      "@luis-travel/api/*": ["../../packages/api/src/*"],
+      "@luis-travel/types": ["../../packages/types/src"],
+      "@luis-travel/types/*": ["../../packages/types/src/*"],
+      "@luis-travel/db": ["../../packages/db/src"],
+      "@luis-travel/db/*": ["../../packages/db/src/*"]
+    }
+  },
+  "include": ["src/**/*", "server/**/*"]
+}

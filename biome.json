@@ -54,20 +54,27 @@
   },
   "files": {
     "includes": [
-      "src/**",
-      "server/**",
+      "apps/**/*.ts",
+      "apps/**/*.tsx",
+      "apps/**/*.json",
+      "packages/**/*.ts",
+      "packages/**/*.tsx",
+      "packages/**/*.json",
       "*.ts",
       "*.tsx",
       "*.json",
       "!node_modules",
+      "!**/node_modules",
       "!dist",
+      "!**/dist",
       "!.vinxi",
       "!.output",
       "!*.min.js",
       "!bun.lock",
       "!**/*.css",
       "!**/routeTree.gen.ts",
-      "!**/migrations"
+      "!**/migrations",
+      "!**/.expo"
     ]
   }
 }

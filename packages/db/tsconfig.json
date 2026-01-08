@@ -1,0 +1,11 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@luis-travel/types": ["../types/src"],
+      "@luis-travel/types/*": ["../types/src/*"]
+    }
+  },
+  "include": ["src/**/*"]
+}
