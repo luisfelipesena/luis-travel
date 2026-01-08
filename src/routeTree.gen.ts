@@ -15,6 +15,9 @@ import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthSplatRouteImport } from './routes/auth/$'
 import { Route as AuthenticatedDashboardIndexRouteImport } from './routes/_authenticated/dashboard/index'
+import { Route as AuthenticatedDashboardInvitationsRouteImport } from './routes/_authenticated/dashboard/invitations'
+import { Route as AuthenticatedDashboardFlightsRouteImport } from './routes/_authenticated/dashboard/flights'
+import { Route as AuthenticatedDashboardCalendarRouteImport } from './routes/_authenticated/dashboard/calendar'
 import { Route as AuthenticatedDashboardTripsIndexRouteImport } from './routes/_authenticated/dashboard/trips/index'
 import { Route as AuthenticatedDashboardTripsNewRouteImport } from './routes/_authenticated/dashboard/trips/new'
 import { Route as AuthenticatedDashboardTripsTripIdIndexRouteImport } from './routes/_authenticated/dashboard/trips/$tripId/index'
@@ -50,6 +53,24 @@ const AuthenticatedDashboardIndexRoute =
     path: '/dashboard/',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedDashboardInvitationsRoute =
+  AuthenticatedDashboardInvitationsRouteImport.update({
+    id: '/dashboard/invitations',
+    path: '/dashboard/invitations',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedDashboardFlightsRoute =
+  AuthenticatedDashboardFlightsRouteImport.update({
+    id: '/dashboard/flights',
+    path: '/dashboard/flights',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedDashboardCalendarRoute =
+  AuthenticatedDashboardCalendarRouteImport.update({
+    id: '/dashboard/calendar',
+    path: '/dashboard/calendar',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedDashboardTripsIndexRoute =
   AuthenticatedDashboardTripsIndexRouteImport.update({
     id: '/dashboard/trips/',
@@ -80,6 +101,9 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
   '/auth/$': typeof AuthSplatRoute
+  '/dashboard/calendar': typeof AuthenticatedDashboardCalendarRoute
+  '/dashboard/flights': typeof AuthenticatedDashboardFlightsRoute
+  '/dashboard/invitations': typeof AuthenticatedDashboardInvitationsRoute
   '/dashboard': typeof AuthenticatedDashboardIndexRoute
   '/dashboard/trips/new': typeof AuthenticatedDashboardTripsNewRoute
   '/dashboard/trips': typeof AuthenticatedDashboardTripsIndexRoute
@@ -91,6 +115,9 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
   '/auth/$': typeof AuthSplatRoute
+  '/dashboard/calendar': typeof AuthenticatedDashboardCalendarRoute
+  '/dashboard/flights': typeof AuthenticatedDashboardFlightsRoute
+  '/dashboard/invitations': typeof AuthenticatedDashboardInvitationsRoute
   '/dashboard': typeof AuthenticatedDashboardIndexRoute
   '/dashboard/trips/new': typeof AuthenticatedDashboardTripsNewRoute
   '/dashboard/trips': typeof AuthenticatedDashboardTripsIndexRoute
@@ -104,6 +131,9 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
   '/auth/$': typeof AuthSplatRoute
+  '/_authenticated/dashboard/calendar': typeof AuthenticatedDashboardCalendarRoute
+  '/_authenticated/dashboard/flights': typeof AuthenticatedDashboardFlightsRoute
+  '/_authenticated/dashboard/invitations': typeof AuthenticatedDashboardInvitationsRoute
   '/_authenticated/dashboard/': typeof AuthenticatedDashboardIndexRoute
   '/_authenticated/dashboard/trips/new': typeof AuthenticatedDashboardTripsNewRoute
   '/_authenticated/dashboard/trips/': typeof AuthenticatedDashboardTripsIndexRoute
@@ -117,6 +147,9 @@ export interface FileRouteTypes {
     | '/login'
     | '/register'
     | '/auth/$'
+    | '/dashboard/calendar'
+    | '/dashboard/flights'
+    | '/dashboard/invitations'
     | '/dashboard'
     | '/dashboard/trips/new'
     | '/dashboard/trips'
@@ -128,6 +161,9 @@ export interface FileRouteTypes {
     | '/login'
     | '/register'
     | '/auth/$'
+    | '/dashboard/calendar'
+    | '/dashboard/flights'
+    | '/dashboard/invitations'
     | '/dashboard'
     | '/dashboard/trips/new'
     | '/dashboard/trips'
@@ -140,6 +176,9 @@ export interface FileRouteTypes {
     | '/login'
     | '/register'
     | '/auth/$'
+    | '/_authenticated/dashboard/calendar'
+    | '/_authenticated/dashboard/flights'
+    | '/_authenticated/dashboard/invitations'
     | '/_authenticated/dashboard/'
     | '/_authenticated/dashboard/trips/new'
     | '/_authenticated/dashboard/trips/'
@@ -199,6 +238,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardIndexRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/dashboard/invitations': {
+      id: '/_authenticated/dashboard/invitations'
+      path: '/dashboard/invitations'
+      fullPath: '/dashboard/invitations'
+      preLoaderRoute: typeof AuthenticatedDashboardInvitationsRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/dashboard/flights': {
+      id: '/_authenticated/dashboard/flights'
+      path: '/dashboard/flights'
+      fullPath: '/dashboard/flights'
+      preLoaderRoute: typeof AuthenticatedDashboardFlightsRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/dashboard/calendar': {
+      id: '/_authenticated/dashboard/calendar'
+      path: '/dashboard/calendar'
+      fullPath: '/dashboard/calendar'
+      preLoaderRoute: typeof AuthenticatedDashboardCalendarRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/dashboard/trips/': {
       id: '/_authenticated/dashboard/trips/'
       path: '/dashboard/trips'
@@ -231,6 +291,9 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedRouteChildren {
+  AuthenticatedDashboardCalendarRoute: typeof AuthenticatedDashboardCalendarRoute
+  AuthenticatedDashboardFlightsRoute: typeof AuthenticatedDashboardFlightsRoute
+  AuthenticatedDashboardInvitationsRoute: typeof AuthenticatedDashboardInvitationsRoute
   AuthenticatedDashboardIndexRoute: typeof AuthenticatedDashboardIndexRoute
   AuthenticatedDashboardTripsNewRoute: typeof AuthenticatedDashboardTripsNewRoute
   AuthenticatedDashboardTripsIndexRoute: typeof AuthenticatedDashboardTripsIndexRoute
@@ -239,6 +302,10 @@ interface AuthenticatedRouteChildren {
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
+  AuthenticatedDashboardCalendarRoute: AuthenticatedDashboardCalendarRoute,
+  AuthenticatedDashboardFlightsRoute: AuthenticatedDashboardFlightsRoute,
+  AuthenticatedDashboardInvitationsRoute:
+    AuthenticatedDashboardInvitationsRoute,
   AuthenticatedDashboardIndexRoute: AuthenticatedDashboardIndexRoute,
   AuthenticatedDashboardTripsNewRoute: AuthenticatedDashboardTripsNewRoute,
   AuthenticatedDashboardTripsIndexRoute: AuthenticatedDashboardTripsIndexRoute,

@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router"
 import { format } from "date-fns"
+import { ptBR } from "date-fns/locale"
 import { ArrowLeft, Calendar, MapPin, Plane, Settings, Sparkles, Users } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -31,12 +32,12 @@ function TripDetailPage() {
     return (
       <Card>
         <CardContent className="flex flex-col items-center justify-center py-16">
-          <h3 className="text-xl font-medium mb-2">Trip not found</h3>
+          <h3 className="text-xl font-medium mb-2">Viagem não encontrada</h3>
           <p className="text-muted-foreground mb-4">
-            The trip you&apos;re looking for doesn&apos;t exist or you don&apos;t have access.
+            A viagem que você procura não existe ou você não tem acesso.
           </p>
           <Button asChild>
-            <Link to="/dashboard/trips">Back to Trips</Link>
+            <Link to="/dashboard/trips">Voltar para Viagens</Link>
           </Button>
         </CardContent>
       </Card>
@@ -59,8 +60,8 @@ function TripDetailPage() {
           <div>
             <div className="flex items-center gap-2">
               <h1 className="text-2xl font-bold">{trip.name}</h1>
-              {isOngoing && <Badge className="bg-green-500">Ongoing</Badge>}
-              {isUpcoming && <Badge>Upcoming</Badge>}
+              {isOngoing && <Badge className="bg-green-500">Em andamento</Badge>}
+              {isUpcoming && <Badge>Próxima</Badge>}
             </div>
             <div className="flex items-center gap-4 mt-1 text-muted-foreground">
               <span className="flex items-center gap-1">
@@ -69,8 +70,8 @@ function TripDetailPage() {
               </span>
               <span className="flex items-center gap-1">
                 <Calendar className="h-4 w-4" />
-                {format(new Date(trip.startDate), "MMM d")} -{" "}
-                {format(new Date(trip.endDate), "MMM d, yyyy")}
+                {format(new Date(trip.startDate), "d 'de' MMM", { locale: ptBR })} -{" "}
+                {format(new Date(trip.endDate), "d 'de' MMM, yyyy", { locale: ptBR })}
               </span>
             </div>
           </div>
@@ -78,7 +79,7 @@ function TripDetailPage() {
         <Button variant="outline" asChild>
           <Link to="/dashboard/trips/$tripId" params={{ tripId }}>
             <Settings className="h-4 w-4 mr-2" />
-            Settings
+            Configurações
           </Link>
         </Button>
       </div>
@@ -89,7 +90,7 @@ function TripDetailPage() {
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium flex items-center gap-2">
               <Calendar className="h-4 w-4" />
-              Activities
+              Atividades
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -100,7 +101,7 @@ function TripDetailPage() {
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium flex items-center gap-2">
               <Plane className="h-4 w-4" />
-              Flights
+              Voos
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -111,7 +112,7 @@ function TripDetailPage() {
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium flex items-center gap-2">
               <Users className="h-4 w-4" />
-              Members
+              Membros
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -123,17 +124,17 @@ function TripDetailPage() {
       {/* Main Content */}
       <Tabs defaultValue="overview" className="space-y-4">
         <TabsList>
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="calendar">Calendar</TabsTrigger>
-          <TabsTrigger value="flights">Flights</TabsTrigger>
-          <TabsTrigger value="members">Members</TabsTrigger>
+          <TabsTrigger value="overview">Visão Geral</TabsTrigger>
+          <TabsTrigger value="calendar">Calendário</TabsTrigger>
+          <TabsTrigger value="flights">Voos</TabsTrigger>
+          <TabsTrigger value="members">Membros</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="space-y-4">
           {trip.description && (
             <Card>
               <CardHeader>
-                <CardTitle>About this trip</CardTitle>
+                <CardTitle>Sobre esta viagem</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground">{trip.description}</p>
@@ -143,23 +144,23 @@ function TripDetailPage() {
 
           <Card>
             <CardHeader>
-              <CardTitle>Quick Actions</CardTitle>
-              <CardDescription>Start planning your trip</CardDescription>
+              <CardTitle>Ações Rápidas</CardTitle>
+              <CardDescription>Comece a planejar sua viagem</CardDescription>
             </CardHeader>
             <CardContent className="flex flex-wrap gap-2">
               <Button asChild>
                 <Link to="/dashboard/trips/$tripId/calendar" params={{ tripId }}>
                   <Calendar className="h-4 w-4 mr-2" />
-                  Open Calendar
+                  Abrir Calendário
                 </Link>
               </Button>
               <Button variant="outline">
                 <Plane className="h-4 w-4 mr-2" />
-                Add Flight
+                Adicionar Voo
               </Button>
               <Button variant="outline">
                 <Sparkles className="h-4 w-4 mr-2" />
-                AI Suggestions
+                Sugestões IA
               </Button>
             </CardContent>
           </Card>
@@ -167,16 +168,16 @@ function TripDetailPage() {
           {/* Recent Activities */}
           <Card>
             <CardHeader>
-              <CardTitle>Upcoming Activities</CardTitle>
+              <CardTitle>Próximas Atividades</CardTitle>
             </CardHeader>
             <CardContent>
               {activities?.length === 0 ? (
                 <div className="text-center py-8 text-muted-foreground">
                   <Calendar className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                  <p>No activities yet</p>
+                  <p>Nenhuma atividade ainda</p>
                   <Button variant="link" asChild className="mt-2">
                     <Link to="/dashboard/trips/$tripId/calendar" params={{ tripId }}>
-                      Add your first activity
+                      Adicione sua primeira atividade
                     </Link>
                   </Button>
                 </div>
@@ -190,7 +191,9 @@ function TripDetailPage() {
                       <div>
                         <p className="font-medium">{activity.title}</p>
                         <p className="text-sm text-muted-foreground">
-                          {format(new Date(activity.startTime), "MMM d, h:mm a")}
+                          {format(new Date(activity.startTime), "d 'de' MMM, HH:mm", {
+                            locale: ptBR,
+                          })}
                         </p>
                       </div>
                       {activity.location && (
@@ -211,13 +214,13 @@ function TripDetailPage() {
           <Card>
             <CardContent className="flex flex-col items-center justify-center py-16">
               <Calendar className="h-16 w-16 text-muted-foreground mb-4" />
-              <h3 className="text-xl font-medium mb-2">Calendar View</h3>
+              <h3 className="text-xl font-medium mb-2">Visualização do Calendário</h3>
               <p className="text-muted-foreground mb-4">
-                View and manage your activities in a calendar layout
+                Visualize e gerencie suas atividades em um layout de calendário
               </p>
               <Button asChild>
                 <Link to="/dashboard/trips/$tripId/calendar" params={{ tripId }}>
-                  Open Full Calendar
+                  Abrir Calendário Completo
                 </Link>
               </Button>
             </CardContent>
@@ -227,16 +230,16 @@ function TripDetailPage() {
         <TabsContent value="flights">
           <Card>
             <CardHeader>
-              <CardTitle>Flights</CardTitle>
-              <CardDescription>Track your flights for this trip</CardDescription>
+              <CardTitle>Voos</CardTitle>
+              <CardDescription>Acompanhe seus voos para esta viagem</CardDescription>
             </CardHeader>
             <CardContent>
               {flights?.length === 0 ? (
                 <div className="text-center py-8 text-muted-foreground">
                   <Plane className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                  <p>No flights added yet</p>
+                  <p>Nenhum voo adicionado ainda</p>
                   <Button variant="link" className="mt-2">
-                    Add your first flight
+                    Adicione seu primeiro voo
                   </Button>
                 </div>
               ) : (
@@ -258,7 +261,9 @@ function TripDetailPage() {
                           {flight.departureAirport} → {flight.arrivalAirport}
                         </p>
                         <p className="text-sm text-muted-foreground">
-                          {format(new Date(flight.departureTime), "MMM d, h:mm a")}
+                          {format(new Date(flight.departureTime), "d 'de' MMM, HH:mm", {
+                            locale: ptBR,
+                          })}
                         </p>
                       </div>
                       {flight.status && <Badge variant="outline">{flight.status}</Badge>}
@@ -273,8 +278,8 @@ function TripDetailPage() {
         <TabsContent value="members">
           <Card>
             <CardHeader>
-              <CardTitle>Trip Members</CardTitle>
-              <CardDescription>People who have access to this trip</CardDescription>
+              <CardTitle>Membros da Viagem</CardTitle>
+              <CardDescription>Pessoas que têm acesso a esta viagem</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-2">
@@ -284,16 +289,16 @@ function TripDetailPage() {
                       <Users className="h-4 w-4 text-primary" />
                     </div>
                     <div>
-                      <p className="font-medium">You</p>
-                      <p className="text-sm text-muted-foreground">Owner</p>
+                      <p className="font-medium">Você</p>
+                      <p className="text-sm text-muted-foreground">Proprietário</p>
                     </div>
                   </div>
-                  <Badge>Owner</Badge>
+                  <Badge>Proprietário</Badge>
                 </div>
               </div>
               <Button variant="outline" className="w-full mt-4">
                 <Users className="h-4 w-4 mr-2" />
-                Invite Members
+                Convidar Membros
               </Button>
             </CardContent>
           </Card>

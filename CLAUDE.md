@@ -15,7 +15,11 @@
 ```
 src/
 ├── auth.ts           # Neon Auth client
-├── types/            # TypeScript enums and types
+├── types/            # Type system (see TypeScript section)
+│   ├── enums/        # Const-as-const enums + Zod schemas
+│   ├── schemas/      # Shared Zod validation schemas
+│   ├── metadata/     # Discriminated unions for JSONB
+│   └── utils.ts      # Type utilities (enumToZod, helpers)
 ├── server/
 │   ├── db/           # Schema + migrations + db client
 │   ├── lib/          # Server utilities (logger)
@@ -103,21 +107,90 @@ src/
 - Handle errors explicitly
 
 ## TypeScript Typing (CRITICAL)
-- **NEVER use hardcoded strings** for enums/constants
-- Use const objects as enums pattern from `@/types`:
-  ```typescript
-  import { TripMemberRole, InvitationStatus, ActivityType } from "@/types"
 
-  // Good:
-  role === TripMemberRole.VIEWER
-  status === InvitationStatus.PENDING
+### Single Source of Truth
+All types, enums, schemas, and metadata live in `src/types/`. Import via `@/types`.
 
-  // Bad:
-  role === "viewer"
-  status === "pending"
-  ```
-- All type definitions live in `src/types/index.ts`
-- Export both const object and type (same name)
+### Enum Pattern (const-as-const)
+```typescript
+// src/types/enums/trip.enum.ts
+
+// 1. Const object = SINGLE source of truth
+export const TripMemberRole = {
+  OWNER: "owner",
+  EDITOR: "editor",
+  VIEWER: "viewer",
+} as const
+
+// 2. Type derived from const
+export type TripMemberRole = (typeof TripMemberRole)[keyof typeof TripMemberRole]
+
+// 3. Values array for Zod/pgEnum
+export const TripMemberRoleValues = enumValues(TripMemberRole)
+
+// 4. Zod schema derived
+export const tripMemberRoleSchema = z.enum(TripMemberRoleValues)
+```
+
+### Usage Rules
+```typescript
+// GOOD: Use enum constants
+role === TripMemberRole.VIEWER
+type: activityTypeSchema  // In tRPC routers
+
+// BAD: Hardcoded strings
+role === "viewer"
+type: z.enum(["default", "ai_generated"])  // Duplicates enum
+```
+
+### Discriminated Unions for Metadata
+```typescript
+// src/types/metadata/activity-metadata.ts
+const aiGeneratedMetadataSchema = z.object({
+  source: z.literal("ai"),
+  aiCategory: aiActivityCategorySchema,
+  generatedAt: z.string().datetime(),
+})
+
+export const activityMetadataSchema = z.discriminatedUnion("source", [
+  aiGeneratedMetadataSchema,
+  manualMetadataSchema,
+])
+
+// Type guards for runtime narrowing
+export function isAIGeneratedMetadata(m: ActivityMetadata): m is AIGeneratedMetadata {
+  return m.source === "ai"
+}
+
+// Factory functions for creating typed metadata
+import { createAIMetadata } from "@/types"
+metadata: createAIMetadata(AIActivityCategory.RESTAURANT)
+```
+
+### Shared Schemas in tRPC
+```typescript
+// GOOD: Import from @/types
+import { createTripInputSchema, tripByIdInputSchema } from "@/types"
+
+.input(createTripInputSchema)  // Reusable, single source
+
+// BAD: Inline z.object in routers
+.input(z.object({ name: z.string()... }))  // Duplicates validation
+```
+
+### Type Utilities
+```typescript
+import { enumValues, enumToZod, assertNever } from "@/types"
+
+// Create Zod enum from const object
+const schema = enumToZod(TripMemberRole)
+
+// Exhaustive switch helper
+switch (status) {
+  case TripStatus.ACTIVE: return "active"
+  default: assertNever(status)  // Compile error if missing case
+}
+```
 
 ## Linting (Biome)
 - `bun run lint` - Check issues

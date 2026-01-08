@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router"
 import { format } from "date-fns"
+import { ptBR } from "date-fns/locale"
 import { Calendar, MapPin, Plus } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -17,13 +18,15 @@ function TripsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold">My Trips</h1>
-          <p className="text-muted-foreground">View and manage all your travel plans</p>
+          <h1 className="text-2xl font-bold">Minhas Viagens</h1>
+          <p className="text-muted-foreground">
+            Visualize e gerencie todos os seus planos de viagem
+          </p>
         </div>
         <Button asChild>
           <Link to="/dashboard/trips/new">
             <Plus className="mr-2 h-4 w-4" />
-            New Trip
+            Nova Viagem
           </Link>
         </Button>
       </div>
@@ -38,13 +41,13 @@ function TripsPage() {
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-16">
             <MapPin className="h-16 w-16 text-muted-foreground mb-4" />
-            <h3 className="text-xl font-medium mb-2">No trips yet</h3>
+            <h3 className="text-xl font-medium mb-2">Nenhuma viagem ainda</h3>
             <p className="text-muted-foreground text-center mb-6 max-w-sm">
-              Create your first trip to start planning your adventure with activities, flights, and
-              more.
+              Crie sua primeira viagem para começar a planejar sua aventura com atividades, voos e
+              muito mais.
             </p>
             <Button asChild size="lg">
-              <Link to="/dashboard/trips/new">Create Your First Trip</Link>
+              <Link to="/dashboard/trips/new">Criar Sua Primeira Viagem</Link>
             </Button>
           </CardContent>
         </Card>
@@ -90,7 +93,7 @@ function TripCard({
                     isOngoing ? "bg-green-500 text-white" : "bg-primary text-primary-foreground"
                   }`}
                 >
-                  {isOngoing ? "Ongoing" : "Upcoming"}
+                  {isOngoing ? "Em andamento" : "Próxima"}
                 </span>
               </div>
             )}
@@ -105,7 +108,7 @@ function TripCard({
                     isOngoing ? "bg-green-500 text-white" : "bg-primary text-primary-foreground"
                   }`}
                 >
-                  {isOngoing ? "Ongoing" : "Upcoming"}
+                  {isOngoing ? "Em andamento" : "Próxima"}
                 </span>
               </div>
             )}
@@ -121,8 +124,8 @@ function TripCard({
         <CardContent>
           <div className="flex items-center gap-1 text-sm text-muted-foreground">
             <Calendar className="h-3 w-3" />
-            {format(new Date(trip.startDate), "MMM d")} -{" "}
-            {format(new Date(trip.endDate), "MMM d, yyyy")}
+            {format(new Date(trip.startDate), "d 'de' MMM", { locale: ptBR })} -{" "}
+            {format(new Date(trip.endDate), "d 'de' MMM, yyyy", { locale: ptBR })}
           </div>
           {trip.description && (
             <p className="mt-2 text-sm text-muted-foreground line-clamp-2">{trip.description}</p>

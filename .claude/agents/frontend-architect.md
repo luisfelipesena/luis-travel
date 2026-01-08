@@ -189,11 +189,13 @@ const tripId = useMemo(() => trip.id, [trip]) // trivial, don't memo
 
 1. **ATOMIC placement** - Is the component in the right folder?
 2. **Component size** - Is it under 200 lines? Should it be split?
-3. **Props interface** - Are props properly typed?
+3. **Props interface** - Are props properly typed? **Use types from @/types**
 4. **Accessibility** - Role, tabIndex, keyboard events, aria labels?
 5. **Nielsen heuristics** - Loading states? Error handling? Consistency?
 6. **DRY** - Is this duplicated elsewhere? Should it be extracted?
 7. **URL state** - Should filter/pagination be in URL (nuqs)?
+8. **Enum usage** - No hardcoded strings, use `TripMemberRole.VIEWER` not `"viewer"`
+9. **Type guards** - Use `isAIGeneratedMetadata()` for metadata narrowing
 
 ## File Naming
 - `trip-card.tsx` - Component file
@@ -207,5 +209,54 @@ const tripId = useMemo(() => trip.id, [trip]) // trivial, don't memo
 2. **No business logic in organisms** - Delegate to services
 3. **No prop drilling** - Use composition or context
 4. **No any types** - Always explicit interfaces
-5. **No hardcoded strings** - Use constants
+5. **No hardcoded strings** - Use constants from `@/types`
 6. **No missing loading/error states** - Always handle both
+
+## TypeScript Typing Guidelines
+
+### Import Types from @/types
+```typescript
+// ✅ CORRECT - Centralized types
+import { TripMemberRole, ActivityType, CalendarView } from "@/types"
+
+if (role === TripMemberRole.VIEWER) { ... }
+```
+
+### Enum Usage in Props
+```typescript
+// ✅ CORRECT - Use enum type
+interface TripCardProps {
+  userRole: TripMemberRole
+  activityType?: ActivityType
+}
+
+// ❌ WRONG - String union duplicates enum
+interface TripCardProps {
+  userRole: "owner" | "editor" | "viewer"
+}
+```
+
+### Type Guards for Metadata
+```typescript
+// ✅ CORRECT - Use provided type guards
+import { isAIGeneratedMetadata, type ActivityMetadata } from "@/types"
+
+function renderActivityBadge(metadata: ActivityMetadata | null) {
+  if (metadata && isAIGeneratedMetadata(metadata)) {
+    return <Badge>{metadata.aiCategory}</Badge>
+  }
+  return null
+}
+```
+
+### Zod Schema Types in Forms
+```typescript
+// ✅ CORRECT - Infer form types from schemas
+import { createTripInputSchema, type CreateTripInput } from "@/types"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+
+const form = useForm<CreateTripInput>({
+  resolver: zodResolver(createTripInputSchema),
+})
+```

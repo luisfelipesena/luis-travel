@@ -19,7 +19,7 @@ export function CalendarToolbar({
     <div className="flex items-center justify-between p-4 border-b">
       <div className="flex items-center gap-2">
         <Button variant="outline" size="sm" onClick={() => onNavigate("today")}>
-          Today
+          Hoje
         </Button>
         <div className="flex items-center">
           <Button variant="ghost" size="icon" onClick={() => onNavigate("prev")}>
@@ -38,21 +38,21 @@ export function CalendarToolbar({
           size="sm"
           onClick={() => onViewChange("day")}
         >
-          Day
+          Dia
         </Button>
         <Button
           variant={view === "week" ? "secondary" : "ghost"}
           size="sm"
           onClick={() => onViewChange("week")}
         >
-          Week
+          Semana
         </Button>
         <Button
           variant={view === "month" ? "secondary" : "ghost"}
           size="sm"
           onClick={() => onViewChange("month")}
         >
-          Month
+          Mês
         </Button>
       </div>
     </div>

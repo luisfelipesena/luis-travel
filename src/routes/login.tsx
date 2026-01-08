@@ -22,7 +22,7 @@ function LoginPage() {
       <div className="w-full max-w-md p-8">
         <SignedIn>
           <div className="text-center">
-            <p>You are already signed in. Redirecting...</p>
+            <p>Você já está logado. Redirecionando...</p>
           </div>
         </SignedIn>
         <AuthView />

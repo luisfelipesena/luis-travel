@@ -40,15 +40,15 @@ export function ActivityFormDialog({
     <Dialog open={open} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>New Activity</DialogTitle>
+          <DialogTitle>Nova Atividade</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit}>
           <div className="grid gap-4 py-4">
             <div className="space-y-2">
-              <Label htmlFor="title">Title</Label>
+              <Label htmlFor="title">Título</Label>
               <Input
                 id="title"
-                placeholder="Activity name"
+                placeholder="Nome da atividade"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 autoFocus
@@ -57,20 +57,20 @@ export function ActivityFormDialog({
             {startTime && endTime && (
               <div className="text-sm text-muted-foreground">
                 <p>
-                  <strong>Start:</strong> {format(startTime, "PPP p")}
+                  <strong>Início:</strong> {format(startTime, "PPP p")}
                 </p>
                 <p>
-                  <strong>End:</strong> {format(endTime, "PPP p")}
+                  <strong>Fim:</strong> {format(endTime, "PPP p")}
                 </p>
               </div>
             )}
           </div>
           <DialogFooter>
             <Button type="button" variant="outline" onClick={onClose}>
-              Cancel
+              Cancelar
             </Button>
             <Button type="submit" disabled={!title.trim()}>
-              Create Activity
+              Criar Atividade
             </Button>
           </DialogFooter>
         </form>

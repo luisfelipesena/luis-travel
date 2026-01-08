@@ -2,6 +2,7 @@ import {
   ACTIVITY_COLORS,
   ActivityType,
   type AIActivityCategory,
+  createAIMetadata,
   DEFAULT_ACTIVITY_COLOR,
   TripMemberRole,
 } from "@/types"
@@ -64,7 +65,7 @@ export class GenerateItineraryUseCase {
       location: s.location,
       type: ActivityType.AI_GENERATED,
       color: this.getColorByCategory(s.category),
-      metadata: { aiCategory: s.category },
+      metadata: createAIMetadata(s.category),
     }))
 
     const addedActivities = await activityService.createManyActivities(

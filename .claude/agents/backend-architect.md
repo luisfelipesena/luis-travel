@@ -130,13 +130,65 @@ throw new Error("Trip not found")
 
 1. Check layer separation - no business logic in repositories
 2. Check router thickness - routers should only call services
-3. Check Zod validation on all inputs
+3. Check Zod validation on all inputs - **must use shared schemas from @/types**
 4. Check proper TRPCError codes
 5. Check that protectedProcedure is used for auth-required routes
 6. Check no direct DB access in routers
+7. Check **no hardcoded enum strings** - use TripMemberRole.VIEWER not "viewer"
+8. Check **typed metadata** - use createAIMetadata() not raw objects
 
 ## File Naming
 - `trip.repository.ts` - Database access
 - `trip.service.ts` - Business logic
 - `invite-member.use-case.ts` - Complex orchestration
 - `trip.router.ts` - tRPC router
+
+## TypeScript Typing Guidelines
+
+### Single Source of Truth
+All types live in `src/types/`. Import via `@/types`.
+
+### Enum Pattern
+```typescript
+// ✅ CORRECT - Use centralized enums
+import { TripMemberRole, ActivityType } from "@/types"
+if (role === TripMemberRole.VIEWER) { ... }
+
+// ❌ WRONG - Hardcoded strings
+if (role === "viewer") { ... }
+```
+
+### Zod Schemas in Routers
+```typescript
+// ✅ CORRECT - Import shared schemas
+import { createTripInputSchema } from "@/types"
+.input(createTripInputSchema)
+
+// ❌ WRONG - Inline z.object duplicates validation
+.input(z.object({ name: z.string()... }))
+```
+
+### Discriminated Unions for Metadata
+```typescript
+// ✅ CORRECT - Use typed metadata factories
+import { createAIMetadata, isAIGeneratedMetadata } from "@/types"
+metadata: createAIMetadata(AIActivityCategory.RESTAURANT)
+
+// Type guard for narrowing
+if (isAIGeneratedMetadata(activity.metadata)) {
+  console.log(activity.metadata.aiCategory)
+}
+
+// ❌ WRONG - Untyped metadata
+metadata: { aiCategory: "restaurant" }
+```
+
+### DB Schema Enums
+```typescript
+// ✅ CORRECT - pgEnum uses centralized values
+import { TripMemberRoleValues } from "@/types"
+export const tripRoleEnum = pgEnum("trip_role", TripMemberRoleValues)
+
+// ❌ WRONG - Duplicates enum values
+pgEnum("trip_role", ["owner", "editor", "viewer"])
+```

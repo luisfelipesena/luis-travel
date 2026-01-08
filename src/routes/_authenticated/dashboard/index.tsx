@@ -23,15 +23,17 @@ function DashboardPage() {
       {/* Welcome Section */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Welcome back, {session?.user.name?.split(" ")[0]}!</h1>
+          <h1 className="text-3xl font-bold">
+            Bem-vindo de volta, {session?.user.name?.split(" ")[0]}!
+          </h1>
           <p className="text-muted-foreground mt-1">
-            Plan your next adventure or manage your existing trips.
+            Planeje sua próxima aventura ou gerencie suas viagens existentes.
           </p>
         </div>
         <Button asChild>
           <Link to="/dashboard/trips/new">
             <Plus className="mr-2 h-4 w-4" />
-            New Trip
+            Nova Viagem
           </Link>
         </Button>
       </div>
@@ -39,19 +41,19 @@ function DashboardPage() {
       {/* Stats */}
       <div className="grid gap-4 md:grid-cols-3">
         <StatsCard
-          title="Total Trips"
+          title="Total de Viagens"
           value={trips?.length || 0}
           icon={<Plane className="h-4 w-4" />}
           loading={isLoading}
         />
         <StatsCard
-          title="Upcoming"
+          title="Próximas"
           value={upcomingTrips?.length || 0}
           icon={<Calendar className="h-4 w-4" />}
           loading={isLoading}
         />
         <StatsCard
-          title="Past Trips"
+          title="Viagens Passadas"
           value={pastTrips?.length || 0}
           icon={<MapPin className="h-4 w-4" />}
           loading={isLoading}
@@ -61,9 +63,9 @@ function DashboardPage() {
       {/* Upcoming Trips */}
       <div>
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-semibold">Upcoming Trips</h2>
+          <h2 className="text-xl font-semibold">Próximas Viagens</h2>
           <Button variant="ghost" asChild>
-            <Link to="/dashboard/trips">View all</Link>
+            <Link to="/dashboard/trips">Ver todas</Link>
           </Button>
         </div>
 
@@ -76,9 +78,9 @@ function DashboardPage() {
         ) : upcomingTrips?.length === 0 ? (
           <EmptyState
             icon={<Plane className="h-12 w-12" />}
-            title="No upcoming trips"
-            description="Start planning your next adventure!"
-            action={{ label: "Create a Trip", href: "/dashboard/trips/new" }}
+            title="Nenhuma viagem próxima"
+            description="Comece a planejar sua próxima aventura!"
+            action={{ label: "Criar Viagem", href: "/dashboard/trips/new" }}
           />
         ) : (
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">

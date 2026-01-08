@@ -1,5 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router"
 import { format } from "date-fns"
+import { ptBR } from "date-fns/locale"
 import { ArrowLeft, CalendarIcon } from "lucide-react"
 import { useState } from "react"
 import { toast } from "sonner"
@@ -27,11 +28,11 @@ function NewTripPage() {
 
   const createTrip = trpc.trip.create.useMutation({
     onSuccess: (trip) => {
-      toast.success("Trip created successfully!")
+      toast.success("Viagem criada com sucesso!")
       navigate({ to: `/dashboard/trips/${trip.id}` })
     },
     onError: (error) => {
-      toast.error(error.message || "Failed to create trip")
+      toast.error(error.message || "Erro ao criar viagem")
     },
   })
 
@@ -39,12 +40,12 @@ function NewTripPage() {
     e.preventDefault()
 
     if (!name || !destination || !startDate || !endDate) {
-      toast.error("Please fill in all required fields")
+      toast.error("Por favor, preencha todos os campos obrigatórios")
       return
     }
 
     if (startDate >= endDate) {
-      toast.error("End date must be after start date")
+      toast.error("A data de término deve ser após a data de início")
       return
     }
 
@@ -66,23 +67,23 @@ function NewTripPage() {
           </Link>
         </Button>
         <div>
-          <h1 className="text-2xl font-bold">Create New Trip</h1>
-          <p className="text-muted-foreground">Start planning your next adventure</p>
+          <h1 className="text-2xl font-bold">Criar Nova Viagem</h1>
+          <p className="text-muted-foreground">Comece a planejar sua próxima aventura</p>
         </div>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>Trip Details</CardTitle>
-          <CardDescription>Enter the basic information about your trip</CardDescription>
+          <CardTitle>Detalhes da Viagem</CardTitle>
+          <CardDescription>Insira as informações básicas sobre sua viagem</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-2">
-              <Label htmlFor="name">Trip Name *</Label>
+              <Label htmlFor="name">Nome da Viagem *</Label>
               <Input
                 id="name"
-                placeholder="Summer Vacation 2025"
+                placeholder="Férias de Verão 2025"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 required
@@ -90,10 +91,10 @@ function NewTripPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="destination">Destination *</Label>
+              <Label htmlFor="destination">Destino *</Label>
               <Input
                 id="destination"
-                placeholder="Paris, France"
+                placeholder="Rio de Janeiro, Brasil"
                 value={destination}
                 onChange={(e) => setDestination(e.target.value)}
                 required
@@ -102,7 +103,7 @@ function NewTripPage() {
 
             <div className="grid gap-4 md:grid-cols-2">
               <div className="space-y-2">
-                <Label>Start Date *</Label>
+                <Label>Data de Início *</Label>
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button
@@ -113,7 +114,9 @@ function NewTripPage() {
                       )}
                     >
                       <CalendarIcon className="mr-2 h-4 w-4" />
-                      {startDate ? format(startDate, "PPP") : "Pick a date"}
+                      {startDate
+                        ? format(startDate, "d 'de' MMMM, yyyy", { locale: ptBR })
+                        : "Selecione uma data"}
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0" align="start">
@@ -122,6 +125,7 @@ function NewTripPage() {
                       selected={startDate}
                       onSelect={setStartDate}
                       disabled={(date) => date < new Date()}
+                      locale={ptBR}
                       initialFocus
                     />
                   </PopoverContent>
@@ -129,7 +133,7 @@ function NewTripPage() {
               </div>
 
               <div className="space-y-2">
-                <Label>End Date *</Label>
+                <Label>Data de Término *</Label>
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button
@@ -140,7 +144,9 @@ function NewTripPage() {
                       )}
                     >
                       <CalendarIcon className="mr-2 h-4 w-4" />
-                      {endDate ? format(endDate, "PPP") : "Pick a date"}
+                      {endDate
+                        ? format(endDate, "d 'de' MMMM, yyyy", { locale: ptBR })
+                        : "Selecione uma data"}
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0" align="start">
@@ -151,6 +157,7 @@ function NewTripPage() {
                       disabled={(date) =>
                         date < new Date() || Boolean(startDate && date <= startDate)
                       }
+                      locale={ptBR}
                       initialFocus
                     />
                   </PopoverContent>
@@ -159,10 +166,10 @@ function NewTripPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="description">Description</Label>
+              <Label htmlFor="description">Descrição</Label>
               <Textarea
                 id="description"
-                placeholder="Add notes about your trip..."
+                placeholder="Adicione notas sobre sua viagem..."
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 rows={4}
@@ -175,10 +182,10 @@ function NewTripPage() {
                 variant="outline"
                 onClick={() => navigate({ to: "/dashboard/trips" })}
               >
-                Cancel
+                Cancelar
               </Button>
               <Button type="submit" disabled={createTrip.isPending}>
-                {createTrip.isPending ? "Creating..." : "Create Trip"}
+                {createTrip.isPending ? "Criando..." : "Criar Viagem"}
               </Button>
             </div>
           </form>

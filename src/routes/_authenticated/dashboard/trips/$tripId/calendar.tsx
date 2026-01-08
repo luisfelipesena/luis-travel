@@ -42,9 +42,9 @@ function TripCalendarPage() {
   if (!trip) {
     return (
       <div className="text-center py-16">
-        <p>Trip not found</p>
+        <p>Viagem não encontrada</p>
         <Button asChild className="mt-4">
-          <Link to="/dashboard/trips">Back to Trips</Link>
+          <Link to="/dashboard/trips">Voltar para Viagens</Link>
         </Button>
       </div>
     )
@@ -72,7 +72,7 @@ function TripCalendarPage() {
           </Link>
         </Button>
         <div>
-          <h1 className="text-2xl font-bold">{trip.name} - Calendar</h1>
+          <h1 className="text-2xl font-bold">{trip.name} - Calendário</h1>
           <p className="text-muted-foreground">{trip.destination}</p>
         </div>
       </div>

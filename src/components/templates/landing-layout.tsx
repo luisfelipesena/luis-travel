@@ -19,15 +19,15 @@ export function LandingLayout({ isAuthenticated, children }: LandingLayoutProps)
           <nav className="flex items-center gap-4">
             {isAuthenticated ? (
               <Button asChild>
-                <Link to="/dashboard">Go to Dashboard</Link>
+                <Link to="/dashboard">Ir para o Painel</Link>
               </Button>
             ) : (
               <>
                 <Button variant="ghost" asChild>
-                  <Link to="/login">Sign In</Link>
+                  <Link to="/login">Entrar</Link>
                 </Button>
                 <Button asChild>
-                  <Link to="/register">Get Started</Link>
+                  <Link to="/register">Começar</Link>
                 </Button>
               </>
             )}
@@ -39,7 +39,7 @@ export function LandingLayout({ isAuthenticated, children }: LandingLayoutProps)
 
       <footer className="border-t py-8">
         <div className="container text-center text-sm text-muted-foreground">
-          <p>&copy; 2025 Luis Travel. All rights reserved.</p>
+          <p>&copy; 2025 Luis Travel. Todos os direitos reservados.</p>
         </div>
       </footer>
     </div>

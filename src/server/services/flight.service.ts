@@ -1,4 +1,4 @@
-import { TripMemberRole } from "@/types"
+import { createFlightExternalData, TripMemberRole } from "@/types"
 import type { Flight, NewFlight } from "../db/schema"
 import { type AviationstackFlight, aviationstackClient } from "../external/aviationstack"
 import { flightRepository } from "../repositories/flight.repository"
@@ -64,7 +64,7 @@ export class FlightService {
       departureTime: new Date(flightData.departure.scheduled),
       arrivalTime: new Date(flightData.arrival.scheduled),
       status: flightData.flight_status,
-      externalData: flightData as unknown as Record<string, unknown>,
+      externalData: createFlightExternalData(flightData),
     })
   }
 
@@ -91,7 +91,7 @@ export class FlightService {
       status: flightData.flight_status,
       departureTime: new Date(flightData.departure.scheduled),
       arrivalTime: new Date(flightData.arrival.scheduled),
-      externalData: flightData as unknown as Record<string, unknown>,
+      externalData: createFlightExternalData(flightData),
     })
   }
 

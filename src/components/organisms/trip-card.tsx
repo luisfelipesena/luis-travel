@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router"
 import { format } from "date-fns"
+import { ptBR } from "date-fns/locale"
 import { MapPin } from "lucide-react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 
@@ -36,8 +37,8 @@ export function TripCard({ trip }: TripCardProps) {
           </CardDescription>
         </CardHeader>
         <CardContent className="text-sm text-muted-foreground">
-          {format(new Date(trip.startDate), "MMM d")} -{" "}
-          {format(new Date(trip.endDate), "MMM d, yyyy")}
+          {format(new Date(trip.startDate), "d 'de' MMM", { locale: ptBR })} -{" "}
+          {format(new Date(trip.endDate), "d 'de' MMM, yyyy", { locale: ptBR })}
         </CardContent>
       </Link>
     </Card>

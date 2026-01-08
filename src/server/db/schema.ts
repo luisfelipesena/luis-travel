@@ -9,6 +9,13 @@ import {
   uuid,
   varchar,
 } from "drizzle-orm/pg-core"
+import {
+  type ActivityMetadata,
+  ActivityTypeValues,
+  type FlightExternalData,
+  InvitationStatusValues,
+  TripMemberRoleValues,
+} from "@/types"
 
 // ============================================================================
 // Better Auth Tables
@@ -68,7 +75,7 @@ export const verification = pgTable("verification", {
 // Trip Domain
 // ============================================================================
 
-export const tripRoleEnum = pgEnum("trip_role", ["owner", "editor", "viewer"])
+export const tripRoleEnum = pgEnum("trip_role", TripMemberRoleValues)
 
 export const trip = pgTable("trip", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -101,12 +108,7 @@ export const tripMember = pgTable("trip_member", {
 // Invitation Domain
 // ============================================================================
 
-export const invitationStatusEnum = pgEnum("invitation_status", [
-  "pending",
-  "accepted",
-  "declined",
-  "expired",
-])
+export const invitationStatusEnum = pgEnum("invitation_status", InvitationStatusValues)
 
 export const invitation = pgTable("invitation", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -128,7 +130,7 @@ export const invitation = pgTable("invitation", {
 // Activity Domain
 // ============================================================================
 
-export const activityTypeEnum = pgEnum("activity_type", ["default", "ai_generated", "custom"])
+export const activityTypeEnum = pgEnum("activity_type", ActivityTypeValues)
 
 export const activity = pgTable("activity", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -143,7 +145,7 @@ export const activity = pgTable("activity", {
   location: varchar("location", { length: 255 }),
   imageUrl: text("image_url"),
   color: varchar("color", { length: 7 }).default("#3b82f6"),
-  metadata: jsonb("metadata").$type<Record<string, unknown>>(),
+  metadata: jsonb("metadata").$type<ActivityMetadata>(),
   createdBy: uuid("created_by")
     .notNull()
     .references(() => user.id),
@@ -167,7 +169,7 @@ export const flight = pgTable("flight", {
   departureTime: timestamp("departure_time").notNull(),
   arrivalTime: timestamp("arrival_time").notNull(),
   status: varchar("status", { length: 50 }),
-  externalData: jsonb("external_data").$type<Record<string, unknown>>(),
+  externalData: jsonb("external_data").$type<FlightExternalData>(),
   createdBy: uuid("created_by")
     .notNull()
     .references(() => user.id),
