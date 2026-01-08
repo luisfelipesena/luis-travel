@@ -114,9 +114,8 @@ export class NominatimClient {
       q: query,
       format: "json",
       addressdetails: "1",
-      limit: String(Math.min(limit * 2, 20)), // Fetch more to filter
-      featuretype: "city", // Focus on cities
-      "accept-language": "en,pt-BR", // Prefer English, fallback to Portuguese
+      limit: String(Math.min(limit * 3, 30)), // Fetch more to filter
+      "accept-language": "pt-BR,en", // Prefer Portuguese, fallback to English
     })
 
     const url = `${BASE_URL}/search?${params.toString()}`
@@ -135,8 +134,24 @@ export class NominatimClient {
     const data: NominatimPlace[] = await response.json()
 
     // Filter to only include places that are likely cities/towns
-    const cityPlaces = data.filter((place) =>
-      ["city", "town", "village", "municipality", "administrative"].includes(place.type)
+    const cityTypes = [
+      "city",
+      "town",
+      "village",
+      "municipality",
+      "administrative",
+      "state",
+      "county",
+      "region",
+      "province",
+      "district",
+    ]
+    const cityPlaces = data.filter(
+      (place) =>
+        cityTypes.includes(place.type) ||
+        place.addresstype === "city" ||
+        place.addresstype === "town" ||
+        place.class === "place"
     )
 
     this.setCachedResult(cacheKey, cityPlaces)

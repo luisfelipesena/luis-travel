@@ -1,15 +1,6 @@
-import { Check, ChevronsUpDown, Loader2, MapPin } from "lucide-react"
-import { useEffect, useState } from "react"
-import { Button } from "@/components/ui/button"
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { Check, Loader2, MapPin, X } from "lucide-react"
+import { useEffect, useRef, useState } from "react"
+import { Input } from "@/components/ui/input"
 import { trpc } from "@/lib/trpc"
 import { cn } from "@/lib/utils"
 
@@ -40,21 +31,33 @@ export function CitySearchCombobox({
   const [open, setOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
   const [debouncedQuery, setDebouncedQuery] = useState("")
+  const inputRef = useRef<HTMLInputElement>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
 
   // Debounce the search query
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedQuery(searchQuery)
     }, 300)
-
     return () => clearTimeout(timer)
   }, [searchQuery])
+
+  // Close dropdown on click outside
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setOpen(false)
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside)
+    return () => document.removeEventListener("mousedown", handleClickOutside)
+  }, [])
 
   const { data: cities, isLoading } = trpc.geo.searchCities.useQuery(
     { query: debouncedQuery, limit: 8 },
     {
       enabled: debouncedQuery.length >= 2,
-      staleTime: 1000 * 60 * 5, // 5 minutes
+      staleTime: 1000 * 60 * 5,
     }
   )
 
@@ -71,100 +74,110 @@ export function CitySearchCombobox({
     setSearchQuery("")
   }
 
-  const handleClear = () => {
+  const handleClear = (e: React.MouseEvent) => {
+    e.stopPropagation()
     onChange(null)
     setSearchQuery("")
+    inputRef.current?.focus()
+  }
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value)
+    if (!open) setOpen(true)
+  }
+
+  const handleFocus = () => {
+    if (searchQuery.length >= 2 || !value) {
+      setOpen(true)
+    }
   }
 
   const displayValue = value ? `${value.name}${value.country ? `, ${value.country}` : ""}` : ""
+  const showDropdown = open && (searchQuery.length >= 2 || isLoading)
+  const hasResults = cities && cities.length > 0
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <Button
-          variant="outline"
-          aria-expanded={open}
-          className={cn("w-full justify-between", !value && "text-muted-foreground", className)}
+    <div ref={containerRef} className={cn("relative", className)}>
+      <div className="relative">
+        <MapPin className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+        <Input
+          ref={inputRef}
+          type="text"
+          placeholder={placeholder}
+          value={value ? displayValue : searchQuery}
+          onChange={handleInputChange}
+          onFocus={handleFocus}
           disabled={disabled}
-        >
-          <div className="flex items-center gap-2 truncate">
-            <MapPin className="h-4 w-4 shrink-0" />
-            <span className="truncate">{displayValue || placeholder}</span>
-          </div>
-          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start">
-        <Command shouldFilter={false}>
-          <CommandInput
-            placeholder="Digite o nome da cidade..."
-            value={searchQuery}
-            onValueChange={setSearchQuery}
-          />
-          <CommandList>
-            {isLoading && debouncedQuery.length >= 2 && (
-              <div className="flex items-center justify-center gap-2 py-6 text-sm text-muted-foreground">
-                <Loader2 className="h-4 w-4 animate-spin" />
-                Buscando cidades...
-              </div>
-            )}
-
-            {!isLoading && debouncedQuery.length >= 2 && cities?.length === 0 && (
-              <CommandEmpty>Nenhuma cidade encontrada.</CommandEmpty>
-            )}
-
-            {!isLoading && debouncedQuery.length < 2 && (
-              <div className="py-6 text-center text-sm text-muted-foreground">
-                Digite pelo menos 2 caracteres para buscar
-              </div>
-            )}
-
-            {cities && cities.length > 0 && (
-              <CommandGroup heading="Cidades">
-                {cities.map((city) => (
-                  <CommandItem
-                    key={city.placeId}
-                    value={String(city.placeId)}
-                    onSelect={() => handleSelect(city)}
-                    className="flex items-center gap-2"
-                  >
-                    <MapPin className="h-4 w-4 text-muted-foreground" />
-                    <div className="flex flex-col">
-                      <span className="font-medium">
-                        {city.name}
-                        {city.countryCode && (
-                          <span className="ml-1 text-xs text-muted-foreground">
-                            {city.countryCode}
-                          </span>
-                        )}
-                      </span>
-                      <span className="text-xs text-muted-foreground line-clamp-1">
-                        {city.displayName}
-                      </span>
-                    </div>
-                    <Check
-                      className={cn(
-                        "ml-auto h-4 w-4",
-                        value?.lat === city.lat && value?.lng === city.lng
-                          ? "opacity-100"
-                          : "opacity-0"
-                      )}
-                    />
-                  </CommandItem>
-                ))}
-              </CommandGroup>
-            )}
-          </CommandList>
-        </Command>
-
+          className={cn(
+            "pl-9 pr-8",
+            value && "text-foreground"
+          )}
+          readOnly={!!value}
+          onClick={() => !value && setOpen(true)}
+        />
         {value && (
-          <div className="border-t p-2">
-            <Button variant="ghost" size="sm" className="w-full" onClick={handleClear}>
-              Limpar seleção
-            </Button>
-          </div>
+          <button
+            type="button"
+            onClick={handleClear}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+          >
+            <X className="h-4 w-4" />
+          </button>
         )}
-      </PopoverContent>
-    </Popover>
+      </div>
+
+      {showDropdown && (
+        <div className="absolute z-50 mt-1 w-full rounded-md border bg-popover shadow-lg">
+          {isLoading && (
+            <div className="flex items-center gap-2 px-3 py-3 text-sm text-muted-foreground">
+              <Loader2 className="h-4 w-4 animate-spin" />
+              Buscando...
+            </div>
+          )}
+
+          {!isLoading && !hasResults && debouncedQuery.length >= 2 && (
+            <div className="px-3 py-3 text-sm text-muted-foreground">
+              Nenhuma cidade encontrada
+            </div>
+          )}
+
+          {hasResults && (
+            <ul className="max-h-60 overflow-auto py-1">
+              {cities.map((city) => {
+                const isSelected = value?.lat === city.lat && value?.lng === city.lng
+                return (
+                  <li key={city.placeId}>
+                    <button
+                      type="button"
+                      onClick={() => handleSelect(city)}
+                      className={cn(
+                        "flex w-full items-center gap-3 px-3 py-2 text-left text-sm hover:bg-accent",
+                        isSelected && "bg-accent"
+                      )}
+                    >
+                      <MapPin className="h-4 w-4 shrink-0 text-muted-foreground" />
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center gap-1.5">
+                          <span className="font-medium truncate">{city.name}</span>
+                          {city.countryCode && (
+                            <span className="shrink-0 rounded bg-muted px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground">
+                              {city.countryCode}
+                            </span>
+                          )}
+                        </div>
+                        <p className="truncate text-xs text-muted-foreground">
+                          {city.displayName}
+                        </p>
+                      </div>
+                      {isSelected && <Check className="h-4 w-4 shrink-0 text-primary" />}
+                    </button>
+                  </li>
+                )
+              })}
+            </ul>
+          )}
+        </div>
+      )}
+    </div>
   )
 }
