@@ -1,17 +1,17 @@
 import { createFileRoute, Link } from "@tanstack/react-router"
 import { Calendar, Plane, Sparkles, Users } from "lucide-react"
+import { authClient } from "@/auth"
 import { FeatureCard } from "@/components/molecules"
 import { LandingLayout } from "@/components/templates"
 import { Button } from "@/components/ui/button"
-import { useSession } from "@/lib/auth-client"
 
 export const Route = createFileRoute("/")({
   component: LandingPage,
 })
 
 function LandingPage() {
-  const { data: session } = useSession()
-  const isAuthenticated = !!session
+  const { data: session } = authClient.useSession()
+  const isAuthenticated = !!session?.user
 
   return (
     <LandingLayout isAuthenticated={isAuthenticated}>

@@ -1,3 +1,4 @@
+import { TripMemberRole } from "@/types"
 import type { Flight, NewFlight } from "../db/schema"
 import { type AviationstackFlight, aviationstackClient } from "../external/aviationstack"
 import { flightRepository } from "../repositories/flight.repository"
@@ -25,7 +26,7 @@ export class FlightService {
   ): Promise<Flight> {
     const role = await tripRepository.getUserRole(tripId, userId)
 
-    if (!role || role === "viewer") {
+    if (!role || role === TripMemberRole.VIEWER) {
       throw new Error("Access denied")
     }
 
@@ -43,7 +44,7 @@ export class FlightService {
   ): Promise<Flight> {
     const role = await tripRepository.getUserRole(tripId, userId)
 
-    if (!role || role === "viewer") {
+    if (!role || role === TripMemberRole.VIEWER) {
       throw new Error("Access denied")
     }
 
@@ -103,7 +104,7 @@ export class FlightService {
 
     const role = await tripRepository.getUserRole(flight.tripId, userId)
 
-    if (!role || role === "viewer") {
+    if (!role || role === TripMemberRole.VIEWER) {
       throw new Error("Access denied")
     }
 

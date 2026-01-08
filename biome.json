@@ -65,7 +65,9 @@
       "!.output",
       "!*.min.js",
       "!bun.lock",
-      "!**/*.css"
+      "!**/*.css",
+      "!**/routeTree.gen.ts",
+      "!**/migrations"
     ]
   }
 }

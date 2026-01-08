@@ -17,7 +17,7 @@ interface TripCardProps {
 export function TripCard({ trip }: TripCardProps) {
   return (
     <Card className="overflow-hidden hover:shadow-md transition-shadow">
-      <Link to={`/dashboard/trips/${trip.id}`}>
+      <Link to="/dashboard/trips/$tripId" params={{ tripId: trip.id }}>
         {trip.coverImage ? (
           <div
             className="h-32 bg-cover bg-center"

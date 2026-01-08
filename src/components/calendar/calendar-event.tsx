@@ -9,7 +9,12 @@ interface CalendarEventProps {
   compact?: boolean
 }
 
-export function CalendarEvent({ activity, style, onUpdate, compact }: CalendarEventProps) {
+export function CalendarEvent({
+  activity,
+  style,
+  onUpdate: _onUpdate,
+  compact,
+}: CalendarEventProps) {
   const startTime = new Date(activity.startTime)
   const endTime = new Date(activity.endTime)
 

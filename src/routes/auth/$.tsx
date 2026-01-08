@@ -3,11 +3,11 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router"
 import { useEffect } from "react"
 import { authClient } from "@/auth"
 
-export const Route = createFileRoute("/login")({
-  component: LoginPage,
+export const Route = createFileRoute("/auth/$")({
+  component: AuthPage,
 })
 
-function LoginPage() {
+function AuthPage() {
   const navigate = useNavigate()
   const { data: session } = authClient.useSession()
 

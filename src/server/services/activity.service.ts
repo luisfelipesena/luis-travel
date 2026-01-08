@@ -1,3 +1,4 @@
+import { TripMemberRole } from "@/types"
 import type { Activity, NewActivity } from "../db/schema"
 import { activityRepository } from "../repositories/activity.repository"
 import { tripRepository } from "../repositories/trip.repository"
@@ -35,7 +36,7 @@ export class ActivityService {
   ): Promise<Activity> {
     const role = await tripRepository.getUserRole(tripId, userId)
 
-    if (!role || role === "viewer") {
+    if (!role || role === TripMemberRole.VIEWER) {
       throw new Error("Access denied")
     }
 
@@ -55,7 +56,7 @@ export class ActivityService {
   ): Promise<Activity[]> {
     const role = await tripRepository.getUserRole(tripId, userId)
 
-    if (!role || role === "viewer") {
+    if (!role || role === TripMemberRole.VIEWER) {
       throw new Error("Access denied")
     }
 
@@ -85,7 +86,7 @@ export class ActivityService {
 
     const role = await tripRepository.getUserRole(activity.tripId, userId)
 
-    if (!role || role === "viewer") {
+    if (!role || role === TripMemberRole.VIEWER) {
       throw new Error("Access denied")
     }
 
@@ -110,7 +111,7 @@ export class ActivityService {
 
     const role = await tripRepository.getUserRole(activity.tripId, userId)
 
-    if (!role || role === "viewer") {
+    if (!role || role === TripMemberRole.VIEWER) {
       throw new Error("Access denied")
     }
 
@@ -128,7 +129,7 @@ export class ActivityService {
 
     const role = await tripRepository.getUserRole(activity.tripId, userId)
 
-    if (!role || role === "viewer") {
+    if (!role || role === TripMemberRole.VIEWER) {
       throw new Error("Access denied")
     }
 

@@ -1,4 +1,12 @@
+import {
+  ACTIVITY_COLORS,
+  ActivityType,
+  type AIActivityCategory,
+  DEFAULT_ACTIVITY_COLOR,
+  TripMemberRole,
+} from "@/types"
 import type { Activity } from "../db/schema"
+import { createRequestLogger } from "../lib/logger"
 import { tripRepository } from "../repositories/trip.repository"
 import { activityService } from "../services/activity.service"
 import { aiService } from "../services/ai.service"
@@ -10,31 +18,41 @@ interface GenerateItineraryParams {
   autoAdd?: boolean
 }
 
+interface AISuggestion {
+  title: string
+  description: string
+  suggestedStartTime: string
+  durationMinutes: number
+  location: string
+  category: AIActivityCategory
+}
+
 interface GenerateItineraryResult {
-  suggestions: {
-    title: string
-    description: string
-    suggestedStartTime: string
-    durationMinutes: number
-    location: string
-    type: string
-  }[]
+  suggestions: AISuggestion[]
   addedActivities?: Activity[]
 }
 
 export class GenerateItineraryUseCase {
   async execute(params: GenerateItineraryParams): Promise<GenerateItineraryResult> {
+    const log = createRequestLogger("GenerateItinerary")
     const { tripId, userId, preferences, autoAdd } = params
+
+    log.info({ tripId, userId, autoAdd }, "Generating itinerary")
 
     const role = await tripRepository.getUserRole(tripId, userId)
 
-    if (!role || role === "viewer") {
+    if (!role || role === TripMemberRole.VIEWER) {
+      log.warn({ tripId, userId, role }, "Access denied for itinerary generation")
       throw new Error("Access denied")
     }
 
     const suggestions = await aiService.generateActivitySuggestions(tripId, userId, preferences)
 
     if (!autoAdd) {
+      log.info(
+        { tripId, suggestionsCount: suggestions.length },
+        "Returning suggestions without adding"
+      )
       return { suggestions }
     }
 
@@ -44,9 +62,9 @@ export class GenerateItineraryUseCase {
       startTime: new Date(s.suggestedStartTime),
       endTime: new Date(new Date(s.suggestedStartTime).getTime() + s.durationMinutes * 60000),
       location: s.location,
-      type: "ai_generated" as const,
-      color: this.getColorByType(s.type),
-      metadata: { aiType: s.type },
+      type: ActivityType.AI_GENERATED,
+      color: this.getColorByCategory(s.category),
+      metadata: { aiCategory: s.category },
     }))
 
     const addedActivities = await activityService.createManyActivities(
@@ -55,17 +73,13 @@ export class GenerateItineraryUseCase {
       activitiesToCreate
     )
 
+    log.info({ tripId, addedCount: addedActivities.length }, "Activities added successfully")
+
     return { suggestions, addedActivities }
   }
 
-  private getColorByType(type: string): string {
-    const colors: Record<string, string> = {
-      attraction: "#3b82f6",
-      restaurant: "#f97316",
-      activity: "#10b981",
-      transport: "#8b5cf6",
-    }
-    return colors[type] || "#6b7280"
+  private getColorByCategory(category: AIActivityCategory): string {
+    return ACTIVITY_COLORS[category] || DEFAULT_ACTIVITY_COLOR
   }
 }
 

@@ -1,10 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router"
 import { Calendar, MapPin, Plane, Plus } from "lucide-react"
+import { authClient } from "@/auth"
 import { StatsCard } from "@/components/molecules"
 import { EmptyState, TripCard } from "@/components/organisms"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
-import { useSession } from "@/lib/auth-client"
 import { trpc } from "@/lib/trpc"
 
 export const Route = createFileRoute("/_authenticated/dashboard/")({
@@ -12,7 +12,7 @@ export const Route = createFileRoute("/_authenticated/dashboard/")({
 })
 
 function DashboardPage() {
-  const { data: session } = useSession()
+  const { data: session } = authClient.useSession()
   const { data: trips, isLoading } = trpc.trip.list.useQuery()
 
   const upcomingTrips = trips?.filter((trip) => new Date(trip.startDate) > new Date())

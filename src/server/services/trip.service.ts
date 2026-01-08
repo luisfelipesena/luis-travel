@@ -1,3 +1,4 @@
+import { TripMemberRole } from "@/types"
 import type { NewTrip, Trip } from "../db/schema"
 import { tripRepository } from "../repositories/trip.repository"
 
@@ -39,7 +40,7 @@ export class TripService {
   ): Promise<Trip> {
     const role = await tripRepository.getUserRole(tripId, userId)
 
-    if (!role || role === "viewer") {
+    if (!role || role === TripMemberRole.VIEWER) {
       throw new Error("Access denied")
     }
 
@@ -66,7 +67,7 @@ export class TripService {
 
   async checkUserCanEdit(tripId: string, userId: string): Promise<boolean> {
     const role = await tripRepository.getUserRole(tripId, userId)
-    return role === "owner" || role === "editor"
+    return role === TripMemberRole.OWNER || role === TripMemberRole.EDITOR
   }
 }
 

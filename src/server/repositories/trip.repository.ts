@@ -1,4 +1,5 @@
 import { and, eq } from "drizzle-orm"
+import { TripMemberRole } from "@/types"
 import { db } from "../db"
 import { type NewTrip, type Trip, trip, tripMember } from "../db/schema"
 
@@ -80,19 +81,19 @@ export class TripRepository {
     return !!membership
   }
 
-  async getUserRole(tripId: string, userId: string): Promise<"owner" | "editor" | "viewer" | null> {
+  async getUserRole(tripId: string, userId: string): Promise<TripMemberRole | null> {
     const tripData = await db.query.trip.findFirst({
       where: eq(trip.id, tripId),
     })
 
     if (!tripData) return null
-    if (tripData.ownerId === userId) return "owner"
+    if (tripData.ownerId === userId) return TripMemberRole.OWNER
 
     const membership = await db.query.tripMember.findFirst({
       where: and(eq(tripMember.tripId, tripId), eq(tripMember.userId, userId)),
     })
 
-    return membership?.role || null
+    return (membership?.role as TripMemberRole) || null
   }
 }
 

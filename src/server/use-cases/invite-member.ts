@@ -1,49 +1,55 @@
 import { addDays } from "date-fns"
 import { nanoid } from "nanoid"
+import { InvitationStatus, TripMemberRole } from "@/types"
 import type { Invitation } from "../db/schema"
+import { createRequestLogger } from "../lib/logger"
 import { invitationRepository } from "../repositories/invitation.repository"
 import { tripRepository } from "../repositories/trip.repository"
 
 interface InviteMemberParams {
   tripId: string
   invitedEmail: string
-  role: "editor" | "viewer"
+  role: typeof TripMemberRole.EDITOR | typeof TripMemberRole.VIEWER
   invitedBy: string
 }
 
 export class InviteMemberUseCase {
   async execute(params: InviteMemberParams): Promise<Invitation> {
+    const log = createRequestLogger("InviteMember")
     const { tripId, invitedEmail, role, invitedBy } = params
+
+    log.info({ tripId, invitedEmail, role }, "Processing invitation")
 
     const trip = await tripRepository.findById(tripId)
 
     if (!trip) {
+      log.warn({ tripId }, "Trip not found")
       throw new Error("Trip not found")
     }
 
     const userRole = await tripRepository.getUserRole(tripId, invitedBy)
 
-    if (userRole !== "owner") {
+    if (userRole !== TripMemberRole.OWNER) {
+      log.warn({ tripId, invitedBy, userRole }, "Only owner can invite")
       throw new Error("Only trip owner can invite members")
-    }
-
-    if (invitedEmail.toLowerCase() === trip.owner?.email?.toLowerCase()) {
-      throw new Error("Cannot invite the trip owner")
     }
 
     const existingInvitations = await invitationRepository.findByTripId(tripId)
     const pendingInvite = existingInvitations.find(
-      (i) => i.invitedEmail.toLowerCase() === invitedEmail.toLowerCase() && i.status === "pending"
+      (i) =>
+        i.invitedEmail.toLowerCase() === invitedEmail.toLowerCase() &&
+        i.status === InvitationStatus.PENDING
     )
 
     if (pendingInvite) {
+      log.warn({ tripId, invitedEmail }, "Pending invitation already exists")
       throw new Error("User already has a pending invitation")
     }
 
     const token = nanoid(32)
     const expiresAt = addDays(new Date(), 7)
 
-    return invitationRepository.create({
+    const invitation = await invitationRepository.create({
       tripId,
       invitedEmail,
       role,
@@ -51,6 +57,10 @@ export class InviteMemberUseCase {
       token,
       expiresAt,
     })
+
+    log.info({ tripId, invitationId: invitation.id }, "Invitation created successfully")
+
+    return invitation
   }
 }
 

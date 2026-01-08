@@ -14,9 +14,11 @@
 ## Architecture (DDD)
 ```
 src/
+├── auth.ts           # Neon Auth client
+├── types/            # TypeScript enums and types
 ├── server/
 │   ├── db/           # Schema + migrations + db client
-│   ├── auth/         # Better Auth config
+│   ├── lib/          # Server utilities (logger)
 │   ├── external/     # Third-party API clients
 │   ├── repositories/ # DB access only
 │   ├── services/     # Business logic
@@ -24,8 +26,10 @@ src/
 │   └── trpc/         # API routers
 ├── components/
 │   ├── ui/           # Shadcn components
-│   ├── layout/       # App shell components
-│   └── {feature}/    # Feature-specific components
+│   ├── atoms/        # Basic building blocks
+│   ├── molecules/    # Atom combinations
+│   ├── organisms/    # Complex components
+│   └── templates/    # Page layouts
 ├── routes/           # TanStack Router pages
 └── lib/              # Shared utilities
 ```
@@ -63,10 +67,11 @@ src/
 - Repository pattern for all DB access
 - JSONB for flexible metadata fields
 
-## Auth Flow
-- Better Auth handles `/api/auth/*` routes
-- Session extracted in tRPC context
-- Route guards via TanStack Router beforeLoad
+## Auth Flow (Neon Auth)
+- Neon Auth handles authentication via `@neondatabase/neon-js`
+- NeonAuthUIProvider wraps app in `__root.tsx`
+- SignedIn/RedirectToSignIn components for protected routes
+- Session parsed from cookies in tRPC context
 - User data from `ctx.user` in procedures
 
 ## Calendar Implementation
@@ -96,6 +101,23 @@ src/
 - Prefer explicit types over inference for function params
 - No `any` types
 - Handle errors explicitly
+
+## TypeScript Typing (CRITICAL)
+- **NEVER use hardcoded strings** for enums/constants
+- Use const objects as enums pattern from `@/types`:
+  ```typescript
+  import { TripMemberRole, InvitationStatus, ActivityType } from "@/types"
+
+  // Good:
+  role === TripMemberRole.VIEWER
+  status === InvitationStatus.PENDING
+
+  // Bad:
+  role === "viewer"
+  status === "pending"
+  ```
+- All type definitions live in `src/types/index.ts`
+- Export both const object and type (same name)
 
 ## Linting (Biome)
 - `bun run lint` - Check issues

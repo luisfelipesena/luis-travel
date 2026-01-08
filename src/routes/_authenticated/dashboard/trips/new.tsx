@@ -148,7 +148,9 @@ function NewTripPage() {
                       mode="single"
                       selected={endDate}
                       onSelect={setEndDate}
-                      disabled={(date) => date < new Date() || (startDate && date <= startDate)}
+                      disabled={(date) =>
+                        date < new Date() || Boolean(startDate && date <= startDate)
+                      }
                       initialFocus
                     />
                   </PopoverContent>

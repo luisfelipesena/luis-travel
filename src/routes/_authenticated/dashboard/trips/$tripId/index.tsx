@@ -76,7 +76,7 @@ function TripDetailPage() {
           </div>
         </div>
         <Button variant="outline" asChild>
-          <Link to={`/dashboard/trips/${tripId}/settings`}>
+          <Link to="/dashboard/trips/$tripId" params={{ tripId }}>
             <Settings className="h-4 w-4 mr-2" />
             Settings
           </Link>
@@ -115,7 +115,7 @@ function TripDetailPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{(trip as any).members?.length + 1 || 1}</div>
+            <div className="text-2xl font-bold">1</div>
           </CardContent>
         </Card>
       </div>
@@ -148,7 +148,7 @@ function TripDetailPage() {
             </CardHeader>
             <CardContent className="flex flex-wrap gap-2">
               <Button asChild>
-                <Link to={`/dashboard/trips/${tripId}/calendar`}>
+                <Link to="/dashboard/trips/$tripId/calendar" params={{ tripId }}>
                   <Calendar className="h-4 w-4 mr-2" />
                   Open Calendar
                 </Link>
@@ -175,7 +175,9 @@ function TripDetailPage() {
                   <Calendar className="h-8 w-8 mx-auto mb-2 opacity-50" />
                   <p>No activities yet</p>
                   <Button variant="link" asChild className="mt-2">
-                    <Link to={`/dashboard/trips/${tripId}/calendar`}>Add your first activity</Link>
+                    <Link to="/dashboard/trips/$tripId/calendar" params={{ tripId }}>
+                      Add your first activity
+                    </Link>
                   </Button>
                 </div>
               ) : (
@@ -214,7 +216,9 @@ function TripDetailPage() {
                 View and manage your activities in a calendar layout
               </p>
               <Button asChild>
-                <Link to={`/dashboard/trips/${tripId}/calendar`}>Open Full Calendar</Link>
+                <Link to="/dashboard/trips/$tripId/calendar" params={{ tripId }}>
+                  Open Full Calendar
+                </Link>
               </Button>
             </CardContent>
           </Card>

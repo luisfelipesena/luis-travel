@@ -1,4 +1,5 @@
 import { and, eq, gt } from "drizzle-orm"
+import { InvitationStatus } from "@/types"
 import { db } from "../db"
 import { type Invitation, invitation, type NewInvitation, tripMember } from "../db/schema"
 
@@ -17,7 +18,7 @@ export class InvitationRepository {
     return db.query.invitation.findFirst({
       where: and(
         eq(invitation.token, token),
-        eq(invitation.status, "pending"),
+        eq(invitation.status, InvitationStatus.PENDING),
         gt(invitation.expiresAt, new Date())
       ),
       with: {
@@ -40,7 +41,7 @@ export class InvitationRepository {
     return db.query.invitation.findMany({
       where: and(
         eq(invitation.invitedEmail, email.toLowerCase()),
-        eq(invitation.status, "pending"),
+        eq(invitation.status, InvitationStatus.PENDING),
         gt(invitation.expiresAt, new Date())
       ),
       with: {
@@ -58,7 +59,13 @@ export class InvitationRepository {
     return created
   }
 
-  async updateStatus(id: string, status: "accepted" | "declined" | "expired"): Promise<Invitation> {
+  async updateStatus(
+    id: string,
+    status:
+      | typeof InvitationStatus.ACCEPTED
+      | typeof InvitationStatus.DECLINED
+      | typeof InvitationStatus.EXPIRED
+  ): Promise<Invitation> {
     const [updated] = await db
       .update(invitation)
       .set({ status })
@@ -79,7 +86,7 @@ export class InvitationRepository {
 
     const [updatedInvite] = await db
       .update(invitation)
-      .set({ status: "accepted" })
+      .set({ status: InvitationStatus.ACCEPTED })
       .where(eq(invitation.id, invitationId))
       .returning()
 

@@ -1,4 +1,5 @@
 import OpenAI from "openai"
+import type { AIActivityCategory } from "@/types"
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -10,7 +11,7 @@ export interface ActivitySuggestion {
   suggestedStartTime: string
   durationMinutes: number
   location: string
-  type: "attraction" | "restaurant" | "activity" | "transport"
+  category: AIActivityCategory
 }
 
 export interface GenerateActivitiesParams {
@@ -39,7 +40,7 @@ Return a JSON object with an "activities" array. Each activity should have:
 - suggestedStartTime: string (ISO 8601 datetime within trip dates)
 - durationMinutes: number (estimated duration)
 - location: string (specific location or address)
-- type: "attraction" | "restaurant" | "activity" | "transport"
+- category: "attraction" | "restaurant" | "activity" | "transport"
 
 Focus on popular tourist attractions, local restaurants, and unique experiences.`
 
