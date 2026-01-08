@@ -10,7 +10,10 @@ import { defineConfig } from "vite"
 export default defineConfig({
   plugins: [
     devtools(),
-    nitro(),
+    nitro({
+      srcDir: "server",
+      scanDirs: ["server"],
+    }),
     tanstackRouter({
       target: "react",
       autoCodeSplitting: true,
