@@ -9,12 +9,12 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as RegisterRouteImport } from './routes/register'
-import { Route as LoginRouteImport } from './routes/login'
 import { Route as PublicRouteImport } from './routes/_public'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
-import { Route as IndexRouteImport } from './routes/index'
+import { Route as PublicIndexRouteImport } from './routes/_public/index'
 import { Route as AuthSplatRouteImport } from './routes/auth/$'
+import { Route as PublicRegisterRouteImport } from './routes/_public/register'
+import { Route as PublicLoginRouteImport } from './routes/_public/login'
 import { Route as AuthenticatedDashboardIndexRouteImport } from './routes/_authenticated/dashboard/index'
 import { Route as AuthenticatedDashboardInvitationsRouteImport } from './routes/_authenticated/dashboard/invitations'
 import { Route as AuthenticatedDashboardFlightsRouteImport } from './routes/_authenticated/dashboard/flights'
@@ -24,16 +24,6 @@ import { Route as AuthenticatedDashboardTripsNewRouteImport } from './routes/_au
 import { Route as AuthenticatedDashboardTripsTripIdIndexRouteImport } from './routes/_authenticated/dashboard/trips/$tripId/index'
 import { Route as AuthenticatedDashboardTripsTripIdCalendarRouteImport } from './routes/_authenticated/dashboard/trips/$tripId/calendar'
 
-const RegisterRoute = RegisterRouteImport.update({
-  id: '/register',
-  path: '/register',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LoginRoute = LoginRouteImport.update({
-  id: '/login',
-  path: '/login',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const PublicRoute = PublicRouteImport.update({
   id: '/_public',
   getParentRoute: () => rootRouteImport,
@@ -42,15 +32,25 @@ const AuthenticatedRoute = AuthenticatedRouteImport.update({
   id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
+const PublicIndexRoute = PublicIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => PublicRoute,
 } as any)
 const AuthSplatRoute = AuthSplatRouteImport.update({
   id: '/auth/$',
   path: '/auth/$',
   getParentRoute: () => rootRouteImport,
+} as any)
+const PublicRegisterRoute = PublicRegisterRouteImport.update({
+  id: '/register',
+  path: '/register',
+  getParentRoute: () => PublicRoute,
+} as any)
+const PublicLoginRoute = PublicLoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => PublicRoute,
 } as any)
 const AuthenticatedDashboardIndexRoute =
   AuthenticatedDashboardIndexRouteImport.update({
@@ -102,10 +102,10 @@ const AuthenticatedDashboardTripsTripIdCalendarRoute =
   } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
-  '/login': typeof LoginRoute
-  '/register': typeof RegisterRoute
+  '/login': typeof PublicLoginRoute
+  '/register': typeof PublicRegisterRoute
   '/auth/$': typeof AuthSplatRoute
+  '/': typeof PublicIndexRoute
   '/dashboard/calendar': typeof AuthenticatedDashboardCalendarRoute
   '/dashboard/flights': typeof AuthenticatedDashboardFlightsRoute
   '/dashboard/invitations': typeof AuthenticatedDashboardInvitationsRoute
@@ -116,10 +116,10 @@ export interface FileRoutesByFullPath {
   '/dashboard/trips/$tripId': typeof AuthenticatedDashboardTripsTripIdIndexRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
-  '/login': typeof LoginRoute
-  '/register': typeof RegisterRoute
+  '/login': typeof PublicLoginRoute
+  '/register': typeof PublicRegisterRoute
   '/auth/$': typeof AuthSplatRoute
+  '/': typeof PublicIndexRoute
   '/dashboard/calendar': typeof AuthenticatedDashboardCalendarRoute
   '/dashboard/flights': typeof AuthenticatedDashboardFlightsRoute
   '/dashboard/invitations': typeof AuthenticatedDashboardInvitationsRoute
@@ -131,12 +131,12 @@ export interface FileRoutesByTo {
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteWithChildren
-  '/_public': typeof PublicRoute
-  '/login': typeof LoginRoute
-  '/register': typeof RegisterRoute
+  '/_public': typeof PublicRouteWithChildren
+  '/_public/login': typeof PublicLoginRoute
+  '/_public/register': typeof PublicRegisterRoute
   '/auth/$': typeof AuthSplatRoute
+  '/_public/': typeof PublicIndexRoute
   '/_authenticated/dashboard/calendar': typeof AuthenticatedDashboardCalendarRoute
   '/_authenticated/dashboard/flights': typeof AuthenticatedDashboardFlightsRoute
   '/_authenticated/dashboard/invitations': typeof AuthenticatedDashboardInvitationsRoute
@@ -149,10 +149,10 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    | '/'
     | '/login'
     | '/register'
     | '/auth/$'
+    | '/'
     | '/dashboard/calendar'
     | '/dashboard/flights'
     | '/dashboard/invitations'
@@ -163,10 +163,10 @@ export interface FileRouteTypes {
     | '/dashboard/trips/$tripId'
   fileRoutesByTo: FileRoutesByTo
   to:
-    | '/'
     | '/login'
     | '/register'
     | '/auth/$'
+    | '/'
     | '/dashboard/calendar'
     | '/dashboard/flights'
     | '/dashboard/invitations'
@@ -177,12 +177,12 @@ export interface FileRouteTypes {
     | '/dashboard/trips/$tripId'
   id:
     | '__root__'
-    | '/'
     | '/_authenticated'
     | '/_public'
-    | '/login'
-    | '/register'
+    | '/_public/login'
+    | '/_public/register'
     | '/auth/$'
+    | '/_public/'
     | '/_authenticated/dashboard/calendar'
     | '/_authenticated/dashboard/flights'
     | '/_authenticated/dashboard/invitations'
@@ -194,30 +194,13 @@ export interface FileRouteTypes {
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
-  PublicRoute: typeof PublicRoute
-  LoginRoute: typeof LoginRoute
-  RegisterRoute: typeof RegisterRoute
+  PublicRoute: typeof PublicRouteWithChildren
   AuthSplatRoute: typeof AuthSplatRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/register': {
-      id: '/register'
-      path: '/register'
-      fullPath: '/register'
-      preLoaderRoute: typeof RegisterRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/login': {
-      id: '/login'
-      path: '/login'
-      fullPath: '/login'
-      preLoaderRoute: typeof LoginRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/_public': {
       id: '/_public'
       path: ''
@@ -232,12 +215,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
+    '/_public/': {
+      id: '/_public/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof PublicIndexRouteImport
+      parentRoute: typeof PublicRoute
     }
     '/auth/$': {
       id: '/auth/$'
@@ -245,6 +228,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/auth/$'
       preLoaderRoute: typeof AuthSplatRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_public/register': {
+      id: '/_public/register'
+      path: '/register'
+      fullPath: '/register'
+      preLoaderRoute: typeof PublicRegisterRouteImport
+      parentRoute: typeof PublicRoute
+    }
+    '/_public/login': {
+      id: '/_public/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof PublicLoginRouteImport
+      parentRoute: typeof PublicRoute
     }
     '/_authenticated/dashboard/': {
       id: '/_authenticated/dashboard/'
@@ -334,12 +331,24 @@ const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
   AuthenticatedRouteChildren,
 )
 
+interface PublicRouteChildren {
+  PublicLoginRoute: typeof PublicLoginRoute
+  PublicRegisterRoute: typeof PublicRegisterRoute
+  PublicIndexRoute: typeof PublicIndexRoute
+}
+
+const PublicRouteChildren: PublicRouteChildren = {
+  PublicLoginRoute: PublicLoginRoute,
+  PublicRegisterRoute: PublicRegisterRoute,
+  PublicIndexRoute: PublicIndexRoute,
+}
+
+const PublicRouteWithChildren =
+  PublicRoute._addFileChildren(PublicRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
-  PublicRoute: PublicRoute,
-  LoginRoute: LoginRoute,
-  RegisterRoute: RegisterRoute,
+  PublicRoute: PublicRouteWithChildren,
   AuthSplatRoute: AuthSplatRoute,
 }
 export const routeTree = rootRouteImport

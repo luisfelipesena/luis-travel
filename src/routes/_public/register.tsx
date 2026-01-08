@@ -1,7 +1,7 @@
 import { AuthView } from "@neondatabase/neon-js/auth/react/ui"
 import { createFileRoute, redirect } from "@tanstack/react-router"
 
-export const Route = createFileRoute("/register")({
+export const Route = createFileRoute("/_public/register")({
   beforeLoad: ({ context }) => {
     if (context.isAuthenticated) {
       throw redirect({ to: "/dashboard" })
@@ -12,8 +12,8 @@ export const Route = createFileRoute("/register")({
 
 function RegisterPage() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-muted/30">
-      <div className="w-full max-w-md p-8">
+    <div className="flex flex-1 items-center justify-center py-12">
+      <div className="w-full max-w-md animate-fade-in">
         <AuthView />
       </div>
     </div>
