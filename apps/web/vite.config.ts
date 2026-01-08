@@ -13,6 +13,9 @@ export default defineConfig({
     nitro({
       serverDir: "server",
       scanDirs: ["server"],
+      output: {
+        dir: "../../.vercel/output",
+      },
     }),
     tanstackRouter({
       target: "react",
