@@ -12,9 +12,9 @@ interface Flight {
   flightNumber: string
   departureAirport: string
   arrivalAirport: string
-  departureTime: string
-  arrivalTime: string
-  status: string
+  departureTime: Date | string
+  arrivalTime: Date | string
+  status: string | null
   duration?: string | null
 }
 
@@ -138,10 +138,10 @@ function FlightCard({ flight, isPast = false }: { flight: Flight; isPast?: boole
         </View>
         <View
           className="px-2 py-1 rounded"
-          style={{ backgroundColor: `${getStatusColor(flight.status)}20` }}
+          style={{ backgroundColor: `${getStatusColor(flight.status || "scheduled")}20` }}
         >
-          <Text style={{ color: getStatusColor(flight.status) }} className="text-xs font-medium">
-            {getStatusLabel(flight.status)}
+          <Text style={{ color: getStatusColor(flight.status || "scheduled") }} className="text-xs font-medium">
+            {getStatusLabel(flight.status || "scheduled")}
           </Text>
         </View>
       </View>

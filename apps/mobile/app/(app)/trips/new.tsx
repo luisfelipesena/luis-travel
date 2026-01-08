@@ -49,8 +49,8 @@ export default function NewTripScreen() {
     createMutation.mutate({
       name: name.trim(),
       destination: destination.trim(),
-      startDate: startDate.toISOString(),
-      endDate: endDate.toISOString(),
+      startDate,
+      endDate,
     })
   }
 

@@ -2,6 +2,7 @@ import { db } from "@luis-travel/db"
 import * as schema from "@luis-travel/db/schema"
 import { betterAuth } from "better-auth"
 import { drizzleAdapter } from "better-auth/adapters/drizzle"
+import { bearer } from "better-auth/plugins"
 
 // Build social providers config only if credentials are set
 const socialProviders: Record<string, { clientId: string; clientSecret: string }> = {}
@@ -48,6 +49,7 @@ export const auth = betterAuth({
       generateId: "uuid",
     },
   },
+  plugins: [bearer()],
 })
 
 export type Session = typeof auth.$Infer.Session

@@ -2,7 +2,7 @@ import { router } from "expo-router"
 import { Bell, ChevronRight, HelpCircle, LogOut, Settings, User } from "lucide-react-native"
 import { Alert, Pressable, ScrollView, Text, View } from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context"
-import { logout } from "../../src/lib/auth"
+import { signOut } from "../../src/lib/auth"
 import { trpc } from "../../src/lib/trpc"
 
 export default function ProfileScreen() {
@@ -15,7 +15,7 @@ export default function ProfileScreen() {
         text: "Sair",
         style: "destructive",
         onPress: async () => {
-          await logout()
+          await signOut()
           router.replace("/(auth)/login")
         },
       },
