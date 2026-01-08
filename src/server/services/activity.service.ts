@@ -1,12 +1,9 @@
+import type { Activity, NewActivity } from "../db/schema"
 import { activityRepository } from "../repositories/activity.repository"
 import { tripRepository } from "../repositories/trip.repository"
-import type { NewActivity, Activity } from "../db/schema"
 
 export class ActivityService {
-  async getActivitiesByTripId(
-    tripId: string,
-    userId: string
-  ): Promise<Activity[]> {
+  async getActivitiesByTripId(tripId: string, userId: string): Promise<Activity[]> {
     const hasAccess = await tripRepository.userHasAccess(tripId, userId)
 
     if (!hasAccess) {

@@ -1,5 +1,5 @@
-import { tripRepository } from "../repositories/trip.repository"
 import type { NewTrip, Trip } from "../db/schema"
+import { tripRepository } from "../repositories/trip.repository"
 
 export class TripService {
   async getUserTrips(userId: string): Promise<Trip[]> {

@@ -1,5 +1,5 @@
-import { Button } from "@/components/ui/button"
 import { ChevronLeft, ChevronRight } from "lucide-react"
+import { Button } from "@/components/ui/button"
 import type { CalendarView } from "./calendar-container"
 
 interface CalendarToolbarProps {
@@ -22,18 +22,10 @@ export function CalendarToolbar({
           Today
         </Button>
         <div className="flex items-center">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => onNavigate("prev")}
-          >
+          <Button variant="ghost" size="icon" onClick={() => onNavigate("prev")}>
             <ChevronLeft className="h-4 w-4" />
           </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => onNavigate("next")}
-          >
+          <Button variant="ghost" size="icon" onClick={() => onNavigate("next")}>
             <ChevronRight className="h-4 w-4" />
           </Button>
         </div>

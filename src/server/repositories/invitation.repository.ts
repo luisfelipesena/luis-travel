@@ -1,6 +1,6 @@
-import { eq, and, gt } from "drizzle-orm"
+import { and, eq, gt } from "drizzle-orm"
 import { db } from "../db"
-import { invitation, tripMember, type NewInvitation, type Invitation } from "../db/schema"
+import { type Invitation, invitation, type NewInvitation, tripMember } from "../db/schema"
 
 export class InvitationRepository {
   async findById(id: string): Promise<Invitation | undefined> {
@@ -58,10 +58,7 @@ export class InvitationRepository {
     return created
   }
 
-  async updateStatus(
-    id: string,
-    status: "accepted" | "declined" | "expired"
-  ): Promise<Invitation> {
+  async updateStatus(id: string, status: "accepted" | "declined" | "expired"): Promise<Invitation> {
     const [updated] = await db
       .update(invitation)
       .set({ status })

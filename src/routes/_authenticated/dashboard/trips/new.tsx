@@ -1,28 +1,17 @@
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router"
+import { format } from "date-fns"
+import { ArrowLeft, CalendarIcon } from "lucide-react"
 import { useState } from "react"
-import { createFileRoute, useNavigate } from "@tanstack/react-router"
-import { trpc } from "@/lib/trpc"
+import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
+import { Calendar } from "@/components/ui/calendar"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Textarea } from "@/components/ui/textarea"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
-import { Calendar } from "@/components/ui/calendar"
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover"
-import { toast } from "sonner"
-import { format } from "date-fns"
-import { CalendarIcon, ArrowLeft } from "lucide-react"
+import { trpc } from "@/lib/trpc"
 import { cn } from "@/lib/utils"
-import { Link } from "@tanstack/react-router"
 
 export const Route = createFileRoute("/_authenticated/dashboard/trips/new")({
   component: NewTripPage,
@@ -78,18 +67,14 @@ function NewTripPage() {
         </Button>
         <div>
           <h1 className="text-2xl font-bold">Create New Trip</h1>
-          <p className="text-muted-foreground">
-            Start planning your next adventure
-          </p>
+          <p className="text-muted-foreground">Start planning your next adventure</p>
         </div>
       </div>
 
       <Card>
         <CardHeader>
           <CardTitle>Trip Details</CardTitle>
-          <CardDescription>
-            Enter the basic information about your trip
-          </CardDescription>
+          <CardDescription>Enter the basic information about your trip</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -163,9 +148,7 @@ function NewTripPage() {
                       mode="single"
                       selected={endDate}
                       onSelect={setEndDate}
-                      disabled={(date) =>
-                        date < new Date() || (startDate && date <= startDate)
-                      }
+                      disabled={(date) => date < new Date() || (startDate && date <= startDate)}
                       initialFocus
                     />
                   </PopoverContent>

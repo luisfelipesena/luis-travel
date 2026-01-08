@@ -1,6 +1,6 @@
-import { eq, and, gte, lte, asc } from "drizzle-orm"
+import { and, asc, eq, gte, lte } from "drizzle-orm"
 import { db } from "../db"
-import { activity, type NewActivity, type Activity } from "../db/schema"
+import { type Activity, activity, type NewActivity } from "../db/schema"
 
 export class ActivityRepository {
   async findById(id: string): Promise<Activity | undefined> {
@@ -22,11 +22,7 @@ export class ActivityRepository {
     })
   }
 
-  async findByDateRange(
-    tripId: string,
-    startDate: Date,
-    endDate: Date
-  ): Promise<Activity[]> {
+  async findByDateRange(tripId: string, startDate: Date, endDate: Date): Promise<Activity[]> {
     return db.query.activity.findMany({
       where: and(
         eq(activity.tripId, tripId),
@@ -59,11 +55,7 @@ export class ActivityRepository {
     return updated
   }
 
-  async updateTimes(
-    id: string,
-    startTime: Date,
-    endTime: Date
-  ): Promise<Activity> {
+  async updateTimes(id: string, startTime: Date, endTime: Date): Promise<Activity> {
     const [updated] = await db
       .update(activity)
       .set({ startTime, endTime, updatedAt: new Date() })

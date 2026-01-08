@@ -1,17 +1,14 @@
-import { z } from "zod"
-import { router, protectedProcedure } from "../init"
-import { activityService } from "../../services/activity.service"
 import { TRPCError } from "@trpc/server"
+import { z } from "zod"
+import { activityService } from "../../services/activity.service"
+import { protectedProcedure, router } from "../init"
 
 export const activityRouter = router({
   listByTrip: protectedProcedure
     .input(z.object({ tripId: z.string().uuid() }))
     .query(async ({ ctx, input }) => {
       try {
-        return await activityService.getActivitiesByTripId(
-          input.tripId,
-          ctx.user.id
-        )
+        return await activityService.getActivitiesByTripId(input.tripId, ctx.user.id)
       } catch (error) {
         if (error instanceof Error && error.message === "Access denied") {
           throw new TRPCError({ code: "FORBIDDEN", message: error.message })
@@ -54,7 +51,10 @@ export const activityRouter = router({
         endTime: z.coerce.date(),
         location: z.string().max(255).optional(),
         imageUrl: z.string().url().optional(),
-        color: z.string().regex(/^#[0-9A-Fa-f]{6}$/).optional(),
+        color: z
+          .string()
+          .regex(/^#[0-9A-Fa-f]{6}$/)
+          .optional(),
         type: z.enum(["default", "ai_generated", "custom"]).optional(),
       })
     )
@@ -86,7 +86,10 @@ export const activityRouter = router({
         endTime: z.coerce.date().optional(),
         location: z.string().max(255).optional().nullable(),
         imageUrl: z.string().url().optional().nullable(),
-        color: z.string().regex(/^#[0-9A-Fa-f]{6}$/).optional(),
+        color: z
+          .string()
+          .regex(/^#[0-9A-Fa-f]{6}$/)
+          .optional(),
       })
     )
     .mutation(async ({ ctx, input }) => {

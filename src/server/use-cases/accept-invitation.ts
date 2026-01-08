@@ -1,6 +1,6 @@
+import type { Invitation, TripMember } from "../db/schema"
 import { invitationRepository } from "../repositories/invitation.repository"
 import { tripRepository } from "../repositories/trip.repository"
-import type { Invitation, TripMember } from "../db/schema"
 
 interface AcceptInvitationResult {
   invitation: Invitation
@@ -20,10 +20,7 @@ export class AcceptInvitationUseCase {
       throw new Error("Invitation has expired")
     }
 
-    const existingAccess = await tripRepository.userHasAccess(
-      invitation.tripId,
-      userId
-    )
+    const existingAccess = await tripRepository.userHasAccess(invitation.tripId, userId)
 
     if (existingAccess) {
       throw new Error("You already have access to this trip")

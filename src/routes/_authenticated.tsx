@@ -1,5 +1,6 @@
-import { createFileRoute, Outlet, redirect } from "@tanstack/react-router"
-import { useSession, signOut } from "@/lib/auth-client"
+import { createFileRoute, Link, Outlet, useNavigate } from "@tanstack/react-router"
+import { LogOut, Plane, Settings, User } from "lucide-react"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -8,9 +9,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Link, useNavigate } from "@tanstack/react-router"
-import { Plane, LogOut, User, Settings } from "lucide-react"
+import { signOut, useSession } from "@/lib/auth-client"
 
 export const Route = createFileRoute("/_authenticated")({
   component: AuthenticatedLayout,
@@ -82,9 +81,7 @@ function AuthenticatedLayout() {
                   </Avatar>
                   <div className="flex flex-col">
                     <span className="text-sm font-medium">{session.user.name}</span>
-                    <span className="text-xs text-muted-foreground">
-                      {session.user.email}
-                    </span>
+                    <span className="text-xs text-muted-foreground">{session.user.email}</span>
                   </div>
                 </div>
                 <DropdownMenuSeparator />

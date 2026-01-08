@@ -1,7 +1,7 @@
-import { z } from "zod"
-import { router, protectedProcedure } from "../init"
-import { generateItineraryUseCase } from "../../use-cases/generate-itinerary"
 import { TRPCError } from "@trpc/server"
+import { z } from "zod"
+import { generateItineraryUseCase } from "../../use-cases/generate-itinerary"
+import { protectedProcedure, router } from "../init"
 
 export const aiRouter = router({
   generateActivities: protectedProcedure

@@ -1,18 +1,10 @@
+import { addDays, addMinutes, format, isSameDay, setHours, setMinutes, startOfWeek } from "date-fns"
 import { useMemo } from "react"
-import {
-  format,
-  isSameDay,
-  startOfWeek,
-  addDays,
-  setHours,
-  setMinutes,
-  addMinutes,
-} from "date-fns"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Skeleton } from "@/components/ui/skeleton"
-import { CalendarEvent } from "../calendar-event"
 import { cn } from "@/lib/utils"
 import type { Activity } from "@/server/db/schema"
+import { CalendarEvent } from "../calendar-event"
 
 const HOURS = Array.from({ length: 24 }, (_, i) => i)
 const DAYS = Array.from({ length: 7 }, (_, i) => i)
@@ -68,19 +60,15 @@ export function WeekView({
       {/* Header */}
       <div className="flex border-b">
         <div className="w-16 flex-shrink-0" />
-        {weekDays.map((day, i) => {
+        {weekDays.map((day) => {
           const isToday = isSameDay(day, new Date())
+          const dayKey = format(day, "yyyy-MM-dd")
           return (
             <div
-              key={i}
-              className={cn(
-                "flex-1 text-center py-2 border-l",
-                isToday && "bg-primary/5"
-              )}
+              key={dayKey}
+              className={cn("flex-1 text-center py-2 border-l", isToday && "bg-primary/5")}
             >
-              <div className="text-xs text-muted-foreground">
-                {format(day, "EEE")}
-              </div>
+              <div className="text-xs text-muted-foreground">{format(day, "EEE")}</div>
               <div
                 className={cn(
                   "text-lg font-semibold",
@@ -112,26 +100,26 @@ export function WeekView({
           </div>
 
           {/* Day columns */}
-          {weekDays.map((day, dayIndex) => {
+          {weekDays.map((day) => {
             const dayKey = format(day, "yyyy-MM-dd")
             const dayActivities = activitiesByDay.get(dayKey) || []
             const isToday = isSameDay(day, new Date())
 
             return (
               <div
-                key={dayIndex}
-                className={cn(
-                  "flex-1 relative border-l",
-                  isToday && "bg-primary/5"
-                )}
+                key={dayKey}
+                className={cn("flex-1 relative border-l", isToday && "bg-primary/5")}
               >
                 {/* Time slots */}
                 {HOURS.map((hour) => (
                   <div
                     key={hour}
+                    role="button"
+                    tabIndex={0}
                     className="border-b cursor-pointer hover:bg-muted/50 transition-colors"
                     style={{ height: SLOT_HEIGHT }}
                     onClick={() => handleSlotClick(day, hour)}
+                    onKeyDown={(e) => e.key === "Enter" && handleSlotClick(day, hour)}
                   />
                 ))}
 
@@ -140,10 +128,8 @@ export function WeekView({
                   const startTime = new Date(activity.startTime)
                   const endTime = new Date(activity.endTime)
 
-                  const startMinutes =
-                    startTime.getHours() * 60 + startTime.getMinutes()
-                  const endMinutes =
-                    endTime.getHours() * 60 + endTime.getMinutes()
+                  const startMinutes = startTime.getHours() * 60 + startTime.getMinutes()
+                  const endMinutes = endTime.getHours() * 60 + endTime.getMinutes()
                   const duration = endMinutes - startMinutes
 
                   const top = (startMinutes / MINUTES_PER_SLOT) * SLOT_HEIGHT

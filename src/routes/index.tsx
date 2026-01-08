@@ -1,7 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router"
-import { useSession } from "@/lib/auth-client"
+import { Calendar, Plane, Sparkles, Users } from "lucide-react"
+import { FeatureCard } from "@/components/molecules"
+import { LandingLayout } from "@/components/templates"
 import { Button } from "@/components/ui/button"
-import { Plane, Calendar, Users, Sparkles } from "lucide-react"
+import { useSession } from "@/lib/auth-client"
 
 export const Route = createFileRoute("/")({
   component: LandingPage,
@@ -9,52 +11,23 @@ export const Route = createFileRoute("/")({
 
 function LandingPage() {
   const { data: session } = useSession()
+  const isAuthenticated = !!session
 
   return (
-    <div className="min-h-screen">
-      {/* Header */}
-      <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container flex h-16 items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Plane className="h-6 w-6 text-primary" />
-            <span className="text-xl font-bold">Luis Travel</span>
-          </div>
-          <nav className="flex items-center gap-4">
-            {session ? (
-              <Button asChild>
-                <Link to="/dashboard">Go to Dashboard</Link>
-              </Button>
-            ) : (
-              <>
-                <Button variant="ghost" asChild>
-                  <Link to="/login">Sign In</Link>
-                </Button>
-                <Button asChild>
-                  <Link to="/register">Get Started</Link>
-                </Button>
-              </>
-            )}
-          </nav>
-        </div>
-      </header>
-
+    <LandingLayout isAuthenticated={isAuthenticated}>
       {/* Hero */}
       <section className="container py-24 md:py-32">
         <div className="mx-auto max-w-3xl text-center">
           <h1 className="text-4xl font-bold tracking-tight sm:text-6xl">
-            Plan Your Perfect Trip with{" "}
-            <span className="text-primary">Luis Travel</span>
+            Plan Your Perfect Trip with <span className="text-primary">Luis Travel</span>
           </h1>
           <p className="mt-6 text-lg text-muted-foreground">
-            Create detailed travel itineraries, track your flights, and
-            collaborate with friends. Let AI help you discover the best
-            activities for your destination.
+            Create detailed travel itineraries, track your flights, and collaborate with friends.
+            Let AI help you discover the best activities for your destination.
           </p>
           <div className="mt-10 flex items-center justify-center gap-4">
             <Button size="lg" asChild>
-              <Link to={session ? "/dashboard" : "/register"}>
-                Start Planning
-              </Link>
+              <Link to={isAuthenticated ? "/dashboard" : "/register"}>Start Planning</Link>
             </Button>
             <Button variant="outline" size="lg" asChild>
               <Link to="/login">Learn More</Link>
@@ -102,37 +75,10 @@ function LandingPage() {
             Join thousands of travelers who plan their trips with Luis Travel.
           </p>
           <Button size="lg" asChild>
-            <Link to={session ? "/dashboard" : "/register"}>
-              Create Your First Trip
-            </Link>
+            <Link to={isAuthenticated ? "/dashboard" : "/register"}>Create Your First Trip</Link>
           </Button>
         </div>
       </section>
-
-      {/* Footer */}
-      <footer className="border-t py-8">
-        <div className="container text-center text-sm text-muted-foreground">
-          <p>&copy; 2025 Luis Travel. All rights reserved.</p>
-        </div>
-      </footer>
-    </div>
-  )
-}
-
-function FeatureCard({
-  icon,
-  title,
-  description,
-}: {
-  icon: React.ReactNode
-  title: string
-  description: string
-}) {
-  return (
-    <div className="flex flex-col items-center text-center p-6 rounded-lg bg-background border">
-      <div className="mb-4 text-primary">{icon}</div>
-      <h3 className="font-semibold mb-2">{title}</h3>
-      <p className="text-sm text-muted-foreground">{description}</p>
-    </div>
+    </LandingLayout>
   )
 }

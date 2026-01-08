@@ -1,7 +1,7 @@
-import { aiService } from "../services/ai.service"
-import { activityService } from "../services/activity.service"
-import { tripRepository } from "../repositories/trip.repository"
 import type { Activity } from "../db/schema"
+import { tripRepository } from "../repositories/trip.repository"
+import { activityService } from "../services/activity.service"
+import { aiService } from "../services/ai.service"
 
 interface GenerateItineraryParams {
   tripId: string
@@ -32,11 +32,7 @@ export class GenerateItineraryUseCase {
       throw new Error("Access denied")
     }
 
-    const suggestions = await aiService.generateActivitySuggestions(
-      tripId,
-      userId,
-      preferences
-    )
+    const suggestions = await aiService.generateActivitySuggestions(tripId, userId, preferences)
 
     if (!autoAdd) {
       return { suggestions }
@@ -46,9 +42,7 @@ export class GenerateItineraryUseCase {
       title: s.title,
       description: s.description,
       startTime: new Date(s.suggestedStartTime),
-      endTime: new Date(
-        new Date(s.suggestedStartTime).getTime() + s.durationMinutes * 60000
-      ),
+      endTime: new Date(new Date(s.suggestedStartTime).getTime() + s.durationMinutes * 60000),
       location: s.location,
       type: "ai_generated" as const,
       color: this.getColorByType(s.type),

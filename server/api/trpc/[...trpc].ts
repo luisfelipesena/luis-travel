@@ -1,6 +1,6 @@
 import { fetchRequestHandler } from "@trpc/server/adapters/fetch"
-import { appRouter } from "../../../src/server/trpc/router"
 import { createContext } from "../../../src/server/trpc/context"
+import { appRouter } from "../../../src/server/trpc/router"
 
 export default defineEventHandler(async (event) => {
   const request = toWebRequest(event)

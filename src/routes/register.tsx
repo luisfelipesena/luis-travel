@@ -1,9 +1,8 @@
-import { useState } from "react"
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router"
-import { signUp } from "@/lib/auth-client"
+import { Plane } from "lucide-react"
+import { useState } from "react"
+import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import {
   Card,
   CardContent,
@@ -12,8 +11,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { toast } from "sonner"
-import { Plane } from "lucide-react"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { signUp } from "@/lib/auth-client"
 
 export const Route = createFileRoute("/register")({
   component: RegisterPage,
@@ -73,9 +73,7 @@ function RegisterPage() {
             </div>
           </div>
           <CardTitle className="text-2xl">Create an Account</CardTitle>
-          <CardDescription>
-            Start planning your travels with Luis Travel
-          </CardDescription>
+          <CardDescription>Start planning your travels with Luis Travel</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">

@@ -1,9 +1,9 @@
+import { addMinutes, format, isSameDay, setHours, setMinutes } from "date-fns"
 import { useMemo } from "react"
-import { format, isSameDay, setHours, setMinutes, addMinutes } from "date-fns"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Skeleton } from "@/components/ui/skeleton"
-import { CalendarEvent } from "../calendar-event"
 import type { Activity } from "@/server/db/schema"
+import { CalendarEvent } from "../calendar-event"
 
 const HOURS = Array.from({ length: 24 }, (_, i) => i)
 const SLOT_HEIGHT = 60
@@ -25,10 +25,7 @@ export function DayView({
   isLoading,
 }: DayViewProps) {
   const dayActivities = useMemo(
-    () =>
-      activities.filter((activity) =>
-        isSameDay(new Date(activity.startTime), date)
-      ),
+    () => activities.filter((activity) => isSameDay(new Date(activity.startTime), date)),
     [activities, date]
   )
 
@@ -68,9 +65,12 @@ export function DayView({
           {HOURS.map((hour) => (
             <div
               key={hour}
+              role="button"
+              tabIndex={0}
               className="border-b cursor-pointer hover:bg-muted/50 transition-colors"
               style={{ height: SLOT_HEIGHT }}
               onClick={() => handleSlotClick(hour)}
+              onKeyDown={(e) => e.key === "Enter" && handleSlotClick(hour)}
             />
           ))}
 
@@ -79,8 +79,7 @@ export function DayView({
             const startTime = new Date(activity.startTime)
             const endTime = new Date(activity.endTime)
 
-            const startMinutes =
-              startTime.getHours() * 60 + startTime.getMinutes()
+            const startMinutes = startTime.getHours() * 60 + startTime.getMinutes()
             const endMinutes = endTime.getHours() * 60 + endTime.getMinutes()
             const duration = endMinutes - startMinutes
 

@@ -1,8 +1,8 @@
-import { nanoid } from "nanoid"
 import { addDays } from "date-fns"
+import { nanoid } from "nanoid"
+import type { Invitation } from "../db/schema"
 import { invitationRepository } from "../repositories/invitation.repository"
 import { tripRepository } from "../repositories/trip.repository"
-import type { Invitation } from "../db/schema"
 
 interface InviteMemberParams {
   tripId: string
@@ -33,9 +33,7 @@ export class InviteMemberUseCase {
 
     const existingInvitations = await invitationRepository.findByTripId(tripId)
     const pendingInvite = existingInvitations.find(
-      (i) =>
-        i.invitedEmail.toLowerCase() === invitedEmail.toLowerCase() &&
-        i.status === "pending"
+      (i) => i.invitedEmail.toLowerCase() === invitedEmail.toLowerCase() && i.status === "pending"
     )
 
     if (pendingInvite) {

@@ -1,6 +1,6 @@
-import { eq, asc } from "drizzle-orm"
+import { asc, eq } from "drizzle-orm"
 import { db } from "../db"
-import { flight, type NewFlight, type Flight } from "../db/schema"
+import { type Flight, flight, type NewFlight } from "../db/schema"
 
 export class FlightRepository {
   async findById(id: string): Promise<Flight | undefined> {
@@ -39,10 +39,7 @@ export class FlightRepository {
     return updated
   }
 
-  async updateExternalData(
-    id: string,
-    externalData: Record<string, unknown>
-  ): Promise<Flight> {
+  async updateExternalData(id: string, externalData: Record<string, unknown>): Promise<Flight> {
     const [updated] = await db
       .update(flight)
       .set({ externalData, updatedAt: new Date() })

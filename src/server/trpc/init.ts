@@ -9,8 +9,7 @@ const t = initTRPC.context<Context>().create({
       ...shape,
       data: {
         ...shape.data,
-        zodError:
-          error.cause instanceof Error ? error.cause.message : null,
+        zodError: error.cause instanceof Error ? error.cause.message : null,
       },
     }
   },

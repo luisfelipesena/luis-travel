@@ -97,7 +97,62 @@ src/
 - No `any` types
 - Handle errors explicitly
 
+## Linting (Biome)
+- `bun run lint` - Check issues
+- `bun run lint:fix` - Auto-fix issues
+- `bun run format` - Format code
+- Config in `biome.json`
+
+## URL State (nuqs)
+- Use nuqs for search params state management
+- Enables shareable URLs with filters/pagination
+- Parsers defined in `src/lib/search-params.ts`
+- Use `useQueryState` for single param
+- Use `useQueryStates` for multiple params
+- **NOTE**: TanStack Start support is experimental
+
+```typescript
+// Example usage
+import { useQueryState, parseAsInteger } from "nuqs"
+
+function Component() {
+  const [page, setPage] = useQueryState("page", parseAsInteger.withDefault(1))
+  return <button onClick={() => setPage(p => p + 1)}>Next</button>
+}
+```
+
+## ATOMIC Design Pattern
+```
+src/components/
+├── atoms/        # Basic building blocks (Button, Input, Label)
+├── molecules/    # Combinations of atoms (SearchInput, FormField)
+├── organisms/    # Complex components (Header, Sidebar, TripCard)
+├── templates/    # Page layouts (DashboardLayout, AuthLayout)
+└── ui/           # Shadcn primitives (keep separate)
+```
+
+- **Atoms**: Single-purpose, no business logic
+- **Molecules**: Compose atoms, minimal logic
+- **Organisms**: Feature-complete, may fetch data
+- **Templates**: Layout structure, slot-based
+
 ## Testing
 - Vitest for unit tests
 - Test services and use cases
 - Mock repositories in service tests
+
+## Subagents
+
+Project has two custom subagents for quality assurance:
+
+### backend-architect
+- **When**: Writing server code (repositories, services, use-cases, routers)
+- **Focus**: DDD layer separation, design patterns, tRPC best practices
+- **Invoke**: Automatically or `Use backend-architect to review this`
+
+### frontend-architect
+- **When**: Writing components, pages, or UI code
+- **Focus**: ATOMIC design, Nielsen heuristics, accessibility
+- **Invoke**: Automatically or `Use frontend-architect to review this`
+
+Location: `.claude/agents/`

@@ -1,7 +1,7 @@
-import { z } from "zod"
-import { router, protectedProcedure } from "../init"
-import { flightService } from "../../services/flight.service"
 import { TRPCError } from "@trpc/server"
+import { z } from "zod"
+import { flightService } from "../../services/flight.service"
+import { protectedProcedure, router } from "../init"
 
 export const flightRouter = router({
   listByTrip: protectedProcedure

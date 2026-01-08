@@ -62,10 +62,7 @@ export class AviationstackClient {
     return data.data?.[0] || null
   }
 
-  async searchFlightByNumber(
-    flightNumber: string,
-    date?: string
-  ): Promise<AviationstackFlight[]> {
+  async searchFlightByNumber(flightNumber: string, date?: string): Promise<AviationstackFlight[]> {
     let url = `${BASE_URL}/flights?access_key=${this.apiKey}&flight_iata=${flightNumber}`
 
     if (date) {
@@ -84,6 +81,4 @@ export class AviationstackClient {
   }
 }
 
-export const aviationstackClient = new AviationstackClient(
-  process.env.AVIATIONSTACK_API_KEY || ""
-)
+export const aviationstackClient = new AviationstackClient(process.env.AVIATIONSTACK_API_KEY || "")

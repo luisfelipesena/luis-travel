@@ -1,11 +1,11 @@
+import { addDays, format, startOfWeek } from "date-fns"
 import { useState } from "react"
-import { addDays, startOfWeek, format } from "date-fns"
+import type { Activity } from "@/server/db/schema"
+import { ActivityFormDialog } from "./activity-form-dialog"
 import { CalendarToolbar } from "./calendar-toolbar"
 import { DayView } from "./views/day-view"
-import { WeekView } from "./views/week-view"
 import { MonthView } from "./views/month-view"
-import { ActivityFormDialog } from "./activity-form-dialog"
-import type { Activity } from "@/server/db/schema"
+import { WeekView } from "./views/week-view"
 
 export type CalendarView = "day" | "week" | "month"
 
@@ -54,9 +54,7 @@ export function CalendarContainer({
         setCurrentDate(addDays(currentDate, offset * 7))
         break
       case "month":
-        setCurrentDate(
-          new Date(currentDate.getFullYear(), currentDate.getMonth() + offset, 1)
-        )
+        setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + offset, 1))
         break
     }
   }
@@ -84,10 +82,11 @@ export function CalendarContainer({
     switch (view) {
       case "day":
         return format(currentDate, "EEEE, MMMM d, yyyy")
-      case "week":
+      case "week": {
         const weekStart = startOfWeek(currentDate, { weekStartsOn: 0 })
         const weekEnd = addDays(weekStart, 6)
         return `${format(weekStart, "MMM d")} - ${format(weekEnd, "MMM d, yyyy")}`
+      }
       case "month":
         return format(currentDate, "MMMM yyyy")
     }

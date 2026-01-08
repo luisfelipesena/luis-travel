@@ -1,22 +1,20 @@
-import { useState } from "react"
 import { createFileRoute, Link } from "@tanstack/react-router"
-import { trpc } from "@/lib/trpc"
+import { ArrowLeft } from "lucide-react"
+import { CalendarContainer } from "@/components/calendar/calendar-container"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
-import { CalendarContainer } from "@/components/calendar/calendar-container"
-import { ArrowLeft } from "lucide-react"
+import { trpc } from "@/lib/trpc"
 
-export const Route = createFileRoute(
-  "/_authenticated/dashboard/trips/$tripId/calendar"
-)({
+export const Route = createFileRoute("/_authenticated/dashboard/trips/$tripId/calendar")({
   component: TripCalendarPage,
 })
 
 function TripCalendarPage() {
   const { tripId } = Route.useParams()
   const { data: trip, isLoading: tripLoading } = trpc.trip.byId.useQuery({ id: tripId })
-  const { data: activities, isLoading: activitiesLoading } =
-    trpc.activity.listByTrip.useQuery({ tripId })
+  const { data: activities, isLoading: activitiesLoading } = trpc.activity.listByTrip.useQuery({
+    tripId,
+  })
 
   const utils = trpc.useUtils()
 
@@ -52,19 +50,11 @@ function TripCalendarPage() {
     )
   }
 
-  const handleActivityUpdate = (
-    activityId: string,
-    startTime: Date,
-    endTime: Date
-  ) => {
+  const handleActivityUpdate = (activityId: string, startTime: Date, endTime: Date) => {
     updateActivity.mutate({ id: activityId, startTime, endTime })
   }
 
-  const handleActivityCreate = (data: {
-    title: string
-    startTime: Date
-    endTime: Date
-  }) => {
+  const handleActivityCreate = (data: { title: string; startTime: Date; endTime: Date }) => {
     createActivity.mutate({
       tripId,
       title: data.title,

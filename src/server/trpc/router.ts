@@ -1,9 +1,9 @@
 import { router } from "./init"
-import { tripRouter } from "./routers/trip"
 import { activityRouter } from "./routers/activity"
+import { aiRouter } from "./routers/ai"
 import { flightRouter } from "./routers/flight"
 import { invitationRouter } from "./routers/invitation"
-import { aiRouter } from "./routers/ai"
+import { tripRouter } from "./routers/trip"
 
 export const appRouter = router({
   trip: tripRouter,

@@ -1,6 +1,6 @@
-import { openaiClient, type ActivitySuggestion } from "../external/openai"
-import { tripRepository } from "../repositories/trip.repository"
+import { type ActivitySuggestion, openaiClient } from "../external/openai"
 import { activityRepository } from "../repositories/activity.repository"
+import { tripRepository } from "../repositories/trip.repository"
 
 export class AIService {
   async generateActivitySuggestions(

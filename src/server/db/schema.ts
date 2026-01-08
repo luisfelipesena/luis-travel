@@ -1,14 +1,14 @@
+import { relations } from "drizzle-orm"
 import {
+  boolean,
+  jsonb,
+  pgEnum,
   pgTable,
   text,
   timestamp,
   uuid,
   varchar,
-  boolean,
-  jsonb,
-  pgEnum,
 } from "drizzle-orm/pg-core"
-import { relations } from "drizzle-orm"
 
 // ============================================================================
 // Better Auth Tables
@@ -128,11 +128,7 @@ export const invitation = pgTable("invitation", {
 // Activity Domain
 // ============================================================================
 
-export const activityTypeEnum = pgEnum("activity_type", [
-  "default",
-  "ai_generated",
-  "custom",
-])
+export const activityTypeEnum = pgEnum("activity_type", ["default", "ai_generated", "custom"])
 
 export const activity = pgTable("activity", {
   id: uuid("id").primaryKey().defaultRandom(),

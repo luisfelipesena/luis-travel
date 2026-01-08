@@ -1,7 +1,7 @@
-import { z } from "zod"
-import { router, protectedProcedure } from "../init"
-import { tripService } from "../../services/trip.service"
 import { TRPCError } from "@trpc/server"
+import { z } from "zod"
+import { tripService } from "../../services/trip.service"
+import { protectedProcedure, router } from "../init"
 
 export const tripRouter = router({
   list: protectedProcedure.query(async ({ ctx }) => {

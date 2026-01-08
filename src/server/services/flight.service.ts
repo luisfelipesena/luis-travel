@@ -1,7 +1,7 @@
+import type { Flight, NewFlight } from "../db/schema"
+import { type AviationstackFlight, aviationstackClient } from "../external/aviationstack"
 import { flightRepository } from "../repositories/flight.repository"
 import { tripRepository } from "../repositories/trip.repository"
-import { aviationstackClient, type AviationstackFlight } from "../external/aviationstack"
-import type { NewFlight, Flight } from "../db/schema"
 
 export class FlightService {
   async getFlightsByTripId(tripId: string, userId: string): Promise<Flight[]> {

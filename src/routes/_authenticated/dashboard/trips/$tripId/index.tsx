@@ -1,44 +1,22 @@
 import { createFileRoute, Link } from "@tanstack/react-router"
-import { trpc } from "@/lib/trpc"
-import { Button } from "@/components/ui/button"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
-import { Skeleton } from "@/components/ui/skeleton"
-import { Badge } from "@/components/ui/badge"
-import {
-  ArrowLeft,
-  Calendar,
-  Plane,
-  Users,
-  Settings,
-  MapPin,
-  Sparkles,
-} from "lucide-react"
 import { format } from "date-fns"
+import { ArrowLeft, Calendar, MapPin, Plane, Settings, Sparkles, Users } from "lucide-react"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Skeleton } from "@/components/ui/skeleton"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { trpc } from "@/lib/trpc"
 
-export const Route = createFileRoute(
-  "/_authenticated/dashboard/trips/$tripId/"
-)({
+export const Route = createFileRoute("/_authenticated/dashboard/trips/$tripId/")({
   component: TripDetailPage,
 })
 
 function TripDetailPage() {
   const { tripId } = Route.useParams()
   const { data: trip, isLoading, error } = trpc.trip.byId.useQuery({ id: tripId })
-  const { data: activities } = trpc.activity.listByTrip.useQuery(
-    { tripId },
-    { enabled: !!trip }
-  )
-  const { data: flights } = trpc.flight.listByTrip.useQuery(
-    { tripId },
-    { enabled: !!trip }
-  )
+  const { data: activities } = trpc.activity.listByTrip.useQuery({ tripId }, { enabled: !!trip })
+  const { data: flights } = trpc.flight.listByTrip.useQuery({ tripId }, { enabled: !!trip })
 
   if (isLoading) {
     return (
@@ -66,9 +44,7 @@ function TripDetailPage() {
   }
 
   const isUpcoming = new Date(trip.startDate) > new Date()
-  const isOngoing =
-    new Date(trip.startDate) <= new Date() &&
-    new Date(trip.endDate) >= new Date()
+  const isOngoing = new Date(trip.startDate) <= new Date() && new Date(trip.endDate) >= new Date()
 
   return (
     <div className="space-y-6">
@@ -139,9 +115,7 @@ function TripDetailPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
-              {(trip as any).members?.length + 1 || 1}
-            </div>
+            <div className="text-2xl font-bold">{(trip as any).members?.length + 1 || 1}</div>
           </CardContent>
         </Card>
       </div>
@@ -170,9 +144,7 @@ function TripDetailPage() {
           <Card>
             <CardHeader>
               <CardTitle>Quick Actions</CardTitle>
-              <CardDescription>
-                Start planning your trip
-              </CardDescription>
+              <CardDescription>Start planning your trip</CardDescription>
             </CardHeader>
             <CardContent className="flex flex-wrap gap-2">
               <Button asChild>
@@ -203,9 +175,7 @@ function TripDetailPage() {
                   <Calendar className="h-8 w-8 mx-auto mb-2 opacity-50" />
                   <p>No activities yet</p>
                   <Button variant="link" asChild className="mt-2">
-                    <Link to={`/dashboard/trips/${tripId}/calendar`}>
-                      Add your first activity
-                    </Link>
+                    <Link to={`/dashboard/trips/${tripId}/calendar`}>Add your first activity</Link>
                   </Button>
                 </div>
               ) : (
@@ -244,9 +214,7 @@ function TripDetailPage() {
                 View and manage your activities in a calendar layout
               </p>
               <Button asChild>
-                <Link to={`/dashboard/trips/${tripId}/calendar`}>
-                  Open Full Calendar
-                </Link>
+                <Link to={`/dashboard/trips/${tripId}/calendar`}>Open Full Calendar</Link>
               </Button>
             </CardContent>
           </Card>
@@ -278,9 +246,7 @@ function TripDetailPage() {
                         <Plane className="h-5 w-5 text-primary" />
                         <div>
                           <p className="font-medium">{flight.flightNumber}</p>
-                          <p className="text-sm text-muted-foreground">
-                            {flight.airline}
-                          </p>
+                          <p className="text-sm text-muted-foreground">{flight.airline}</p>
                         </div>
                       </div>
                       <div className="text-right">
@@ -291,9 +257,7 @@ function TripDetailPage() {
                           {format(new Date(flight.departureTime), "MMM d, h:mm a")}
                         </p>
                       </div>
-                      {flight.status && (
-                        <Badge variant="outline">{flight.status}</Badge>
-                      )}
+                      {flight.status && <Badge variant="outline">{flight.status}</Badge>}
                     </div>
                   ))}
                 </div>
@@ -306,9 +270,7 @@ function TripDetailPage() {
           <Card>
             <CardHeader>
               <CardTitle>Trip Members</CardTitle>
-              <CardDescription>
-                People who have access to this trip
-              </CardDescription>
+              <CardDescription>People who have access to this trip</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-2">

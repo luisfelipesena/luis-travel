@@ -1,6 +1,6 @@
-import { eq, or, and } from "drizzle-orm"
+import { and, eq } from "drizzle-orm"
 import { db } from "../db"
-import { trip, tripMember, type NewTrip, type Trip } from "../db/schema"
+import { type NewTrip, type Trip, trip, tripMember } from "../db/schema"
 
 export class TripRepository {
   async findById(id: string): Promise<Trip | undefined> {
@@ -31,9 +31,7 @@ export class TripRepository {
       },
     })
 
-    const memberTrips = memberOf
-      .map((m) => m.trip)
-      .filter((t): t is Trip => t !== null)
+    const memberTrips = memberOf.map((m) => m.trip).filter((t): t is Trip => t !== null)
 
     const allTrips = [...owned, ...memberTrips]
 
@@ -42,8 +40,7 @@ export class TripRepository {
     )
 
     return uniqueTrips.sort(
-      (a, b) =>
-        new Date(b.startDate).getTime() - new Date(a.startDate).getTime()
+      (a, b) => new Date(b.startDate).getTime() - new Date(a.startDate).getTime()
     )
   }
 
@@ -83,10 +80,7 @@ export class TripRepository {
     return !!membership
   }
 
-  async getUserRole(
-    tripId: string,
-    userId: string
-  ): Promise<"owner" | "editor" | "viewer" | null> {
+  async getUserRole(tripId: string, userId: string): Promise<"owner" | "editor" | "viewer" | null> {
     const tripData = await db.query.trip.findFirst({
       where: eq(trip.id, tripId),
     })

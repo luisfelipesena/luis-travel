@@ -22,19 +22,14 @@ export interface GenerateActivitiesParams {
 }
 
 export class OpenAIClient {
-  async generateActivities(
-    params: GenerateActivitiesParams
-  ): Promise<ActivitySuggestion[]> {
-    const { destination, startDate, endDate, preferences, existingActivities } =
-      params
+  async generateActivities(params: GenerateActivitiesParams): Promise<ActivitySuggestion[]> {
+    const { destination, startDate, endDate, preferences, existingActivities } = params
 
     const existingText = existingActivities?.length
       ? `\nExisting activities to avoid duplicating: ${existingActivities.join(", ")}`
       : ""
 
-    const preferencesText = preferences
-      ? `\nUser preferences: ${preferences}`
-      : ""
+    const preferencesText = preferences ? `\nUser preferences: ${preferences}` : ""
 
     const prompt = `Generate 5 activity suggestions for a trip to ${destination} from ${startDate.toISOString().split("T")[0]} to ${endDate.toISOString().split("T")[0]}.${preferencesText}${existingText}
 
@@ -53,8 +48,7 @@ Focus on popular tourist attractions, local restaurants, and unique experiences.
       messages: [
         {
           role: "system",
-          content:
-            "You are a travel planning assistant. Return only valid JSON.",
+          content: "You are a travel planning assistant. Return only valid JSON.",
         },
         { role: "user", content: prompt },
       ],

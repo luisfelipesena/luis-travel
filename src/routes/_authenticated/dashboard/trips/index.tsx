@@ -1,16 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router"
-import { trpc } from "@/lib/trpc"
-import { Button } from "@/components/ui/button"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
-import { Skeleton } from "@/components/ui/skeleton"
-import { Plus, MapPin, Calendar } from "lucide-react"
 import { format } from "date-fns"
+import { Calendar, MapPin, Plus } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Skeleton } from "@/components/ui/skeleton"
+import { trpc } from "@/lib/trpc"
 
 export const Route = createFileRoute("/_authenticated/dashboard/trips/")({
   component: TripsPage,
@@ -24,9 +18,7 @@ function TripsPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">My Trips</h1>
-          <p className="text-muted-foreground">
-            View and manage all your travel plans
-          </p>
+          <p className="text-muted-foreground">View and manage all your travel plans</p>
         </div>
         <Button asChild>
           <Link to="/dashboard/trips/new">
@@ -48,8 +40,8 @@ function TripsPage() {
             <MapPin className="h-16 w-16 text-muted-foreground mb-4" />
             <h3 className="text-xl font-medium mb-2">No trips yet</h3>
             <p className="text-muted-foreground text-center mb-6 max-w-sm">
-              Create your first trip to start planning your adventure with
-              activities, flights, and more.
+              Create your first trip to start planning your adventure with activities, flights, and
+              more.
             </p>
             <Button asChild size="lg">
               <Link to="/dashboard/trips/new">Create Your First Trip</Link>
@@ -81,9 +73,7 @@ function TripCard({
   }
 }) {
   const isUpcoming = new Date(trip.startDate) > new Date()
-  const isOngoing =
-    new Date(trip.startDate) <= new Date() &&
-    new Date(trip.endDate) >= new Date()
+  const isOngoing = new Date(trip.startDate) <= new Date() && new Date(trip.endDate) >= new Date()
 
   return (
     <Card className="overflow-hidden hover:shadow-md transition-shadow">
@@ -97,9 +87,7 @@ function TripCard({
               <div className="absolute top-2 right-2">
                 <span
                   className={`text-xs px-2 py-1 rounded-full ${
-                    isOngoing
-                      ? "bg-green-500 text-white"
-                      : "bg-primary text-primary-foreground"
+                    isOngoing ? "bg-green-500 text-white" : "bg-primary text-primary-foreground"
                   }`}
                 >
                   {isOngoing ? "Ongoing" : "Upcoming"}
@@ -114,9 +102,7 @@ function TripCard({
               <div className="absolute top-2 right-2">
                 <span
                   className={`text-xs px-2 py-1 rounded-full ${
-                    isOngoing
-                      ? "bg-green-500 text-white"
-                      : "bg-primary text-primary-foreground"
+                    isOngoing ? "bg-green-500 text-white" : "bg-primary text-primary-foreground"
                   }`}
                 >
                   {isOngoing ? "Ongoing" : "Upcoming"}
@@ -139,9 +125,7 @@ function TripCard({
             {format(new Date(trip.endDate), "MMM d, yyyy")}
           </div>
           {trip.description && (
-            <p className="mt-2 text-sm text-muted-foreground line-clamp-2">
-              {trip.description}
-            </p>
+            <p className="mt-2 text-sm text-muted-foreground line-clamp-2">{trip.description}</p>
           )}
         </CardContent>
       </Link>
