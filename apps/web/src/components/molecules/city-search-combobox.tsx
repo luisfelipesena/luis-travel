@@ -87,7 +87,17 @@ export function CitySearchCombobox({
   }
 
   const handleFocus = () => {
-    if (searchQuery.length >= 2 || !value) {
+    setOpen(true)
+  }
+
+  const handleClick = () => {
+    if (value) {
+      // If a value is selected, clear it and let user search again
+      onChange(null)
+      setSearchQuery("")
+      setOpen(true)
+      inputRef.current?.focus()
+    } else {
       setOpen(true)
     }
   }
@@ -99,7 +109,7 @@ export function CitySearchCombobox({
   return (
     <div ref={containerRef} className={cn("relative", className)}>
       <div className="relative">
-        <MapPin className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+        <MapPin className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground pointer-events-none" />
         <Input
           ref={inputRef}
           type="text"
@@ -107,16 +117,17 @@ export function CitySearchCombobox({
           value={value ? displayValue : searchQuery}
           onChange={handleInputChange}
           onFocus={handleFocus}
+          onClick={handleClick}
           disabled={disabled}
-          className={cn("pl-9 pr-8", value && "text-foreground")}
+          className={cn("pl-9 pr-8 cursor-pointer", value && "text-foreground")}
           readOnly={!!value}
-          onClick={() => !value && setOpen(true)}
         />
         {value && (
           <button
             type="button"
             onClick={handleClear}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+            aria-label="Limpar seleção"
           >
             <X className="h-4 w-4" />
           </button>

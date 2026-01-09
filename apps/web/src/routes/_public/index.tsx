@@ -69,65 +69,68 @@ function LandingPage() {
 
   return (
     <>
-      {/* Hero Section - Dark Theme */}
-      <section className="relative min-h-[90vh] bg-gradient-to-br from-gray-950 via-gray-900 to-gray-950 overflow-hidden">
-        {/* Animated background elements */}
-        <div className="absolute inset-0 -z-10">
-          {/* Globe-like gradient effect */}
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px]">
-            <div className="absolute inset-0 rounded-full bg-gradient-to-br from-primary/25 via-primary/10 to-transparent blur-3xl animate-pulse" />
-            <div className="absolute inset-8 rounded-full bg-gradient-to-tr from-primary/20 via-primary/5 to-transparent blur-2xl" />
+      {/* Hero Section - Light Theme */}
+      <section className="relative bg-gradient-to-br from-slate-50 via-white to-primary/5 overflow-hidden">
+        {/* Background effects */}
+        <div className="absolute inset-0">
+          {/* Soft gradient orbs */}
+          <div className="absolute top-0 right-[10%] w-[500px] h-[500px]">
+            <div className="absolute inset-0 rounded-full bg-primary/10 blur-[100px]" />
           </div>
-          {/* Grid lines effect */}
+          <div className="absolute bottom-0 left-[5%] w-[400px] h-[400px]">
+            <div className="absolute inset-0 rounded-full bg-primary/8 blur-[80px]" />
+          </div>
+          {/* Subtle grid pattern */}
           <div
             className="absolute inset-0 opacity-[0.03]"
             style={{
               backgroundImage: `
-                linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)
+                linear-gradient(rgb(45 139 111 / 0.3) 1px, transparent 1px),
+                linear-gradient(90deg, rgb(45 139 111 / 0.3) 1px, transparent 1px)
               `,
               backgroundSize: "60px 60px",
             }}
           />
-          {/* Floating dots */}
-          <div className="absolute top-20 left-[15%] w-2 h-2 bg-primary/60 rounded-full" />
-          <div className="absolute top-40 right-[20%] w-1.5 h-1.5 bg-primary/40 rounded-full" />
-          <div className="absolute bottom-32 left-[25%] w-2 h-2 bg-primary/50 rounded-full" />
-          <div className="absolute top-[60%] right-[30%] w-1 h-1 bg-primary/30 rounded-full" />
+          {/* Decorative dots */}
+          <div className="absolute top-[15%] left-[8%] w-2 h-2 bg-primary/40 rounded-full" />
+          <div className="absolute top-[25%] left-[25%] w-1.5 h-1.5 bg-primary/30 rounded-full" />
+          <div className="absolute bottom-[30%] left-[12%] w-2 h-2 bg-primary/35 rounded-full" />
+          <div className="absolute top-[20%] right-[15%] w-1.5 h-1.5 bg-primary/25 rounded-full" />
+          <div className="absolute bottom-[25%] right-[20%] w-2 h-2 bg-primary/40 rounded-full" />
         </div>
 
-        <div className="container relative z-10 py-16 lg:py-24">
-          <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+        <div className="container relative z-10 py-16 lg:py-20">
+          <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center min-h-[calc(100vh-200px)]">
             {/* Left side - Text content */}
-            <div className="space-y-8 text-white">
+            <div className="space-y-8">
               {/* Stats badge */}
-              <div className="inline-flex items-center gap-6 px-5 py-2.5 rounded-full border border-white/10 bg-white/5 backdrop-blur-sm">
+              <div className="inline-flex items-center gap-4 sm:gap-6 px-4 sm:px-5 py-2.5 rounded-full border border-primary/10 bg-white/80 backdrop-blur-sm shadow-sm">
                 {stats.map((stat, i) => (
                   <div key={stat.label} className="flex items-center gap-2">
-                    <span className="text-lg font-bold text-primary">{stat.value}</span>
-                    <span className="text-sm text-gray-400">{stat.label}</span>
-                    {i < stats.length - 1 && <div className="w-px h-4 bg-white/10 ml-4" />}
+                    <span className="text-base sm:text-lg font-bold text-primary">{stat.value}</span>
+                    <span className="text-xs sm:text-sm text-muted-foreground">{stat.label}</span>
+                    {i < stats.length - 1 && (
+                      <div className="w-px h-4 bg-border ml-2 sm:ml-4" />
+                    )}
                   </div>
                 ))}
               </div>
 
               {/* Headline */}
-              <div className="space-y-4">
-                <h1 className="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
+              <div className="space-y-5">
+                <h1 className="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl leading-[1.1] text-gray-900">
                   Planeje sua viagem
                   <br />
-                  <span className="text-primary">
-                    de qualquer lugar
-                  </span>
+                  <span className="text-primary">de qualquer lugar</span>
                 </h1>
-                <p className="text-lg text-gray-400 max-w-lg leading-relaxed">
-                  Crie roteiros detalhados, acompanhe voos e colabore com amigos. Nossa IA sugere as
-                  melhores atividades para seu destino.
+                <p className="text-lg text-muted-foreground max-w-lg leading-relaxed">
+                  Crie roteiros detalhados, acompanhe voos e colabore com amigos.
+                  Nossa IA sugere as melhores atividades para seu destino.
                 </p>
               </div>
 
               {/* Feature highlights */}
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-3">
                 {[
                   "Calendário visual",
                   "Colaboração real-time",
@@ -136,18 +139,18 @@ function LandingPage() {
                   "Multi-destino",
                   "100% gratuito",
                 ].map((feature) => (
-                  <div key={feature} className="flex items-center gap-2 text-sm text-gray-300">
-                    <div className="w-1.5 h-1.5 rounded-full bg-primary" />
+                  <div key={feature} className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <div className="w-1.5 h-1.5 rounded-full bg-primary flex-shrink-0" />
                     {feature}
                   </div>
                 ))}
               </div>
 
               {/* Mobile CTA */}
-              <div className="lg:hidden">
+              <div className="lg:hidden pt-2">
                 <Button
                   size="lg"
-                  className="bg-primary hover:bg-primary/90 text-white px-8"
+                  className="px-8"
                   onClick={() =>
                     document.getElementById("trip-form")?.scrollIntoView({ behavior: "smooth" })
                   }
@@ -159,21 +162,18 @@ function LandingPage() {
             </div>
 
             {/* Right side - Form */}
-            <div id="trip-form" className="lg:pl-8">
-              <EnhancedTripForm isAuthenticated={isAuthenticated} variant="dark" />
+            <div id="trip-form" className="lg:pl-4">
+              <EnhancedTripForm isAuthenticated={isAuthenticated} />
             </div>
           </div>
         </div>
-
-        {/* Bottom gradient fade */}
-        <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-background to-transparent" />
       </section>
 
       {/* Features Section */}
-      <section id="features" className="py-20 lg:py-28">
+      <section id="features" className="py-20 lg:py-28 bg-muted/30">
         <div className="container">
           <div className="mx-auto max-w-2xl text-center mb-16">
-            <div className="inline-flex items-center gap-2 rounded-full border bg-muted/50 px-4 py-1.5 text-sm mb-6">
+            <div className="inline-flex items-center gap-2 rounded-full border bg-background px-4 py-1.5 text-sm mb-6 shadow-sm">
               <MapPin className="h-4 w-4 text-primary" />
               <span>Tudo para planejar sua aventura</span>
             </div>
@@ -198,7 +198,7 @@ function LandingPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 lg:py-28 bg-muted/30">
+      <section className="py-20 lg:py-28">
         <div className="container">
           <div className="grid gap-12 lg:grid-cols-2 items-center">
             <div className="space-y-8">

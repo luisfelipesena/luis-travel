@@ -1,8 +1,8 @@
 import { useNavigate } from "@tanstack/react-router"
 import { format } from "date-fns"
 import { ptBR } from "date-fns/locale"
-import { ArrowRight, CalendarIcon, Loader2, MapPin } from "lucide-react"
-import { useEffect, useMemo, useRef, useState } from "react"
+import { ArrowRight, CalendarIcon, ImageIcon, Loader2, MapPin } from "lucide-react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import type { DateRange } from "react-day-picker"
 import { CitySearchCombobox, type CitySelection } from "@/components/molecules/city-search-combobox"
 import { Button } from "@/components/ui/button"
@@ -14,16 +14,162 @@ import { trpc } from "@/lib/trpc"
 import { cn } from "@/lib/utils"
 
 /**
- * Generate destination image URL using Lorem Picsum
+ * Fetch image from Wikipedia article by title
  */
-function getDestinationImageUrl(cityName: string, country?: string): string {
-  const seed = [cityName, country]
-    .filter(Boolean)
-    .join("-")
-    .toLowerCase()
-    .replace(/\s+/g, "-")
-    .replace(/[^a-z0-9-]/g, "")
-  return `https://picsum.photos/seed/${encodeURIComponent(seed)}/800/600`
+async function fetchWikipediaImageByTitle(title: string): Promise<string | null> {
+  try {
+    const response = await fetch(
+      `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(title)}`,
+      {
+        headers: {
+          "Api-User-Agent": "LuisTravel/1.0 (travel planning app)",
+        },
+      }
+    )
+
+    if (!response.ok) return null
+
+    const data = await response.json()
+
+    if (data.originalimage?.source) {
+      return data.originalimage.source
+    }
+    if (data.thumbnail?.source) {
+      return data.thumbnail.source.replace(/\/\d+px-/, "/800px-")
+    }
+  } catch {
+    return null
+  }
+  return null
+}
+
+/**
+ * Search Wikipedia for the correct article title
+ * Useful when city has disambiguation (e.g., Salvador -> Salvador, Bahia)
+ */
+async function searchWikipediaForCity(
+  cityName: string,
+  country?: string
+): Promise<string | null> {
+  try {
+    const searchQuery = country ? `${cityName} ${country} city` : `${cityName} city`
+    const response = await fetch(
+      `https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(searchQuery)}&format=json&origin=*&srlimit=5`,
+      {
+        headers: {
+          "Api-User-Agent": "LuisTravel/1.0 (travel planning app)",
+        },
+      }
+    )
+
+    if (!response.ok) return null
+
+    const data = await response.json()
+    const results = data.query?.search || []
+
+    // Find first result that looks like a city article
+    for (const result of results) {
+      const title = result.title as string
+      // Skip disambiguation pages and non-city articles
+      if (title.includes("disambiguation") || title.includes("(song)") || title.includes("(film)")) {
+        continue
+      }
+      // Prefer articles that contain the city name
+      if (title.toLowerCase().includes(cityName.toLowerCase())) {
+        return title.replace(/\s+/g, "_")
+      }
+    }
+
+    // Fallback to first result if none match perfectly
+    if (results.length > 0) {
+      return (results[0].title as string).replace(/\s+/g, "_")
+    }
+  } catch {
+    return null
+  }
+  return null
+}
+
+/**
+ * Fetch city image from Wikipedia API
+ * Returns iconic landmark photos from Wikipedia articles
+ */
+async function fetchWikipediaCityImage(
+  cityName: string,
+  country?: string
+): Promise<string | null> {
+  // Build possible Wikipedia article titles to try
+  const titlesToTry: string[] = []
+
+  // Format: "City_Name" (most common)
+  titlesToTry.push(cityName.replace(/\s+/g, "_"))
+
+  // Format: "City_Name,_Country" or "City_Name,_State"
+  if (country) {
+    const countryFormatted = country.replace(/\s+/g, "_")
+    titlesToTry.push(`${cityName.replace(/\s+/g, "_")},_${countryFormatted}`)
+  }
+
+  // Format: "City_Name_(city)" for disambiguation
+  titlesToTry.push(`${cityName.replace(/\s+/g, "_")}_(city)`)
+
+  // Try direct title matches first (faster)
+  for (const title of titlesToTry) {
+    const image = await fetchWikipediaImageByTitle(title)
+    if (image) return image
+  }
+
+  // Fallback: Use Wikipedia search to find correct article
+  const searchTitle = await searchWikipediaForCity(cityName, country)
+  if (searchTitle) {
+    const image = await fetchWikipediaImageByTitle(searchTitle)
+    if (image) return image
+  }
+
+  return null
+}
+
+/**
+ * Hook to fetch Wikipedia city image with caching
+ */
+function useWikipediaCityImage(city: CitySelection | null) {
+  const [imageUrl, setImageUrl] = useState<string | null>(null)
+  const [isLoading, setIsLoading] = useState(false)
+  const cache = useRef<Map<string, string | null>>(new Map())
+
+  const fetchImage = useCallback(async () => {
+    if (!city) {
+      setImageUrl(null)
+      return
+    }
+
+    const cacheKey = `${city.name}-${city.country || ""}`
+
+    // Check cache first
+    if (cache.current.has(cacheKey)) {
+      setImageUrl(cache.current.get(cacheKey) || null)
+      return
+    }
+
+    setIsLoading(true)
+
+    try {
+      const url = await fetchWikipediaCityImage(city.name, city.country)
+      cache.current.set(cacheKey, url)
+      setImageUrl(url)
+    } catch {
+      cache.current.set(cacheKey, null)
+      setImageUrl(null)
+    } finally {
+      setIsLoading(false)
+    }
+  }, [city])
+
+  useEffect(() => {
+    fetchImage()
+  }, [fetchImage])
+
+  return { imageUrl, isLoading }
 }
 
 const STORAGE_KEY = "luis_travel_pending_trip"
@@ -56,11 +202,9 @@ export function clearPendingTrip() {
 
 interface EnhancedTripFormProps {
   isAuthenticated: boolean
-  variant?: "light" | "dark"
 }
 
-export function EnhancedTripForm({ isAuthenticated, variant = "light" }: EnhancedTripFormProps) {
-  const isDark = variant === "dark"
+export function EnhancedTripForm({ isAuthenticated }: EnhancedTripFormProps) {
   const navigate = useNavigate()
   const [tripName, setTripName] = useState("")
   const [selectedCity, setSelectedCity] = useState<CitySelection | null>(null)
@@ -68,18 +212,15 @@ export function EnhancedTripForm({ isAuthenticated, variant = "light" }: Enhance
   const [isSubmitting, setIsSubmitting] = useState(false)
   const hasTriggeredAutoCreate = useRef(false)
 
+  // Fetch Wikipedia image for selected city
+  const { imageUrl: coverImage, isLoading: isImageLoading } = useWikipediaCityImage(selectedCity)
+
   const createTripMutation = trpc.trip.create.useMutation({
     onSuccess: (trip) => {
       clearPendingTrip()
       navigate({ to: "/dashboard/trips/$tripId/calendar", params: { tripId: trip.id } })
     },
   })
-
-  // Auto-generate cover image URL based on selected city
-  const coverImage = useMemo(() => {
-    if (!selectedCity) return undefined
-    return getDestinationImageUrl(selectedCity.name, selectedCity.country)
-  }, [selectedCity])
 
   // Restore pending trip on load
   useEffect(() => {
@@ -103,15 +244,11 @@ export function EnhancedTripForm({ isAuthenticated, variant = "light" }: Enhance
       hasTriggeredAutoCreate.current = true
 
       const destinationData = pending.destinationData
-      // Generate cover image from destination
-      const autoCoverImage = destinationData
-        ? getDestinationImageUrl(destinationData.name, destinationData.country)
-        : undefined
 
       createTripMutation.mutate({
         name: pending.name || `Viagem para ${pending.destination}`,
         destination: pending.destination,
-        coverImage: autoCoverImage,
+        coverImage: pending.coverImage,
         destinations: destinationData
           ? [
               {
@@ -144,7 +281,7 @@ export function EnhancedTripForm({ isAuthenticated, variant = "light" }: Enhance
 
     const tripData: PendingTrip = {
       name,
-      coverImage,
+      coverImage: coverImage || undefined,
       destination,
       destinationData: selectedCity,
       dateRange: {
@@ -157,7 +294,7 @@ export function EnhancedTripForm({ isAuthenticated, variant = "light" }: Enhance
       createTripMutation.mutate({
         name,
         destination,
-        coverImage,
+        coverImage: coverImage || undefined,
         destinations: [
           {
             name: selectedCity.name,
@@ -184,29 +321,17 @@ export function EnhancedTripForm({ isAuthenticated, variant = "light" }: Enhance
     <form onSubmit={handleSubmit} className="w-full">
       <div className="relative">
         {/* Glow effect */}
-        <div className="absolute -inset-1 rounded-3xl blur-xl opacity-70 bg-gradient-to-r from-primary/20 via-primary/10 to-primary/20" />
+        <div className="absolute -inset-1 rounded-3xl blur-xl opacity-60 bg-gradient-to-r from-primary/20 via-primary/10 to-primary/20" />
 
-        <div
-          className={cn(
-            "relative space-y-6 rounded-2xl border p-6 shadow-2xl md:p-8",
-            isDark ? "bg-gray-900/90 backdrop-blur-sm border-white/10" : "bg-card"
-          )}
-        >
+        <div className="relative space-y-6 rounded-2xl border bg-card p-6 shadow-xl md:p-8">
           {/* Header */}
           <div className="flex items-center gap-3">
-            <div
-              className={cn(
-                "flex h-10 w-10 items-center justify-center rounded-xl",
-                isDark ? "bg-primary/20" : "bg-primary/10"
-              )}
-            >
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
               <MapPin className="h-5 w-5 text-primary" />
             </div>
             <div>
-              <h2 className={cn("text-xl font-bold", isDark && "text-white")}>
-                Planeje sua viagem
-              </h2>
-              <p className={cn("text-sm", isDark ? "text-gray-400" : "text-muted-foreground")}>
+              <h2 className="text-xl font-bold">Planeje sua viagem</h2>
+              <p className="text-sm text-muted-foreground">
                 Preencha os dados e comece a organizar
               </p>
             </div>
@@ -215,27 +340,20 @@ export function EnhancedTripForm({ isAuthenticated, variant = "light" }: Enhance
           <div className="space-y-5">
             {/* Trip Name */}
             <div className="space-y-2">
-              <Label htmlFor="trip-name" className={cn(isDark && "text-gray-200")}>
-                Nome da viagem
-              </Label>
+              <Label htmlFor="trip-name">Nome da viagem</Label>
               <Input
                 id="trip-name"
                 placeholder="Ex: Férias de Verão 2025"
                 value={tripName}
                 onChange={(e) => setTripName(e.target.value)}
-                className={cn(
-                  "h-11",
-                  isDark && "bg-gray-800/50 border-white/10 text-white placeholder:text-gray-500"
-                )}
+                className="h-11"
               />
             </div>
 
             {/* Destination */}
             <div className="space-y-2">
-              <Label className={cn("flex items-center gap-2", isDark && "text-gray-200")}>
-                <MapPin
-                  className={cn("h-4 w-4", isDark ? "text-gray-400" : "text-muted-foreground")}
-                />
+              <Label className="flex items-center gap-2">
+                <MapPin className="h-4 w-4 text-muted-foreground" />
                 Para onde você vai?
               </Label>
               <CitySearchCombobox
@@ -246,32 +364,38 @@ export function EnhancedTripForm({ isAuthenticated, variant = "light" }: Enhance
             </div>
 
             {/* Destination Preview Image - shows when city is selected */}
-            {coverImage && (
-              <div
-                className={cn(
-                  "relative overflow-hidden rounded-xl border",
-                  isDark && "border-white/10"
+            {selectedCity && (
+              <div className="relative overflow-hidden rounded-xl border bg-muted h-36">
+                {isImageLoading ? (
+                  <div className="absolute inset-0 flex items-center justify-center bg-muted">
+                    <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+                  </div>
+                ) : coverImage ? (
+                  <img
+                    src={coverImage}
+                    alt={`${selectedCity.name}`}
+                    className="w-full h-full object-cover"
+                    loading="lazy"
+                  />
+                ) : (
+                  <div className="absolute inset-0 flex items-center justify-center bg-muted">
+                    <ImageIcon className="h-8 w-8 text-muted-foreground/50" />
+                  </div>
                 )}
-              >
-                <img
-                  src={coverImage}
-                  alt={`Preview de ${selectedCity?.name}`}
-                  className="w-full h-32 object-cover"
-                  loading="lazy"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
-                <div className="absolute bottom-2 left-3 text-white text-sm font-medium">
-                  {destination}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
+                <div className="absolute bottom-3 left-4 text-white">
+                  <p className="text-lg font-semibold">{selectedCity.name}</p>
+                  {selectedCity.country && (
+                    <p className="text-sm opacity-90">{selectedCity.country}</p>
+                  )}
                 </div>
               </div>
             )}
 
             {/* Date Range */}
             <div className="space-y-2">
-              <Label className={cn("flex items-center gap-2", isDark && "text-gray-200")}>
-                <CalendarIcon
-                  className={cn("h-4 w-4", isDark ? "text-gray-400" : "text-muted-foreground")}
-                />
+              <Label className="flex items-center gap-2">
+                <CalendarIcon className="h-4 w-4 text-muted-foreground" />
                 Quando?
               </Label>
               <Popover>
@@ -280,10 +404,7 @@ export function EnhancedTripForm({ isAuthenticated, variant = "light" }: Enhance
                     variant="outline"
                     className={cn(
                       "w-full justify-start text-left font-normal h-11",
-                      !dateRange && "text-muted-foreground",
-                      isDark &&
-                        "bg-gray-800/50 border-white/10 text-white hover:bg-gray-800 hover:text-white",
-                      isDark && !dateRange && "text-gray-500"
+                      !dateRange && "text-muted-foreground"
                     )}
                   >
                     {dateRange?.from ? (
@@ -337,12 +458,7 @@ export function EnhancedTripForm({ isAuthenticated, variant = "light" }: Enhance
           </Button>
 
           {!isAuthenticated && (
-            <p
-              className={cn(
-                "text-center text-xs",
-                isDark ? "text-gray-500" : "text-muted-foreground"
-              )}
-            >
+            <p className="text-center text-xs text-muted-foreground">
               Você será redirecionado para criar uma conta ou fazer login
             </p>
           )}
