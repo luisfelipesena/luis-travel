@@ -17,21 +17,20 @@ import { Textarea } from "@/components/ui/textarea"
 import { trpc } from "@/lib/trpc"
 import { cn } from "@/lib/utils"
 
+/** Generate destination image URL using Lorem Picsum */
+function getDestinationImageUrl(cityName: string, country?: string): string {
+  const seed = [cityName, country]
+    .filter(Boolean)
+    .join("-")
+    .toLowerCase()
+    .replace(/\s+/g, "-")
+    .replace(/[^a-z0-9-]/g, "")
+  return `https://picsum.photos/seed/${encodeURIComponent(seed)}/800/600`
+}
+
 export const Route = createFileRoute("/_authenticated/dashboard/trips/new")({
   component: NewTripPage,
 })
-
-/**
- * Generate destination image URL using Unsplash Source
- */
-function getDestinationImageUrl(cityName: string, country?: string): string {
-  const searchTerms = [cityName, country, "travel", "landmark", "tourism"]
-    .filter(Boolean)
-    .map((term) => encodeURIComponent(term!.toLowerCase()))
-    .join(",")
-
-  return `https://source.unsplash.com/featured/800x600/?${searchTerms}`
-}
 
 function NewTripPage() {
   const navigate = useNavigate()

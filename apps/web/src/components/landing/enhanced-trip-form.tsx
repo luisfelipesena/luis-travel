@@ -1,7 +1,7 @@
 import { useNavigate } from "@tanstack/react-router"
 import { format } from "date-fns"
 import { ptBR } from "date-fns/locale"
-import { ArrowRight, CalendarIcon, Loader2, MapPin, Sparkles } from "lucide-react"
+import { ArrowRight, CalendarIcon, Loader2, MapPin } from "lucide-react"
 import { useEffect, useMemo, useRef, useState } from "react"
 import type { DateRange } from "react-day-picker"
 import { CitySearchCombobox, type CitySelection } from "@/components/molecules/city-search-combobox"
@@ -14,16 +14,16 @@ import { trpc } from "@/lib/trpc"
 import { cn } from "@/lib/utils"
 
 /**
- * Generate destination image URL using Unsplash Source
- * This creates a high-quality travel image for any destination
+ * Generate destination image URL using Lorem Picsum
  */
 function getDestinationImageUrl(cityName: string, country?: string): string {
-  const searchTerms = [cityName, country, "travel", "landmark", "tourism"]
+  const seed = [cityName, country]
     .filter(Boolean)
-    .map((term) => encodeURIComponent(term!.toLowerCase()))
-    .join(",")
-
-  return `https://source.unsplash.com/featured/800x600/?${searchTerms}`
+    .join("-")
+    .toLowerCase()
+    .replace(/\s+/g, "-")
+    .replace(/[^a-z0-9-]/g, "")
+  return `https://picsum.photos/seed/${encodeURIComponent(seed)}/800/600`
 }
 
 const STORAGE_KEY = "luis_travel_pending_trip"
@@ -56,9 +56,11 @@ export function clearPendingTrip() {
 
 interface EnhancedTripFormProps {
   isAuthenticated: boolean
+  variant?: "light" | "dark"
 }
 
-export function EnhancedTripForm({ isAuthenticated }: EnhancedTripFormProps) {
+export function EnhancedTripForm({ isAuthenticated, variant = "light" }: EnhancedTripFormProps) {
+  const isDark = variant === "dark"
   const navigate = useNavigate()
   const [tripName, setTripName] = useState("")
   const [selectedCity, setSelectedCity] = useState<CitySelection | null>(null)
@@ -182,17 +184,36 @@ export function EnhancedTripForm({ isAuthenticated }: EnhancedTripFormProps) {
     <form onSubmit={handleSubmit} className="w-full">
       <div className="relative">
         {/* Glow effect */}
-        <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 via-primary/10 to-primary/20 rounded-3xl blur-xl opacity-70" />
+        <div
+          className={cn(
+            "absolute -inset-1 rounded-3xl blur-xl opacity-70",
+            isDark
+              ? "bg-gradient-to-r from-emerald-500/20 via-teal-500/10 to-emerald-500/20"
+              : "bg-gradient-to-r from-primary/20 via-primary/10 to-primary/20"
+          )}
+        />
 
-        <div className="relative space-y-6 rounded-2xl border bg-card p-6 shadow-2xl md:p-8">
+        <div
+          className={cn(
+            "relative space-y-6 rounded-2xl border p-6 shadow-2xl md:p-8",
+            isDark ? "bg-gray-900/90 backdrop-blur-sm border-white/10" : "bg-card"
+          )}
+        >
           {/* Header */}
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
-              <Sparkles className="h-5 w-5 text-primary" />
+            <div
+              className={cn(
+                "flex h-10 w-10 items-center justify-center rounded-xl",
+                isDark ? "bg-emerald-500/20" : "bg-primary/10"
+              )}
+            >
+              <MapPin className={cn("h-5 w-5", isDark ? "text-emerald-400" : "text-primary")} />
             </div>
             <div>
-              <h2 className="text-xl font-bold">Planeje sua viagem</h2>
-              <p className="text-sm text-muted-foreground">
+              <h2 className={cn("text-xl font-bold", isDark && "text-white")}>
+                Planeje sua viagem
+              </h2>
+              <p className={cn("text-sm", isDark ? "text-gray-400" : "text-muted-foreground")}>
                 Preencha os dados e comece a organizar
               </p>
             </div>
@@ -201,20 +222,27 @@ export function EnhancedTripForm({ isAuthenticated }: EnhancedTripFormProps) {
           <div className="space-y-5">
             {/* Trip Name */}
             <div className="space-y-2">
-              <Label htmlFor="trip-name">Nome da viagem</Label>
+              <Label htmlFor="trip-name" className={cn(isDark && "text-gray-200")}>
+                Nome da viagem
+              </Label>
               <Input
                 id="trip-name"
                 placeholder="Ex: Férias de Verão 2025"
                 value={tripName}
                 onChange={(e) => setTripName(e.target.value)}
-                className="h-11"
+                className={cn(
+                  "h-11",
+                  isDark && "bg-gray-800/50 border-white/10 text-white placeholder:text-gray-500"
+                )}
               />
             </div>
 
             {/* Destination */}
             <div className="space-y-2">
-              <Label className="flex items-center gap-2">
-                <MapPin className="h-4 w-4 text-muted-foreground" />
+              <Label className={cn("flex items-center gap-2", isDark && "text-gray-200")}>
+                <MapPin
+                  className={cn("h-4 w-4", isDark ? "text-gray-400" : "text-muted-foreground")}
+                />
                 Para onde você vai?
               </Label>
               <CitySearchCombobox
@@ -226,7 +254,12 @@ export function EnhancedTripForm({ isAuthenticated }: EnhancedTripFormProps) {
 
             {/* Destination Preview Image - shows when city is selected */}
             {coverImage && (
-              <div className="relative overflow-hidden rounded-xl border">
+              <div
+                className={cn(
+                  "relative overflow-hidden rounded-xl border",
+                  isDark && "border-white/10"
+                )}
+              >
                 <img
                   src={coverImage}
                   alt={`Preview de ${selectedCity?.name}`}
@@ -242,8 +275,10 @@ export function EnhancedTripForm({ isAuthenticated }: EnhancedTripFormProps) {
 
             {/* Date Range */}
             <div className="space-y-2">
-              <Label className="flex items-center gap-2">
-                <CalendarIcon className="h-4 w-4 text-muted-foreground" />
+              <Label className={cn("flex items-center gap-2", isDark && "text-gray-200")}>
+                <CalendarIcon
+                  className={cn("h-4 w-4", isDark ? "text-gray-400" : "text-muted-foreground")}
+                />
                 Quando?
               </Label>
               <Popover>
@@ -252,7 +287,10 @@ export function EnhancedTripForm({ isAuthenticated }: EnhancedTripFormProps) {
                     variant="outline"
                     className={cn(
                       "w-full justify-start text-left font-normal h-11",
-                      !dateRange && "text-muted-foreground"
+                      !dateRange && "text-muted-foreground",
+                      isDark &&
+                        "bg-gray-800/50 border-white/10 text-white hover:bg-gray-800 hover:text-white",
+                      isDark && !dateRange && "text-gray-500"
                     )}
                   >
                     {dateRange?.from ? (
@@ -289,7 +327,12 @@ export function EnhancedTripForm({ isAuthenticated }: EnhancedTripFormProps) {
           <Button
             type="submit"
             size="lg"
-            className="w-full h-12 text-base font-semibold shadow-lg shadow-primary/25"
+            className={cn(
+              "w-full h-12 text-base font-semibold shadow-lg",
+              isDark
+                ? "bg-emerald-500 hover:bg-emerald-600 text-white shadow-emerald-500/25"
+                : "shadow-primary/25"
+            )}
             disabled={!isValid || isLoading}
           >
             {isLoading ? (
@@ -306,7 +349,12 @@ export function EnhancedTripForm({ isAuthenticated }: EnhancedTripFormProps) {
           </Button>
 
           {!isAuthenticated && (
-            <p className="text-center text-xs text-muted-foreground">
+            <p
+              className={cn(
+                "text-center text-xs",
+                isDark ? "text-gray-500" : "text-muted-foreground"
+              )}
+            >
               Você será redirecionado para criar uma conta ou fazer login
             </p>
           )}

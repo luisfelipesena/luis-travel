@@ -3,31 +3,31 @@ import DateTimePicker from "@react-native-community/datetimepicker"
 import { useRouter } from "expo-router"
 import { useMemo, useState } from "react"
 import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  TouchableOpacity,
-  TextInput,
+  ActivityIndicator,
+  Alert,
+  Image,
   KeyboardAvoidingView,
   Platform,
-  Alert,
-  ActivityIndicator,
-  Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context"
 import { trpc } from "@/src/lib/trpc"
 
 /**
- * Generate destination image URL using Unsplash Source
+ * Generate destination image URL using Lorem Picsum
+ * Uses seed for consistent images per destination
  */
 function getDestinationImageUrl(destination: string): string {
-  const searchTerms = [destination, "travel", "landmark", "tourism"]
-    .filter(Boolean)
-    .map((term) => encodeURIComponent(term.toLowerCase()))
-    .join(",")
-
-  return `https://source.unsplash.com/featured/800x600/?${searchTerms}`
+  const seed = destination
+    .toLowerCase()
+    .replace(/\s+/g, "-")
+    .replace(/[^a-z0-9-]/g, "")
+  return `https://picsum.photos/seed/${encodeURIComponent(seed)}/800/600`
 }
 
 export default function NewTripScreen() {
