@@ -4,6 +4,7 @@ import { format } from "date-fns"
 import { ptBR } from "date-fns/locale"
 import { ArrowLeft, CalendarIcon } from "lucide-react"
 import { useMemo, useState } from "react"
+import type { DateRange } from "react-day-picker"
 import { toast } from "sonner"
 import { type Destination, DestinationList } from "@/components/trip/destination-list"
 import { Button } from "@/components/ui/button"
@@ -39,8 +40,7 @@ function NewTripPage() {
     { name: "", displayName: "", lat: 0, lng: 0, order: 0 },
   ])
   const [description, setDescription] = useState("")
-  const [startDate, setStartDate] = useState<Date>()
-  const [endDate, setEndDate] = useState<Date>()
+  const [dateRange, setDateRange] = useState<DateRange | undefined>()
 
   const createTrip = trpc.trip.create.useMutation({
     onSuccess: (trip) => {
@@ -69,12 +69,12 @@ function NewTripPage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
 
-    if (!name || validDestinations.length === 0 || !startDate || !endDate) {
+    if (!name || validDestinations.length === 0 || !dateRange?.from || !dateRange?.to) {
       toast.error("Por favor, preencha todos os campos obrigatórios")
       return
     }
 
-    if (startDate >= endDate) {
+    if (dateRange.from >= dateRange.to) {
       toast.error("A data de término deve ser após a data de início")
       return
     }
@@ -91,8 +91,8 @@ function NewTripPage() {
         countryCode: d.countryCode,
       })),
       description: description || undefined,
-      startDate,
-      endDate,
+      startDate: dateRange.from,
+      endDate: dateRange.to,
       coverImage,
     })
   }
@@ -158,68 +158,48 @@ function NewTripPage() {
               </div>
             )}
 
-            <div className="grid gap-4 md:grid-cols-2">
-              <div className="space-y-2">
-                <Label>Data de Início *</Label>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className={cn(
-                        "w-full justify-start text-left font-normal",
-                        !startDate && "text-muted-foreground"
-                      )}
-                    >
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {startDate
-                        ? format(startDate, "d 'de' MMMM, yyyy", { locale: ptBR })
-                        : "Selecione uma data"}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={startDate}
-                      onSelect={setStartDate}
-                      disabled={(date) => date < new Date()}
-                      locale={ptBR}
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
-              </div>
-
-              <div className="space-y-2">
-                <Label>Data de Término *</Label>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className={cn(
-                        "w-full justify-start text-left font-normal",
-                        !endDate && "text-muted-foreground"
-                      )}
-                    >
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {endDate
-                        ? format(endDate, "d 'de' MMMM, yyyy", { locale: ptBR })
-                        : "Selecione uma data"}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={endDate}
-                      onSelect={setEndDate}
-                      disabled={(date) =>
-                        date < new Date() || Boolean(startDate && date <= startDate)
-                      }
-                      locale={ptBR}
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
-              </div>
+            {/* Date Range Picker - single picker for both dates */}
+            <div className="space-y-2">
+              <Label className="flex items-center gap-2">
+                <CalendarIcon className="h-4 w-4 text-muted-foreground" />
+                Datas da Viagem *
+              </Label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      "w-full justify-start text-left font-normal",
+                      !dateRange && "text-muted-foreground"
+                    )}
+                  >
+                    {dateRange?.from ? (
+                      dateRange.to ? (
+                        <>
+                          {format(dateRange.from, "dd MMM", { locale: ptBR })} -{" "}
+                          {format(dateRange.to, "dd MMM yyyy", { locale: ptBR })}
+                        </>
+                      ) : (
+                        format(dateRange.from, "dd MMM yyyy", { locale: ptBR })
+                      )
+                    ) : (
+                      "Selecione as datas da viagem"
+                    )}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="center">
+                  <Calendar
+                    initialFocus
+                    mode="range"
+                    defaultMonth={dateRange?.from}
+                    selected={dateRange}
+                    onSelect={setDateRange}
+                    numberOfMonths={2}
+                    locale={ptBR}
+                    disabled={(date) => date < new Date()}
+                  />
+                </PopoverContent>
+              </Popover>
             </div>
 
             <div className="space-y-2">

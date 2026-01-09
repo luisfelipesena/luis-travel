@@ -44,13 +44,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     github: false,
   })
 
-  // Load stored auth state and fetch providers on mount
-  useEffect(() => {
-    loadStoredAuth()
-    fetchAvailableProviders()
-  }, [])
-
-  const fetchAvailableProviders = async () => {
+  const fetchAvailableProviders = useCallback(async () => {
     try {
       const response = await fetch(`${API_URL}/api/auth/providers`)
       if (response.ok) {
@@ -63,7 +57,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } catch (error) {
       console.error("Failed to fetch providers:", error)
     }
-  }
+  }, [])
 
   const handleAuthCallback = useCallback(async (authToken: string) => {
     try {
@@ -122,7 +116,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => subscription.remove()
   }, [handleAuthCallback])
 
-  const loadStoredAuth = async () => {
+  const loadStoredAuth = useCallback(async () => {
     try {
       const [storedToken, storedUser] = await Promise.all([
         storage.getToken(),
@@ -138,7 +132,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [])
+
+  // Load stored auth state and fetch providers on mount
+  useEffect(() => {
+    loadStoredAuth()
+    fetchAvailableProviders()
+  }, [loadStoredAuth, fetchAvailableProviders])
 
   const signInWithEmail = useCallback(async (email: string, password: string) => {
     try {
