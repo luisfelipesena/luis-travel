@@ -320,12 +320,7 @@ export function EnhancedTripForm({ isAuthenticated, variant = "light" }: Enhance
           <Button
             type="submit"
             size="lg"
-            className={cn(
-              "w-full h-12 text-base font-semibold shadow-lg",
-              isDark
-                ? "bg-emerald-500 hover:bg-emerald-600 text-white shadow-emerald-500/25"
-                : "shadow-primary/25"
-            )}
+            className="w-full h-12 text-base font-semibold shadow-lg shadow-primary/25"
             disabled={!isValid || isLoading}
           >
             {isLoading ? (
