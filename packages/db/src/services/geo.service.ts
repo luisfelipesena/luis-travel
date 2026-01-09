@@ -1,4 +1,5 @@
 import { type CitySearchResult, nominatimClient } from "../external/nominatim"
+import { unsplashService } from "../external/unsplash"
 
 export class GeoService {
   /**
@@ -28,6 +29,33 @@ export class GeoService {
       return `${city.name}, ${city.country}`
     }
     return city.name
+  }
+
+  /**
+   * Get a destination image URL for a city
+   * Uses Unsplash for high-quality travel images
+   */
+  getDestinationImageUrl(
+    cityName: string,
+    country?: string,
+    options?: { width?: number; height?: number }
+  ): string {
+    return unsplashService.getDestinationImageUrl(cityName, country, {
+      ...options,
+      keywords: ["travel", "landmark", "tourism"],
+    })
+  }
+
+  /**
+   * Get a stable (consistent) destination image URL for a city
+   * Same city always returns same image
+   */
+  getStableDestinationImageUrl(
+    cityName: string,
+    country?: string,
+    options?: { width?: number; height?: number }
+  ): string {
+    return unsplashService.getStableDestinationImageUrl(cityName, country, options)
   }
 }
 

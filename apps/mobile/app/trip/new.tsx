@@ -1,8 +1,7 @@
 import { Ionicons } from "@expo/vector-icons"
 import DateTimePicker from "@react-native-community/datetimepicker"
-import * as ImagePicker from "expo-image-picker"
 import { useRouter } from "expo-router"
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import {
   View,
   Text,
@@ -17,8 +16,19 @@ import {
   Image,
 } from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context"
-import { API_URL } from "@/src/lib/config"
 import { trpc } from "@/src/lib/trpc"
+
+/**
+ * Generate destination image URL using Unsplash Source
+ */
+function getDestinationImageUrl(destination: string): string {
+  const searchTerms = [destination, "travel", "landmark", "tourism"]
+    .filter(Boolean)
+    .map((term) => encodeURIComponent(term.toLowerCase()))
+    .join(",")
+
+  return `https://source.unsplash.com/featured/800x600/?${searchTerms}`
+}
 
 export default function NewTripScreen() {
   const router = useRouter()
@@ -35,62 +45,12 @@ export default function NewTripScreen() {
   })
   const [showStartPicker, setShowStartPicker] = useState(false)
   const [showEndPicker, setShowEndPicker] = useState(false)
-  const [coverImage, setCoverImage] = useState<string>()
-  const [isUploading, setIsUploading] = useState(false)
 
-  const pickImage = async () => {
-    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync()
-    if (status !== "granted") {
-      Alert.alert("Permissão necessária", "Precisamos de acesso à galeria para selecionar uma imagem")
-      return
-    }
-
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ["images"],
-      allowsEditing: true,
-      aspect: [16, 9],
-      quality: 0.8,
-    })
-
-    if (!result.canceled && result.assets[0]) {
-      await uploadImage(result.assets[0].uri)
-    }
-  }
-
-  const uploadImage = async (uri: string) => {
-    setIsUploading(true)
-    try {
-      const filename = uri.split("/").pop() || "image.jpg"
-      const match = /\.(\w+)$/.exec(filename)
-      const type = match ? `image/${match[1]}` : "image/jpeg"
-
-      const formData = new FormData()
-      formData.append("file", {
-        uri,
-        name: filename,
-        type,
-      } as unknown as Blob)
-
-      const response = await fetch(`${API_URL}/api/upload`, {
-        method: "POST",
-        body: formData,
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      })
-
-      if (!response.ok) {
-        throw new Error("Erro ao fazer upload")
-      }
-
-      const data = await response.json()
-      setCoverImage(`${API_URL}${data.url}`)
-    } catch (error) {
-      Alert.alert("Erro", "Falha ao carregar imagem")
-    } finally {
-      setIsUploading(false)
-    }
-  }
+  // Auto-generate cover image from destination
+  const coverImage = useMemo(() => {
+    if (!destination.trim()) return undefined
+    return getDestinationImageUrl(destination.trim())
+  }, [destination])
 
   const createMutation = trpc.trip.create.useMutation({
     onSuccess: (data) => {
@@ -194,6 +154,16 @@ export default function NewTripScreen() {
             </View>
           </View>
 
+          {/* Destination Preview Image - shows when destination is entered */}
+          {coverImage && (
+            <View style={styles.imagePreviewContainer}>
+              <Image source={{ uri: coverImage }} style={styles.imagePreview} />
+              <View style={styles.imageOverlay}>
+                <Text style={styles.imageOverlayText}>{destination}</Text>
+              </View>
+            </View>
+          )}
+
           {/* Dates */}
           <View style={styles.datesRow}>
             <View style={[styles.field, { flex: 1 }]}>
@@ -247,38 +217,6 @@ export default function NewTripScreen() {
               numberOfLines={4}
               textAlignVertical="top"
             />
-          </View>
-
-          {/* Cover Image */}
-          <View style={styles.field}>
-            <Text style={styles.label}>Imagem de capa (opcional)</Text>
-            {coverImage ? (
-              <View style={styles.imagePreviewContainer}>
-                <Image source={{ uri: coverImage }} style={styles.imagePreview} />
-                <TouchableOpacity
-                  style={styles.removeImageButton}
-                  onPress={() => setCoverImage(undefined)}
-                >
-                  <Ionicons name="close-circle" size={28} color="#ef4444" />
-                </TouchableOpacity>
-              </View>
-            ) : (
-              <TouchableOpacity
-                style={styles.imagePickerButton}
-                onPress={pickImage}
-                disabled={isUploading}
-              >
-                {isUploading ? (
-                  <ActivityIndicator size="small" color="#64748b" />
-                ) : (
-                  <>
-                    <Ionicons name="image-outline" size={32} color="#64748b" />
-                    <Text style={styles.imagePickerText}>Adicionar imagem</Text>
-                    <Text style={styles.imagePickerHint}>PNG, JPG ou WebP (máx. 5MB)</Text>
-                  </>
-                )}
-              </TouchableOpacity>
-            )}
           </View>
 
           {/* Info */}
@@ -413,39 +351,27 @@ const styles = StyleSheet.create({
     color: "#3b82f6",
     lineHeight: 20,
   },
-  imagePickerButton: {
-    backgroundColor: "#fff",
-    borderRadius: 12,
-    borderWidth: 2,
-    borderColor: "#e2e8f0",
-    borderStyle: "dashed",
-    height: 150,
-    justifyContent: "center",
-    alignItems: "center",
-    gap: 8,
-  },
-  imagePickerText: {
-    fontSize: 14,
-    fontWeight: "500",
-    color: "#64748b",
-  },
-  imagePickerHint: {
-    fontSize: 12,
-    color: "#94a3b8",
-  },
   imagePreviewContainer: {
     position: "relative",
+    borderRadius: 12,
+    overflow: "hidden",
   },
   imagePreview: {
     width: "100%",
-    height: 150,
-    borderRadius: 12,
+    height: 120,
   },
-  removeImageButton: {
+  imageOverlay: {
     position: "absolute",
-    top: 8,
-    right: 8,
-    backgroundColor: "#fff",
-    borderRadius: 14,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+  },
+  imageOverlayText: {
+    color: "#fff",
+    fontSize: 14,
+    fontWeight: "500",
   },
 })

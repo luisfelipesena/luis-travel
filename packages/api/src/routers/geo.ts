@@ -16,6 +16,13 @@ const reverseGeocodeInputSchema = z.object({
   lng: z.number().min(-180).max(180),
 })
 
+const getDestinationImageInputSchema = z.object({
+  cityName: z.string().min(1),
+  country: z.string().optional(),
+  width: z.number().min(100).max(2000).default(800),
+  height: z.number().min(100).max(2000).default(600),
+})
+
 // ============================================================================
 // Output Schemas
 // ============================================================================
@@ -57,5 +64,20 @@ export const geoRouter = router({
     .query(async ({ input }) => {
       const result = await geoService.getCityFromCoordinates(input.lat, input.lng)
       return result
+    }),
+
+  /**
+   * Get a destination image URL for a city
+   * Returns a high-quality travel image URL from Unsplash
+   */
+  getDestinationImage: publicProcedure
+    .input(getDestinationImageInputSchema)
+    .output(z.object({ imageUrl: z.string() }))
+    .query(({ input }) => {
+      const imageUrl = geoService.getDestinationImageUrl(input.cityName, input.country, {
+        width: input.width,
+        height: input.height,
+      })
+      return { imageUrl }
     }),
 })

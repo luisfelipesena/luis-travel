@@ -2,9 +2,8 @@ import { useNavigate } from "@tanstack/react-router"
 import { format } from "date-fns"
 import { ptBR } from "date-fns/locale"
 import { ArrowRight, CalendarIcon, Loader2, MapPin, Sparkles } from "lucide-react"
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import type { DateRange } from "react-day-picker"
-import { FileUploadZone } from "@/components/atoms"
 import { CitySearchCombobox, type CitySelection } from "@/components/molecules/city-search-combobox"
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
@@ -13,6 +12,19 @@ import { Label } from "@/components/ui/label"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { trpc } from "@/lib/trpc"
 import { cn } from "@/lib/utils"
+
+/**
+ * Generate destination image URL using Unsplash Source
+ * This creates a high-quality travel image for any destination
+ */
+function getDestinationImageUrl(cityName: string, country?: string): string {
+  const searchTerms = [cityName, country, "travel", "landmark", "tourism"]
+    .filter(Boolean)
+    .map((term) => encodeURIComponent(term!.toLowerCase()))
+    .join(",")
+
+  return `https://source.unsplash.com/featured/800x600/?${searchTerms}`
+}
 
 const STORAGE_KEY = "luis_travel_pending_trip"
 
@@ -49,7 +61,6 @@ interface EnhancedTripFormProps {
 export function EnhancedTripForm({ isAuthenticated }: EnhancedTripFormProps) {
   const navigate = useNavigate()
   const [tripName, setTripName] = useState("")
-  const [coverImage, setCoverImage] = useState<string | undefined>()
   const [selectedCity, setSelectedCity] = useState<CitySelection | null>(null)
   const [dateRange, setDateRange] = useState<DateRange | undefined>()
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -62,12 +73,17 @@ export function EnhancedTripForm({ isAuthenticated }: EnhancedTripFormProps) {
     },
   })
 
+  // Auto-generate cover image URL based on selected city
+  const coverImage = useMemo(() => {
+    if (!selectedCity) return undefined
+    return getDestinationImageUrl(selectedCity.name, selectedCity.country)
+  }, [selectedCity])
+
   // Restore pending trip on load
   useEffect(() => {
     const pending = getPendingTrip()
     if (pending) {
       setTripName(pending.name)
-      if (pending.coverImage) setCoverImage(pending.coverImage)
       if (pending.destinationData) setSelectedCity(pending.destinationData)
       setDateRange({
         from: new Date(pending.dateRange.from),
@@ -85,10 +101,15 @@ export function EnhancedTripForm({ isAuthenticated }: EnhancedTripFormProps) {
       hasTriggeredAutoCreate.current = true
 
       const destinationData = pending.destinationData
+      // Generate cover image from destination
+      const autoCoverImage = destinationData
+        ? getDestinationImageUrl(destinationData.name, destinationData.country)
+        : undefined
+
       createTripMutation.mutate({
         name: pending.name || `Viagem para ${pending.destination}`,
         destination: pending.destination,
-        coverImage: pending.coverImage,
+        coverImage: autoCoverImage,
         destinations: destinationData
           ? [
               {
@@ -110,25 +131,6 @@ export function EnhancedTripForm({ isAuthenticated }: EnhancedTripFormProps) {
   const destination = selectedCity
     ? `${selectedCity.name}${selectedCity.country ? `, ${selectedCity.country}` : ""}`
     : ""
-
-  const handleImageUpload = async (file: File): Promise<string> => {
-    const formData = new FormData()
-    formData.append("file", file)
-
-    const response = await fetch("/api/upload", {
-      method: "POST",
-      body: formData,
-    })
-
-    if (!response.ok) {
-      const error = await response.json()
-      throw new Error(error.message || "Erro ao fazer upload")
-    }
-
-    const data = await response.json()
-    setCoverImage(data.url)
-    return data.url
-  }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -209,16 +211,6 @@ export function EnhancedTripForm({ isAuthenticated }: EnhancedTripFormProps) {
               />
             </div>
 
-            {/* Cover Image */}
-            <div className="space-y-2">
-              <Label>Imagem de capa (opcional)</Label>
-              <FileUploadZone
-                value={coverImage}
-                onUpload={handleImageUpload}
-                onRemove={() => setCoverImage(undefined)}
-              />
-            </div>
-
             {/* Destination */}
             <div className="space-y-2">
               <Label className="flex items-center gap-2">
@@ -231,6 +223,22 @@ export function EnhancedTripForm({ isAuthenticated }: EnhancedTripFormProps) {
                 placeholder="Buscar cidade..."
               />
             </div>
+
+            {/* Destination Preview Image - shows when city is selected */}
+            {coverImage && (
+              <div className="relative overflow-hidden rounded-xl border">
+                <img
+                  src={coverImage}
+                  alt={`Preview de ${selectedCity?.name}`}
+                  className="w-full h-32 object-cover"
+                  loading="lazy"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+                <div className="absolute bottom-2 left-3 text-white text-sm font-medium">
+                  {destination}
+                </div>
+              </div>
+            )}
 
             {/* Date Range */}
             <div className="space-y-2">
