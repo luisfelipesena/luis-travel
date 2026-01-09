@@ -44,6 +44,13 @@ export const auth = betterAuth({
       maxAge: 60 * 5, // 5 minutes
     },
   },
+  trustedOrigins: [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "exp://192.168.0.73:8081",
+    "exp://localhost:8081",
+    "luistravel://",
+  ],
   advanced: {
     database: {
       generateId: "uuid",

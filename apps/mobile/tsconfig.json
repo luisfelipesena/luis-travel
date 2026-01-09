@@ -1,7 +1,19 @@
 {
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
-    "strict": true
+    "strict": true,
+    "paths": {
+      "@/*": ["./*"],
+      "@luis-travel/api": ["../../packages/api/src/index.ts"],
+      "@luis-travel/types": ["../../packages/types/src/index.ts"]
+    }
   },
-  "include": ["**/*.ts", "**/*.tsx", ".expo/types/**/*.ts", "expo-env.d.ts"]
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+    ".expo/types/**/*.ts",
+    "expo-env.d.ts",
+    "../../packages/api/src/**/*.ts",
+    "../../packages/types/src/**/*.ts"
+  ]
 }

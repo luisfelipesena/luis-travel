@@ -1,3 +1,6 @@
 export * from "./city-search-combobox"
 export * from "./feature-card"
 export * from "./stats-card"
+export * from "./social-proof-badge"
+export * from "./feature-showcase-card"
+export * from "./benefit-card"

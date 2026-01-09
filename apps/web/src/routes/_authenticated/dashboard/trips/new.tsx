@@ -2,8 +2,8 @@ import { formatDestinations } from "@luis-travel/types"
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router"
 import { format } from "date-fns"
 import { ptBR } from "date-fns/locale"
-import { ArrowLeft, CalendarIcon } from "lucide-react"
-import { useState } from "react"
+import { ArrowLeft, CalendarIcon, ImagePlus, X } from "lucide-react"
+import { useRef, useState } from "react"
 import { toast } from "sonner"
 import { type Destination, DestinationList } from "@/components/trip/destination-list"
 import { Button } from "@/components/ui/button"
@@ -29,6 +29,50 @@ function NewTripPage() {
   const [description, setDescription] = useState("")
   const [startDate, setStartDate] = useState<Date>()
   const [endDate, setEndDate] = useState<Date>()
+  const [coverImage, setCoverImage] = useState<string>()
+  const [isUploading, setIsUploading] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    // Validate file type
+    if (!file.type.startsWith("image/")) {
+      toast.error("Por favor, selecione uma imagem")
+      return
+    }
+
+    // Validate file size (5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("A imagem deve ter no máximo 5MB")
+      return
+    }
+
+    setIsUploading(true)
+    try {
+      const formData = new FormData()
+      formData.append("file", file)
+
+      const response = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      })
+
+      if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.message || "Erro ao fazer upload")
+      }
+
+      const data = await response.json()
+      setCoverImage(data.url)
+      toast.success("Imagem carregada com sucesso!")
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Erro ao fazer upload da imagem")
+    } finally {
+      setIsUploading(false)
+    }
+  }
 
   const createTrip = trpc.trip.create.useMutation({
     onSuccess: (trip) => {
@@ -74,6 +118,7 @@ function NewTripPage() {
       description: description || undefined,
       startDate,
       endDate,
+      coverImage,
     })
   }
 
@@ -195,6 +240,49 @@ function NewTripPage() {
                 onChange={(e) => setDescription(e.target.value)}
                 rows={4}
               />
+            </div>
+
+            <div className="space-y-2">
+              <Label>Imagem de Capa</Label>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleImageUpload}
+                className="hidden"
+              />
+              {coverImage ? (
+                <div className="relative">
+                  <img
+                    src={coverImage}
+                    alt="Capa da viagem"
+                    className="h-48 w-full rounded-lg object-cover"
+                  />
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    size="icon"
+                    className="absolute right-2 top-2"
+                    onClick={() => setCoverImage(undefined)}
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+              ) : (
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="h-48 w-full border-dashed"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={isUploading}
+                >
+                  <div className="flex flex-col items-center gap-2 text-muted-foreground">
+                    <ImagePlus className="h-8 w-8" />
+                    <span>{isUploading ? "Carregando..." : "Adicionar imagem de capa"}</span>
+                    <span className="text-xs">PNG, JPG ou WebP (máx. 5MB)</span>
+                  </div>
+                </Button>
+              )}
             </div>
 
             <div className="flex gap-4">

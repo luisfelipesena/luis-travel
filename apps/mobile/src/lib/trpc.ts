@@ -1,21 +1,19 @@
+import { createTRPCReact, httpBatchLink } from "@trpc/react-query"
 import type { AppRouter } from "@luis-travel/api"
-import { httpBatchLink } from "@trpc/client"
-import { createTRPCReact } from "@trpc/react-query"
-import * as SecureStore from "expo-secure-store"
 import superjson from "superjson"
+import { API_URL } from "./config"
+import { storage } from "./storage"
 
 export const trpc = createTRPCReact<AppRouter>()
 
-const API_URL = process.env.EXPO_PUBLIC_API_URL || "https://luis-travel.vercel.app"
-
-export function getTRPCClient() {
+export function createTRPCClient() {
   return trpc.createClient({
     links: [
       httpBatchLink({
         url: `${API_URL}/api/trpc`,
         transformer: superjson,
         async headers() {
-          const token = await SecureStore.getItemAsync("auth_token")
+          const token = await storage.getToken()
           return token ? { Authorization: `Bearer ${token}` } : {}
         },
       }),

@@ -1,6 +1,33 @@
-import type { Coordinate, RouteLeg, TransportMode } from "@luis-travel/types"
-
+// OSRM (Open Source Routing Machine) integration for mobile
 const OSRM_BASE_URL = "https://router.project-osrm.org"
+
+export type TransportMode = "walking" | "driving" | "cycling"
+
+export interface Coordinate {
+  lat: number
+  lng: number
+}
+
+export interface RouteLeg {
+  from: Coordinate
+  to: Coordinate
+  distance: number // meters
+  duration: number // seconds
+  polyline: string
+  mode: TransportMode
+}
+
+interface OSRMRoute {
+  distance: number
+  duration: number
+  geometry: string
+  legs: { distance: number; duration: number }[]
+}
+
+interface OSRMRouteResponse {
+  code: string
+  routes: OSRMRoute[]
+}
 
 /**
  * Decode OSRM polyline (polyline5 precision)
@@ -42,19 +69,6 @@ export function decodePolyline(encoded: string): { latitude: number; longitude: 
   }
 
   return coordinates
-}
-
-interface OSRMRouteResponse {
-  code: string
-  routes?: Array<{
-    distance: number
-    duration: number
-    geometry: string
-    legs: Array<{
-      distance: number
-      duration: number
-    }>
-  }>
 }
 
 /**
@@ -120,11 +134,14 @@ export function formatDuration(seconds: number): string {
   return `${minutes} min`
 }
 
-/**
- * Transport mode labels in Portuguese
- */
 export const TRANSPORT_MODE_LABELS: Record<TransportMode, string> = {
   driving: "Carro",
   walking: "A pé",
   cycling: "Bicicleta",
+}
+
+export const ROUTE_COLORS: Record<TransportMode, string> = {
+  walking: "#22c55e",
+  driving: "#3b82f6",
+  cycling: "#f59e0b",
 }

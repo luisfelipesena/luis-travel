@@ -1,7 +1,6 @@
-import type { Coordinate, TransportMode } from "@luis-travel/types"
 import { useQuery } from "@tanstack/react-query"
 import { useMemo } from "react"
-import { decodePolyline, getRouteBetweenPoints } from "../lib/routing"
+import { type TransportMode, decodePolyline, getRouteBetweenPoints } from "../lib/routing"
 
 interface ActivityWithLocation {
   id: string
@@ -35,7 +34,6 @@ export function useItineraryRoutes(
   mode: TransportMode = "walking",
   enabled = true
 ): UseItineraryRoutesResult {
-  // Filter and sort activities with valid coordinates
   const sortedActivities = useMemo(() => {
     return activities
       .filter(
@@ -48,7 +46,6 @@ export function useItineraryRoutes(
       .sort((a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime())
   }, [activities])
 
-  // Create unique cache key
   const cacheKey = useMemo(() => {
     const coordsHash = sortedActivities
       .map((a) => `${a.id}:${a.locationLat}:${a.locationLng}`)
@@ -56,7 +53,6 @@ export function useItineraryRoutes(
     return `routes-${mode}-${coordsHash}`
   }, [sortedActivities, mode])
 
-  // Fetch all route segments
   const {
     data: segments = [],
     isLoading,
@@ -68,15 +64,14 @@ export function useItineraryRoutes(
         return []
       }
 
-      // Fetch routes between consecutive activities in parallel
       const promises = sortedActivities.slice(0, -1).map(async (activity, index) => {
         const nextActivity = sortedActivities[index + 1]
 
-        const from: Coordinate = {
+        const from = {
           lat: Number.parseFloat(activity.locationLat!),
           lng: Number.parseFloat(activity.locationLng!),
         }
-        const to: Coordinate = {
+        const to = {
           lat: Number.parseFloat(nextActivity.locationLat!),
           lng: Number.parseFloat(nextActivity.locationLng!),
         }
@@ -113,7 +108,6 @@ export function useItineraryRoutes(
     gcTime: 30 * 60 * 1000,
   })
 
-  // Calculate totals
   const { totalDistance, totalDuration } = useMemo(() => {
     return segments.reduce(
       (acc, seg) => ({

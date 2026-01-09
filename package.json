@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "workspaces": [
-    "apps/*",
+    "apps/web",
     "packages/*"
   ],
   "resolutions": {
@@ -13,7 +13,7 @@
   "scripts": {
     "dev": "bun run --filter @luis-travel/web dev",
     "dev:web": "bun run --filter @luis-travel/web dev",
-    "dev:mobile": "bun run --filter @luis-travel/mobile start",
+    "dev:mobile": "cd apps/mobile && bun run start",
     "build": "bun run --filter @luis-travel/web build",
     "test": "bun run --filter '*' test",
     "typecheck": "bun run --filter '*' typecheck",
@@ -26,6 +26,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^2.3.11",
+    "semver": "^7.6.0",
     "typescript": "^5.7.2"
   }
 }
