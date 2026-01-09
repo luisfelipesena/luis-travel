@@ -1,11 +1,9 @@
-import DateTimePicker, {
-  DateTimePickerEvent,
-} from "@react-native-community/datetimepicker"
+import DateTimePicker, { type DateTimePickerEvent } from "@react-native-community/datetimepicker"
 import { format } from "date-fns"
 import { ptBR } from "date-fns/locale"
 import { Calendar } from "lucide-react-native"
 import { useState } from "react"
-import { View, Text, Pressable, Platform, Modal } from "react-native"
+import { Modal, Platform, Pressable, Text, View } from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context"
 
 interface DatePickerProps {
@@ -69,12 +67,7 @@ export function DatePicker({
       </Pressable>
 
       {Platform.OS === "ios" ? (
-        <Modal
-          visible={showPicker}
-          transparent
-          animationType="slide"
-          onRequestClose={handleCancel}
-        >
+        <Modal visible={showPicker} transparent animationType="slide" onRequestClose={handleCancel}>
           <View className="flex-1 justify-end bg-black/50">
             <SafeAreaView className="bg-white rounded-t-2xl">
               {/* Header */}

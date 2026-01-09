@@ -1,10 +1,10 @@
 import type {
   Coordinate,
+  ItineraryRouteData,
+  OSRMRouteResponse,
   RouteLeg,
   RouteSegment,
   TransportMode,
-  OSRMRouteResponse,
-  ItineraryRouteData,
 } from "@luis-travel/types"
 import { RouteStatus } from "@luis-travel/types"
 

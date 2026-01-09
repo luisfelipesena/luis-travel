@@ -1,7 +1,7 @@
 import { ActivityType } from "@luis-travel/types"
 import { format, setHours, setMinutes } from "date-fns"
 import { ptBR } from "date-fns/locale"
-import { CalendarIcon, Clock, Loader2 } from "lucide-react"
+import { CalendarIcon, Clock, Loader2, MapPin, Palette, Users as UsersIcon } from "lucide-react"
 import { useEffect, useMemo, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
@@ -16,7 +16,6 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { ScrollArea } from "@/components/ui/scroll-area"
 import {
   Select,
   SelectContent,
@@ -24,6 +23,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Textarea } from "@/components/ui/textarea"
 import { cn } from "@/lib/utils"
 import { LocationMapPicker } from "./location-map-picker"
@@ -111,6 +111,7 @@ export function ActivityFormDialog({
   const [locationLng, setLocationLng] = useState<string | undefined>()
   const [color, setColor] = useState(COLOR_PRESETS[0])
   const [selectedParticipants, setSelectedParticipants] = useState<string[]>([])
+  const [activeTab, setActiveTab] = useState("details")
 
   // All trip participants (members + owner)
   const allParticipants = useMemo(() => {
@@ -173,6 +174,7 @@ export function ActivityFormDialog({
       setLocationLng(undefined)
       setColor(COLOR_PRESETS[0])
       setSelectedParticipants([])
+      setActiveTab("details")
     }
   }, [activity, initialStartTime, initialEndTime])
 
@@ -204,7 +206,6 @@ export function ActivityFormDialog({
     const finalEndTime = parseTime(endTimeStr, endDate)
 
     if (finalStartTime >= finalEndTime) {
-      // Could show error toast here
       return
     }
 
@@ -228,15 +229,34 @@ export function ActivityFormDialog({
 
   return (
     <Dialog open={open} onOpenChange={(o) => !o && handleClose()}>
-      <DialogContent className="max-h-[90vh] max-w-3xl overflow-hidden p-0">
-        <DialogHeader className="border-b px-6 py-4">
+      <DialogContent className="flex max-h-[85vh] w-full max-w-2xl flex-col gap-0 p-0">
+        <DialogHeader className="shrink-0 border-b px-6 py-4">
           <DialogTitle>{isEditMode ? "Editar Atividade" : "Nova Atividade"}</DialogTitle>
         </DialogHeader>
 
-        <ScrollArea className="max-h-[calc(90vh-140px)]">
-          <form id="activity-form" onSubmit={handleSubmit} className="px-6 py-4">
-            <div className="grid gap-6 md:grid-cols-2">
-              {/* Left Column - Basic Info */}
+        <form id="activity-form" onSubmit={handleSubmit} className="flex min-h-0 flex-1 flex-col">
+          <Tabs
+            value={activeTab}
+            onValueChange={setActiveTab}
+            className="flex min-h-0 flex-1 flex-col"
+          >
+            <TabsList className="mx-6 mt-4 grid w-auto grid-cols-3">
+              <TabsTrigger value="details" className="gap-2">
+                <CalendarIcon className="h-4 w-4" />
+                <span className="hidden sm:inline">Detalhes</span>
+              </TabsTrigger>
+              <TabsTrigger value="location" className="gap-2">
+                <MapPin className="h-4 w-4" />
+                <span className="hidden sm:inline">Local</span>
+              </TabsTrigger>
+              <TabsTrigger value="options" className="gap-2">
+                <Palette className="h-4 w-4" />
+                <span className="hidden sm:inline">Opções</span>
+              </TabsTrigger>
+            </TabsList>
+
+            {/* Details Tab */}
+            <TabsContent value="details" className="mt-0 flex-1 overflow-y-auto px-6 py-4">
               <div className="space-y-4">
                 {/* Title */}
                 <div className="space-y-2">
@@ -247,18 +267,6 @@ export function ActivityFormDialog({
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
                     autoFocus
-                  />
-                </div>
-
-                {/* Description */}
-                <div className="space-y-2">
-                  <Label htmlFor="description">Descrição</Label>
-                  <Textarea
-                    id="description"
-                    placeholder="Detalhes sobre a atividade..."
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    rows={3}
                   />
                 </div>
 
@@ -285,123 +293,149 @@ export function ActivityFormDialog({
                   </Select>
                 </div>
 
-                {/* Date/Time - Start */}
-                <div className="space-y-2">
-                  <Label>Início *</Label>
-                  <div className="flex gap-2">
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <Button
-                          variant="outline"
-                          className={cn(
-                            "flex-1 justify-start text-left font-normal",
-                            !startDate && "text-muted-foreground"
-                          )}
-                        >
-                          <CalendarIcon className="mr-2 h-4 w-4" />
-                          {startDate ? format(startDate, "dd/MM/yyyy", { locale: ptBR }) : "Data"}
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
-                          mode="single"
-                          selected={startDate}
-                          onSelect={setStartDate}
-                          locale={ptBR}
-                        />
-                      </PopoverContent>
-                    </Popover>
-                    <div className="relative w-24">
-                      <Clock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                {/* Date/Time Row */}
+                <div className="grid gap-4 sm:grid-cols-2">
+                  {/* Start */}
+                  <div className="space-y-2">
+                    <Label className="flex items-center gap-1">
+                      <Clock className="h-3.5 w-3.5" />
+                      Início *
+                    </Label>
+                    <div className="flex gap-2">
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant="outline"
+                            className={cn(
+                              "flex-1 justify-start text-left font-normal",
+                              !startDate && "text-muted-foreground"
+                            )}
+                          >
+                            <CalendarIcon className="mr-2 h-4 w-4" />
+                            {startDate ? format(startDate, "dd/MM", { locale: ptBR }) : "Data"}
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar
+                            mode="single"
+                            selected={startDate}
+                            onSelect={setStartDate}
+                            locale={ptBR}
+                          />
+                        </PopoverContent>
+                      </Popover>
                       <Input
                         type="time"
                         value={startTimeStr}
                         onChange={(e) => setStartTimeStr(e.target.value)}
-                        className="pl-10"
+                        className="w-24"
                       />
                     </div>
                   </div>
-                </div>
 
-                {/* Date/Time - End */}
-                <div className="space-y-2">
-                  <Label>Fim *</Label>
-                  <div className="flex gap-2">
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <Button
-                          variant="outline"
-                          className={cn(
-                            "flex-1 justify-start text-left font-normal",
-                            !endDate && "text-muted-foreground"
-                          )}
-                        >
-                          <CalendarIcon className="mr-2 h-4 w-4" />
-                          {endDate ? format(endDate, "dd/MM/yyyy", { locale: ptBR }) : "Data"}
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
-                          mode="single"
-                          selected={endDate}
-                          onSelect={setEndDate}
-                          locale={ptBR}
-                        />
-                      </PopoverContent>
-                    </Popover>
-                    <div className="relative w-24">
-                      <Clock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                  {/* End */}
+                  <div className="space-y-2">
+                    <Label className="flex items-center gap-1">
+                      <Clock className="h-3.5 w-3.5" />
+                      Fim *
+                    </Label>
+                    <div className="flex gap-2">
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant="outline"
+                            className={cn(
+                              "flex-1 justify-start text-left font-normal",
+                              !endDate && "text-muted-foreground"
+                            )}
+                          >
+                            <CalendarIcon className="mr-2 h-4 w-4" />
+                            {endDate ? format(endDate, "dd/MM", { locale: ptBR }) : "Data"}
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar
+                            mode="single"
+                            selected={endDate}
+                            onSelect={setEndDate}
+                            locale={ptBR}
+                          />
+                        </PopoverContent>
+                      </Popover>
                       <Input
                         type="time"
                         value={endTimeStr}
                         onChange={(e) => setEndTimeStr(e.target.value)}
-                        className="pl-10"
+                        className="w-24"
                       />
                     </div>
                   </div>
                 </div>
 
-                {/* Color */}
+                {/* Description */}
                 <div className="space-y-2">
-                  <Label>Cor</Label>
-                  <div className="flex flex-wrap gap-2">
+                  <Label htmlFor="description">Descrição</Label>
+                  <Textarea
+                    id="description"
+                    placeholder="Detalhes sobre a atividade..."
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    rows={3}
+                  />
+                </div>
+              </div>
+            </TabsContent>
+
+            {/* Location Tab */}
+            <TabsContent value="location" className="mt-0 flex-1 overflow-y-auto px-6 py-4">
+              <LocationMapPicker
+                location={location}
+                lat={locationLat}
+                lng={locationLng}
+                onLocationChange={setLocation}
+                onCoordsChange={(lat, lng) => {
+                  setLocationLat(lat)
+                  setLocationLng(lng)
+                }}
+              />
+            </TabsContent>
+
+            {/* Options Tab */}
+            <TabsContent value="options" className="mt-0 flex-1 overflow-y-auto px-6 py-4">
+              <div className="space-y-6">
+                {/* Color Selection */}
+                <div className="space-y-3">
+                  <Label className="flex items-center gap-2">
+                    <Palette className="h-4 w-4" />
+                    Cor do Evento
+                  </Label>
+                  <div className="flex flex-wrap gap-3">
                     {COLOR_PRESETS.map((c) => (
                       <button
                         key={c}
                         type="button"
                         onClick={() => setColor(c)}
                         className={cn(
-                          "h-8 w-8 rounded-full transition-all",
+                          "h-10 w-10 rounded-full transition-all hover:scale-110",
                           color === c && "ring-2 ring-offset-2 ring-primary"
                         )}
                         style={{ backgroundColor: c }}
+                        aria-label={`Selecionar cor ${c}`}
                       />
                     ))}
                   </div>
                 </div>
-              </div>
-
-              {/* Right Column - Map & Participants */}
-              <div className="space-y-4">
-                {/* Location Map */}
-                <LocationMapPicker
-                  location={location}
-                  lat={locationLat}
-                  lng={locationLng}
-                  onLocationChange={setLocation}
-                  onCoordsChange={(lat, lng) => {
-                    setLocationLat(lat)
-                    setLocationLng(lng)
-                  }}
-                />
 
                 {/* Participants */}
                 {allParticipants.length > 0 && (
-                  <div className="space-y-2">
-                    <Label>Participantes</Label>
-                    <div className="rounded-lg border p-3">
+                  <div className="space-y-3">
+                    <Label className="flex items-center gap-2">
+                      <UsersIcon className="h-4 w-4" />
+                      Participantes
+                    </Label>
+                    <div className="space-y-2 rounded-lg border p-3">
                       {/* Select All */}
-                      <div className="mb-2 flex items-center space-x-2 border-b pb-2">
+                      <div className="flex items-center space-x-2 border-b pb-2">
                         <Checkbox
                           id="select-all"
                           checked={allSelected}
@@ -411,12 +445,12 @@ export function ActivityFormDialog({
                           htmlFor="select-all"
                           className="cursor-pointer text-sm font-medium leading-none"
                         >
-                          Todos
+                          Selecionar Todos
                         </label>
                       </div>
 
                       {/* Individual participants */}
-                      <div className="max-h-32 space-y-2 overflow-y-auto">
+                      <div className="max-h-40 space-y-2 overflow-y-auto pt-1">
                         {allParticipants.map((p) => (
                           <div key={p.id} className="flex items-center space-x-2">
                             <Checkbox
@@ -437,11 +471,11 @@ export function ActivityFormDialog({
                   </div>
                 )}
               </div>
-            </div>
-          </form>
-        </ScrollArea>
+            </TabsContent>
+          </Tabs>
+        </form>
 
-        <DialogFooter className="border-t px-6 py-4">
+        <DialogFooter className="shrink-0 border-t px-6 py-4">
           <Button type="button" variant="outline" onClick={handleClose}>
             Cancelar
           </Button>

@@ -1,9 +1,17 @@
 import type { LatLngBoundsExpression, LatLngExpression } from "leaflet"
 import "leaflet/dist/leaflet.css"
 import { ActivityType, TransportMode } from "@luis-travel/types"
+import { Bike, Car, Clock, Footprints, Loader2, MapPin } from "lucide-react"
 import { useMemo, useState } from "react"
-import { MapContainer, Marker, Polyline, Popup, TileLayer, useMap, CircleMarker } from "react-leaflet"
-import { Car, Footprints, Bike, Clock, MapPin, Loader2 } from "lucide-react"
+import {
+  CircleMarker,
+  MapContainer,
+  Marker,
+  Polyline,
+  Popup,
+  TileLayer,
+  useMap,
+} from "react-leaflet"
 import { useItineraryRoutes } from "@/hooks/use-itinerary-routes"
 import { formatDistance, formatDuration, TRANSPORT_MODE_LABELS } from "@/lib/routing"
 import { cn } from "@/lib/utils"
@@ -182,10 +190,7 @@ export function ItineraryRouteMap({
   if (activitiesWithCoords.length === 0) {
     return (
       <div
-        className={cn(
-          "flex items-center justify-center rounded-lg border bg-muted/50",
-          className
-        )}
+        className={cn("flex items-center justify-center rounded-lg border bg-muted/50", className)}
         style={{ height }}
       >
         <div className="text-center text-sm text-muted-foreground">

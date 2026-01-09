@@ -1,7 +1,7 @@
+import type { Coordinate, TransportMode } from "@luis-travel/types"
 import { useQuery } from "@tanstack/react-query"
 import { useMemo } from "react"
-import type { Coordinate, TransportMode, ItineraryRouteData } from "@luis-travel/types"
-import { getRouteBetweenPoints, decodePolyline } from "@/lib/routing"
+import { decodePolyline, getRouteBetweenPoints } from "@/lib/routing"
 
 interface ActivityWithLocation {
   id: string
@@ -67,8 +67,6 @@ export function useItineraryRoutes(
       if (sortedActivities.length < 2) {
         return []
       }
-
-      const results: RouteSegmentWithPath[] = []
 
       // Fetch routes between consecutive activities in parallel
       const promises = sortedActivities.slice(0, -1).map(async (activity, index) => {

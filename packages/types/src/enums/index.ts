@@ -19,6 +19,13 @@ export { FlightStatus, FlightStatusValues, flightStatusSchema } from "./flight.e
 
 // Invitation enums
 export { InvitationStatus, InvitationStatusValues, invitationStatusSchema } from "./invitation.enum"
+// Routing enums
+export {
+  RouteStatus,
+  RouteStatusValues,
+  TransportMode,
+  TransportModeValues,
+} from "./routing.enum"
 export type { AssignableRole } from "./trip.enum"
 // Trip enums
 export {
@@ -31,10 +38,3 @@ export {
   tripMemberRoleSchema,
   tripStatusSchema,
 } from "./trip.enum"
-// Routing enums
-export {
-  TransportMode,
-  TransportModeValues,
-  RouteStatus,
-  RouteStatusValues,
-} from "./routing.enum"

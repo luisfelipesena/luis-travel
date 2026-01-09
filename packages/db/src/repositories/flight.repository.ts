@@ -1,13 +1,50 @@
 import type { Flight, FlightExternalData } from "@luis-travel/types"
-import { asc, eq } from "drizzle-orm"
+import { asc, eq, inArray } from "drizzle-orm"
 import { db } from ".."
-import { flight, type NewFlight } from "../schema"
+import { flight, type NewFlight, trip, tripMember } from "../schema"
 
 export class FlightRepository {
   async findById(id: string): Promise<Flight | undefined> {
     return db.query.flight.findFirst({
       where: eq(flight.id, id),
       with: {
+        creator: true,
+      },
+    })
+  }
+
+  async findByUserId(userId: string): Promise<Flight[]> {
+    // Get all trips where user is owner or member
+    const userTrips = await db
+      .selectDistinct({ id: trip.id })
+      .from(trip)
+      .leftJoin(tripMember, eq(trip.id, tripMember.tripId))
+      .where(eq(trip.ownerId, userId))
+      .union(
+        db
+          .selectDistinct({ id: trip.id })
+          .from(trip)
+          .innerJoin(tripMember, eq(trip.id, tripMember.tripId))
+          .where(eq(tripMember.userId, userId))
+      )
+
+    const tripIds = userTrips.map((t) => t.id)
+
+    if (tripIds.length === 0) {
+      return []
+    }
+
+    return db.query.flight.findMany({
+      where: inArray(flight.tripId, tripIds),
+      orderBy: [asc(flight.departureTime)],
+      with: {
+        trip: {
+          columns: {
+            id: true,
+            name: true,
+            destination: true,
+          },
+        },
         creator: true,
       },
     })

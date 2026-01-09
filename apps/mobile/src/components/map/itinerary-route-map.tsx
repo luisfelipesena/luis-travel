@@ -1,8 +1,8 @@
-import { TransportMode, ActivityType } from "@luis-travel/types"
-import { Car, Footprints, Bike, Clock, MapPin, Loader2 } from "lucide-react-native"
-import { useMemo, useState, useRef } from "react"
-import { View, Text, Pressable, ActivityIndicator, StyleSheet } from "react-native"
-import MapView, { Marker, Polyline, Region, Callout } from "react-native-maps"
+import { ActivityType, TransportMode } from "@luis-travel/types"
+import { Bike, Car, Clock, Footprints, MapPin } from "lucide-react-native"
+import { useMemo, useRef, useState } from "react"
+import { ActivityIndicator, Pressable, StyleSheet, Text, View } from "react-native"
+import MapView, { Marker, Polyline, type Region } from "react-native-maps"
 import { useItineraryRoutes } from "../../hooks/use-itinerary-routes"
 import { formatDistance, formatDuration, TRANSPORT_MODE_LABELS } from "../../lib/routing"
 

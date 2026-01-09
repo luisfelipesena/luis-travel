@@ -69,26 +69,58 @@ export function CalendarContainer({
       const today = new Date()
       if (today >= tripStartDate && today <= tripEndDate) {
         setCurrentDate(today)
-      } else {
+      } else if (today < tripStartDate) {
         setCurrentDate(tripStartDate)
+      } else {
+        setCurrentDate(tripEndDate)
       }
       return
     }
+
+    let newDate: Date
 
     const offset = direction === "next" ? 1 : -1
 
     switch (view) {
       case "day":
-        setCurrentDate(addDays(currentDate, offset))
+        newDate = addDays(currentDate, offset)
         break
       case "week":
-        setCurrentDate(addDays(currentDate, offset * 7))
+        newDate = addDays(currentDate, offset * 7)
         break
       case "month":
-        setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + offset, 1))
+        newDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + offset, 1)
         break
     }
+
+    // Restrict navigation to trip date range
+    if (newDate >= tripStartDate && newDate <= tripEndDate) {
+      setCurrentDate(newDate)
+    }
   }
+
+  // Check if at boundaries
+  const isAtStart = (() => {
+    switch (view) {
+      case "day":
+        return currentDate <= tripStartDate
+      case "week":
+        return addDays(currentDate, -7) < tripStartDate
+      case "month":
+        return new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1) < tripStartDate
+    }
+  })()
+
+  const isAtEnd = (() => {
+    switch (view) {
+      case "day":
+        return currentDate >= tripEndDate
+      case "week":
+        return addDays(currentDate, 7) > tripEndDate
+      case "month":
+        return new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1) > tripEndDate
+    }
+  })()
 
   const handleSlotSelect = (startTime: Date, endTime: Date) => {
     setSelectedSlot({ startTime, endTime })
@@ -154,6 +186,10 @@ export function CalendarContainer({
         onViewChange={setView}
         onNavigate={handleNavigate}
         dateRangeLabel={getDateRangeLabel()}
+        isAtStart={isAtStart}
+        isAtEnd={isAtEnd}
+        tripStartDate={tripStartDate}
+        tripEndDate={tripEndDate}
       />
 
       <div className="flex-1 overflow-hidden">

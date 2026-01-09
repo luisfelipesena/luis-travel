@@ -1,5 +1,5 @@
 import { z } from "zod"
-import { TransportModeValues, RouteStatusValues } from "../enums/routing.enum"
+import { RouteStatusValues, TransportModeValues } from "../enums/routing.enum"
 
 // ============================================================================
 // Transport mode schema

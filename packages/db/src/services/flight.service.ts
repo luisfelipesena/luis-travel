@@ -5,6 +5,10 @@ import { tripRepository } from "../repositories/trip.repository"
 import type { Flight, NewFlight } from "../schema"
 
 export class FlightService {
+  async getAllFlightsByUser(userId: string): Promise<Flight[]> {
+    return flightRepository.findByUserId(userId)
+  }
+
   async getFlightsByTripId(tripId: string, userId: string): Promise<Flight[]> {
     const hasAccess = await tripRepository.userHasAccess(tripId, userId)
 

@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router"
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router"
 import { format } from "date-fns"
 import { ptBR } from "date-fns/locale"
 import {
@@ -11,8 +11,11 @@ import {
   Sparkles,
   Users,
 } from "lucide-react"
+import { parseAsString, useQueryState } from "nuqs"
 import { useState } from "react"
 import { toast } from "sonner"
+import { FlightFormDialog } from "@/components/organisms/flight-form-dialog"
+import { TripSettingsDialog } from "@/components/organisms/trip-settings-dialog"
 import { type AISuggestion, AISuggestionsDialog } from "@/components/trip/ai-suggestions-dialog"
 import { DailyItinerary } from "@/components/trip/daily-itinerary"
 import { Badge } from "@/components/ui/badge"
@@ -28,7 +31,11 @@ export const Route = createFileRoute("/_authenticated/dashboard/trips/$tripId/")
 
 function TripDetailPage() {
   const { tripId } = Route.useParams()
+  const navigate = useNavigate()
+  const [activeTab, setActiveTab] = useQueryState("tab", parseAsString.withDefault("overview"))
   const [aiDialogOpen, setAiDialogOpen] = useState(false)
+  const [flightDialogOpen, setFlightDialogOpen] = useState(false)
+  const [settingsDialogOpen, setSettingsDialogOpen] = useState(false)
 
   const utils = trpc.useUtils()
   const { data: trip, isLoading, error } = trpc.trip.byId.useQuery({ id: tripId })
@@ -120,59 +127,17 @@ function TripDetailPage() {
             </div>
           </div>
         </div>
-        <Button variant="outline" asChild>
-          <Link to="/dashboard/trips/$tripId" params={{ tripId }}>
-            <Settings className="mr-2 h-4 w-4" />
-            Configurações
-          </Link>
+        <Button variant="outline" onClick={() => setSettingsDialogOpen(true)}>
+          <Settings className="mr-2 h-4 w-4" />
+          Configurações
         </Button>
       </div>
 
-      {/* Quick Stats */}
-      <div className="grid gap-4 md:grid-cols-3">
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="flex items-center gap-2 text-sm font-medium">
-              <Calendar className="h-4 w-4" />
-              Atividades
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{activities?.length || 0}</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="flex items-center gap-2 text-sm font-medium">
-              <Plane className="h-4 w-4" />
-              Voos
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{flights?.length || 0}</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="flex items-center gap-2 text-sm font-medium">
-              <Users className="h-4 w-4" />
-              Membros
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">1</div>
-          </CardContent>
-        </Card>
-      </div>
-
       {/* Main Content */}
-      <Tabs defaultValue="overview" className="space-y-4">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
         <TabsList>
           <TabsTrigger value="overview">Visão Geral</TabsTrigger>
-          <TabsTrigger value="routes">
-            <Navigation className="mr-1 h-3 w-3" />
-            Rotas
-          </TabsTrigger>
+          <TabsTrigger value="routes">Rotas</TabsTrigger>
           <TabsTrigger value="calendar">Calendário</TabsTrigger>
           <TabsTrigger value="flights">Voos</TabsTrigger>
           <TabsTrigger value="members">Membros</TabsTrigger>
@@ -202,7 +167,7 @@ function TripDetailPage() {
                   Abrir Calendário
                 </Link>
               </Button>
-              <Button variant="outline">
+              <Button variant="outline" onClick={() => setFlightDialogOpen(true)}>
                 <Plane className="mr-2 h-4 w-4" />
                 Adicionar Voo
               </Button>
@@ -319,7 +284,7 @@ function TripDetailPage() {
                 <div className="py-8 text-center text-muted-foreground">
                   <Plane className="mx-auto mb-2 h-8 w-8 opacity-50" />
                   <p>Nenhum voo adicionado ainda</p>
-                  <Button variant="link" className="mt-2">
+                  <Button variant="link" className="mt-2" onClick={() => setFlightDialogOpen(true)}>
                     Adicione seu primeiro voo
                   </Button>
                 </div>
@@ -395,6 +360,33 @@ function TripDetailPage() {
         isGenerating={generateMutation.isPending}
         isAdding={addMutation.isPending}
       />
+
+      {/* Flight Form Dialog */}
+      <FlightFormDialog
+        open={flightDialogOpen}
+        onClose={() => setFlightDialogOpen(false)}
+        tripId={tripId}
+      />
+
+      {/* Trip Settings Dialog */}
+      {trip && (
+        <TripSettingsDialog
+          open={settingsDialogOpen}
+          onClose={() => setSettingsDialogOpen(false)}
+          tripId={tripId}
+          initialData={{
+            name: trip.name,
+            destination: trip.destination,
+            description: trip.description,
+            startDate: new Date(trip.startDate),
+            endDate: new Date(trip.endDate),
+          }}
+          onSuccess={() => {
+            // If trip was deleted, navigate back to trips list
+            navigate({ to: "/dashboard/trips" })
+          }}
+        />
+      )}
     </div>
   )
 }

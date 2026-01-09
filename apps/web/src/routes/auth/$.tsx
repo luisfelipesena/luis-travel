@@ -21,17 +21,24 @@ function AuthPage() {
       <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-[#2D8B6F] to-[#1a5c47] p-12 flex-col justify-between">
         <div>
           <div className="flex items-center gap-3">
-            <img src="/luis-travel-icon.svg" alt="Luis Travel" className="h-10 w-10 brightness-0 invert" />
+            <img
+              src="/luis-travel-icon.svg"
+              alt="Luis Travel"
+              className="h-10 w-10 brightness-0 invert"
+            />
             <span className="text-2xl font-bold text-white">Luis Travel</span>
           </div>
         </div>
 
         <div className="space-y-6">
           <h2 className="text-4xl font-bold text-white leading-tight">
-            Planeje sua próxima<br />aventura com facilidade
+            Planeje sua próxima
+            <br />
+            aventura com facilidade
           </h2>
           <p className="text-white/80 text-lg max-w-md">
-            Crie roteiros personalizados, acompanhe voos em tempo real e compartilhe suas viagens com amigos e família.
+            Crie roteiros personalizados, acompanhe voos em tempo real e compartilhe suas viagens
+            com amigos e família.
           </p>
 
           <div className="flex gap-6 pt-4">
@@ -46,9 +53,7 @@ function AuthPage() {
           </div>
         </div>
 
-        <p className="text-white/60 text-sm">
-          © 2024 Luis Travel. Todos os direitos reservados.
-        </p>
+        <p className="text-white/60 text-sm">© 2024 Luis Travel. Todos os direitos reservados.</p>
       </div>
 
       {/* Right side - Auth Form */}

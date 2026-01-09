@@ -1,4 +1,4 @@
-import { defineEventHandler, getCookie, getQuery, sendRedirect } from "h3"
+import { defineEventHandler, getQuery, sendRedirect } from "h3"
 import { auth } from "../../auth"
 
 /**

@@ -3,7 +3,35 @@ import { TRPCError } from "@trpc/server"
 import { z } from "zod"
 import { protectedProcedure, router } from "../init"
 
+const flightWithTripSchema = z.object({
+  id: z.string().uuid(),
+  tripId: z.string().uuid(),
+  flightNumber: z.string(),
+  airline: z.string().nullable(),
+  departureAirport: z.string(),
+  arrivalAirport: z.string(),
+  departureTime: z.date(),
+  arrivalTime: z.date(),
+  status: z.string().nullable(),
+  externalData: z.any().nullable(),
+  createdBy: z.string().uuid(),
+  createdAt: z.date(),
+  updatedAt: z.date(),
+  trip: z
+    .object({
+      id: z.string().uuid(),
+      name: z.string(),
+      destination: z.string(),
+    })
+    .optional(),
+  creator: z.any().optional(),
+})
+
 export const flightRouter = router({
+  list: protectedProcedure.output(z.array(flightWithTripSchema)).query(async ({ ctx }) => {
+    return await flightService.getAllFlightsByUser(ctx.user.id)
+  }),
+
   listByTrip: protectedProcedure
     .input(z.object({ tripId: z.string().uuid() }))
     .query(async ({ ctx, input }) => {

@@ -140,7 +140,10 @@ function FlightCard({ flight, isPast = false }: { flight: Flight; isPast?: boole
           className="px-2 py-1 rounded"
           style={{ backgroundColor: `${getStatusColor(flight.status || "scheduled")}20` }}
         >
-          <Text style={{ color: getStatusColor(flight.status || "scheduled") }} className="text-xs font-medium">
+          <Text
+            style={{ color: getStatusColor(flight.status || "scheduled") }}
+            className="text-xs font-medium"
+          >
             {getStatusLabel(flight.status || "scheduled")}
           </Text>
         </View>

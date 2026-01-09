@@ -1,15 +1,15 @@
-import { Check, Loader2, MapPin, X, Search } from "lucide-react-native"
+import { Check, MapPin, Search, X } from "lucide-react-native"
 import { useEffect, useState } from "react"
 import {
-  View,
+  ActivityIndicator,
+  FlatList,
+  KeyboardAvoidingView,
+  Modal,
+  Platform,
+  Pressable,
   Text,
   TextInput,
-  Pressable,
-  FlatList,
-  Modal,
-  ActivityIndicator,
-  KeyboardAvoidingView,
-  Platform,
+  View,
 } from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context"
 import { trpc } from "../lib/trpc"
