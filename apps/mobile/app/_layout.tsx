@@ -65,7 +65,12 @@ function RootLayoutNav() {
       // Redirect to home
       router.replace("/(tabs)")
     }
-  }, [isAuthenticated, isLoading, segments])
+  }, [
+    isAuthenticated,
+    isLoading,
+    segments, // Redirect to home
+    router.replace,
+  ])
 
   return (
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>

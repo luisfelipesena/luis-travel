@@ -1,15 +1,15 @@
-import {
-  View,
-  Text,
-  StyleSheet,
-  FlatList,
-  TouchableOpacity,
-  RefreshControl,
-  ActivityIndicator,
-} from "react-native"
 import { Ionicons } from "@expo/vector-icons"
 import { format } from "date-fns"
 import { useRouter } from "expo-router"
+import {
+  ActivityIndicator,
+  FlatList,
+  RefreshControl,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native"
 import { trpc } from "@/src/lib/trpc"
 
 export default function TripsScreen() {
@@ -37,7 +37,8 @@ export default function TripsScreen() {
         <View style={styles.detailRow}>
           <Ionicons name="calendar-outline" size={16} color="#64748b" />
           <Text style={styles.detailText}>
-            {format(new Date(item.startDate), "MMM d")} - {format(new Date(item.endDate), "MMM d, yyyy")}
+            {format(new Date(item.startDate), "MMM d")} -{" "}
+            {format(new Date(item.endDate), "MMM d, yyyy")}
           </Text>
         </View>
       </View>

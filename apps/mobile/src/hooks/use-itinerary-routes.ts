@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query"
 import { useMemo } from "react"
-import { type TransportMode, decodePolyline, getRouteBetweenPoints } from "../lib/routing"
+import { decodePolyline, getRouteBetweenPoints, type TransportMode } from "../lib/routing"
 
 interface ActivityWithLocation {
   id: string

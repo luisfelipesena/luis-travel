@@ -4,13 +4,13 @@ import { ptBR } from "date-fns/locale"
 import { useLocalSearchParams, useRouter } from "expo-router"
 import { useState } from "react"
 import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  TouchableOpacity,
   ActivityIndicator,
   RefreshControl,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context"
 import { ItineraryRouteMap } from "@/src/components/itinerary-route-map"
@@ -62,8 +62,7 @@ export default function TripDetailScreen() {
   }
 
   const isUpcoming = new Date(trip.startDate) > new Date()
-  const isOngoing =
-    new Date(trip.startDate) <= new Date() && new Date(trip.endDate) >= new Date()
+  const isOngoing = new Date(trip.startDate) <= new Date() && new Date(trip.endDate) >= new Date()
 
   return (
     <SafeAreaView style={styles.container} edges={["top"]}>

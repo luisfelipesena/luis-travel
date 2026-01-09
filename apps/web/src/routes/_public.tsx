@@ -44,16 +44,10 @@ function PublicLayout() {
       </main>
 
       <footer className="border-t bg-muted/30">
-        <div className="container py-8">
-          <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
-            <div className="flex items-center gap-2">
-              <img src="/luis-travel-icon.svg" alt="Luis Travel" className="h-5 w-5" />
-              <span className="font-semibold text-[#2D8B6F]">Luis Travel</span>
-            </div>
-            <p className="text-sm text-muted-foreground">
-              &copy; {new Date().getFullYear()} Luis Travel. Todos os direitos reservados.
-            </p>
-          </div>
+        <div className="container py-6">
+          <p className="text-center text-sm text-muted-foreground">
+            &copy; {new Date().getFullYear()} Luis Travel. Todos os direitos reservados.
+          </p>
         </div>
       </footer>
     </div>

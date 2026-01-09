@@ -1,14 +1,14 @@
 import { Ionicons } from "@expo/vector-icons"
 import { useMemo, useState } from "react"
-import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator } from "react-native"
+import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { WebView } from "react-native-webview"
 import { useItineraryRoutes } from "../hooks/use-itinerary-routes"
 import {
-  type TransportMode,
   formatDistance,
   formatDuration,
-  TRANSPORT_MODE_LABELS,
   ROUTE_COLORS,
+  TRANSPORT_MODE_LABELS,
+  type TransportMode,
 } from "../lib/routing"
 
 const ACTIVITY_TYPE_COLORS: Record<string, string> = {

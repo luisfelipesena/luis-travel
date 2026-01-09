@@ -24,7 +24,7 @@ export function AvatarGroup({
   images = defaultAvatars,
   max = 4,
   size = "md",
-  className
+  className,
 }: AvatarGroupProps) {
   const visibleImages = images.slice(0, max)
   const remaining = images.length - max

@@ -184,14 +184,7 @@ export function EnhancedTripForm({ isAuthenticated, variant = "light" }: Enhance
     <form onSubmit={handleSubmit} className="w-full">
       <div className="relative">
         {/* Glow effect */}
-        <div
-          className={cn(
-            "absolute -inset-1 rounded-3xl blur-xl opacity-70",
-            isDark
-              ? "bg-gradient-to-r from-emerald-500/20 via-teal-500/10 to-emerald-500/20"
-              : "bg-gradient-to-r from-primary/20 via-primary/10 to-primary/20"
-          )}
-        />
+        <div className="absolute -inset-1 rounded-3xl blur-xl opacity-70 bg-gradient-to-r from-primary/20 via-primary/10 to-primary/20" />
 
         <div
           className={cn(
@@ -204,10 +197,10 @@ export function EnhancedTripForm({ isAuthenticated, variant = "light" }: Enhance
             <div
               className={cn(
                 "flex h-10 w-10 items-center justify-center rounded-xl",
-                isDark ? "bg-emerald-500/20" : "bg-primary/10"
+                isDark ? "bg-primary/20" : "bg-primary/10"
               )}
             >
-              <MapPin className={cn("h-5 w-5", isDark ? "text-emerald-400" : "text-primary")} />
+              <MapPin className="h-5 w-5 text-primary" />
             </div>
             <div>
               <h2 className={cn("text-xl font-bold", isDark && "text-white")}>

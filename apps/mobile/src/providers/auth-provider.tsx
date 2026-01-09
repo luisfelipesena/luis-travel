@@ -1,8 +1,14 @@
-import { createContext, useContext, useEffect, useState, useCallback, type ReactNode } from "react"
-import * as WebBrowser from "expo-web-browser"
 import * as Linking from "expo-linking"
+import * as WebBrowser from "expo-web-browser"
+import { createContext, type ReactNode, useCallback, useContext, useEffect, useState } from "react"
+import {
+  API_URL,
+  APP_SCHEME,
+  AUTH_CALLBACK_URL,
+  GITHUB_AUTH_URL,
+  GOOGLE_AUTH_URL,
+} from "../lib/config"
 import { storage } from "../lib/storage"
-import { API_URL, APP_SCHEME, GOOGLE_AUTH_URL, GITHUB_AUTH_URL, AUTH_CALLBACK_URL } from "../lib/config"
 
 // Ensure WebBrowser redirects work properly
 WebBrowser.maybeCompleteAuthSession()
@@ -25,8 +31,15 @@ type AuthContextType = {
   isLoading: boolean
   isAuthenticated: boolean
   availableProviders: AvailableProviders
-  signInWithEmail: (email: string, password: string) => Promise<{ success: boolean; error?: string }>
-  signUpWithEmail: (email: string, password: string, name: string) => Promise<{ success: boolean; error?: string }>
+  signInWithEmail: (
+    email: string,
+    password: string
+  ) => Promise<{ success: boolean; error?: string }>
+  signUpWithEmail: (
+    email: string,
+    password: string,
+    name: string
+  ) => Promise<{ success: boolean; error?: string }>
   signInWithGoogle: () => Promise<void>
   signInWithGithub: () => Promise<void>
   signOut: () => Promise<void>

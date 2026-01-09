@@ -8,12 +8,7 @@ interface SocialProofBadgeProps {
   className?: string
 }
 
-export function SocialProofBadge({
-  count,
-  label,
-  avatars,
-  className,
-}: SocialProofBadgeProps) {
+export function SocialProofBadge({ count, label, avatars, className }: SocialProofBadgeProps) {
   return (
     <div
       className={cn(

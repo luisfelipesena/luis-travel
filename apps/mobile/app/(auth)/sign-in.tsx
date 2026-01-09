@@ -1,25 +1,26 @@
+import { Ionicons } from "@expo/vector-icons"
+import { useRouter } from "expo-router"
+import { StatusBar } from "expo-status-bar"
 import { useState } from "react"
 import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
   ActivityIndicator,
-  TextInput,
+  Alert,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
-  Alert,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context"
-import { StatusBar } from "expo-status-bar"
-import { Ionicons } from "@expo/vector-icons"
-import { useRouter } from "expo-router"
 import { useAuth } from "@/src/providers/auth-provider"
 
 export default function SignInScreen() {
   const router = useRouter()
-  const { signInWithGoogle, signInWithGithub, signInWithEmail, isLoading, availableProviders } = useAuth()
+  const { signInWithGoogle, signInWithGithub, signInWithEmail, isLoading, availableProviders } =
+    useAuth()
 
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
@@ -85,7 +86,12 @@ export default function SignInScreen() {
             </View>
 
             <View style={styles.inputContainer}>
-              <Ionicons name="lock-closed-outline" size={20} color="#64748b" style={styles.inputIcon} />
+              <Ionicons
+                name="lock-closed-outline"
+                size={20}
+                color="#64748b"
+                style={styles.inputIcon}
+              />
               <TextInput
                 style={styles.input}
                 placeholder="Senha"
@@ -94,8 +100,15 @@ export default function SignInScreen() {
                 onChangeText={setPassword}
                 secureTextEntry={!showPassword}
               />
-              <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.eyeButton}>
-                <Ionicons name={showPassword ? "eye-off-outline" : "eye-outline"} size={20} color="#64748b" />
+              <TouchableOpacity
+                onPress={() => setShowPassword(!showPassword)}
+                style={styles.eyeButton}
+              >
+                <Ionicons
+                  name={showPassword ? "eye-off-outline" : "eye-outline"}
+                  size={20}
+                  color="#64748b"
+                />
               </TouchableOpacity>
             </View>
 
@@ -129,14 +142,22 @@ export default function SignInScreen() {
 
               <View style={styles.buttonContainer}>
                 {availableProviders.google && (
-                  <TouchableOpacity style={styles.googleButton} onPress={signInWithGoogle} activeOpacity={0.8}>
+                  <TouchableOpacity
+                    style={styles.googleButton}
+                    onPress={signInWithGoogle}
+                    activeOpacity={0.8}
+                  >
                     <Ionicons name="logo-google" size={24} color="#fff" />
                     <Text style={styles.buttonText}>Continuar com Google</Text>
                   </TouchableOpacity>
                 )}
 
                 {availableProviders.github && (
-                  <TouchableOpacity style={styles.githubButton} onPress={signInWithGithub} activeOpacity={0.8}>
+                  <TouchableOpacity
+                    style={styles.githubButton}
+                    onPress={signInWithGithub}
+                    activeOpacity={0.8}
+                  >
                     <Ionicons name="logo-github" size={24} color="#fff" />
                     <Text style={styles.buttonText}>Continuar com GitHub</Text>
                   </TouchableOpacity>

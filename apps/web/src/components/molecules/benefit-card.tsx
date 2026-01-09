@@ -35,9 +35,7 @@ export function BenefitCard({
         <div className="space-y-1">
           <h3 className="font-semibold text-lg">{title}</h3>
           <p className="text-sm text-muted-foreground leading-relaxed">{description}</p>
-          {highlight && (
-            <p className="text-sm font-medium text-primary mt-2">{highlight}</p>
-          )}
+          {highlight && <p className="text-sm font-medium text-primary mt-2">{highlight}</p>}
         </div>
       </div>
     </div>

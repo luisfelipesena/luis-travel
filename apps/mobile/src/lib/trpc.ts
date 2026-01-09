@@ -1,5 +1,5 @@
-import { createTRPCReact, httpBatchLink } from "@trpc/react-query"
 import type { AppRouter } from "@luis-travel/api"
+import { createTRPCReact, httpBatchLink } from "@trpc/react-query"
 import superjson from "superjson"
 import { API_URL } from "./config"
 import { storage } from "./storage"

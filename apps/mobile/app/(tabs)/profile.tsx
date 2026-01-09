@@ -1,5 +1,5 @@
-import { View, Text, StyleSheet, TouchableOpacity, Image, Alert } from "react-native"
 import { Ionicons } from "@expo/vector-icons"
+import { Alert, Image, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { useAuth } from "@/src/providers/auth-provider"
 
 export default function ProfileScreen() {
